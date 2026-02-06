@@ -14,8 +14,10 @@ I architect enterprise-grade SaaS platforms and immersive 3D web experiences. [c
 ---
 
 ### 📈 GitHub Stats
-![Elvin's GitHub Stats](https://github-readme-stats.vercel.app/api?username=Elvinoacer&show_icons=true&theme=dark)
-![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=Elvinoacer&layout=compact&theme=dark)
+<p align="left">
+  <img src="https://github-readme-stats.vercel.app/api?username=Elvinoacer&show_icons=true&theme=dark&hide_border=true&bg_color=0d1117" alt="Elvin's GitHub Stats" />
+  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=Elvinoacer&layout=compact&theme=dark&hide_border=true&bg_color=0d1117" alt="Top Langs" />
+</p>
 
 ---
 
