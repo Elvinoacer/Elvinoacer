@@ -2,7 +2,7 @@
 
 # Hi, I'm Elvin Omondi 🚀
 
-### Founding Engineer | Digital Architect | Full-Stack Expert
+### <img src="https://readme-typing-svg.herokuapp.com?font=Orbitron&color=00f2ff&size=28&lines=Digital+Architect;Full-Stack+Expert;Founding+Engineer+%40+GTSS&center=false&width=600&height=50" alt="Typing SVG" />
 I architect enterprise-grade SaaS platforms and immersive 3D web experiences. Currently leading product development at **GTSS**, maintaining a library of **188+ reusable components** for rapid deployment.
 
 ---
