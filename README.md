@@ -1,3 +1,5 @@
+<img src="./banner.png" width="100%" alt="Elvin Omondi Banner" />
+
 # Hi, I'm Elvin Omondi 🚀
 
 ### Founding Engineer | Digital Architect | Full-Stack Expert
