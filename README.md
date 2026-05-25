@@ -23,6 +23,10 @@ I architect enterprise-grade SaaS platforms and immersive 3D web experiences. Cu
   <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=Elvinoacer&layout=compact&theme=dark&hide_border=true&cache_seconds=86400" alt="Top Languages" height="170" />
 </p>
 
+<p align="left">
+  <img src="https://streak-stats.demolab.com?user=Elvinoacer&theme=dark&hide_border=true&date_format=M%20j%5B%2C%20Y%5D" alt="GitHub Streak Stats" />
+</p>
+
 ---
 
 ### 🏗 Featured Systems
