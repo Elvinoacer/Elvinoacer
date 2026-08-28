@@ -1,101 +1,123 @@
-<img src="./banner.png" width="100%" alt="Elvin Omondi Banner" />
+<div align="center">
 
-# Hi, I'm Elvin Omondi 🚀
+<img src="./banner.png" width="100%" alt="Elvin Omondi — software developer" />
 
-### <img src="https://readme-typing-svg.herokuapp.com?font=Orbitron&color=00f2ff&size=28&lines=Digital+Architect;Full-Stack+Expert;Founding+Engineer+%40+GTSS&center=false&width=600&height=50" alt="Typing SVG" />
-I architect enterprise-grade SaaS platforms and immersive 3D web experiences. Currently leading product development at **GTSS**, maintaining **18+ production systems**. Previously in Berlin (2024-2025).
+# Elvin Omondi Juma
 
----
+**Software Developer · Product Builder · Computer Science Student**
 
-### 🛠 Tech Stack
-- **Frontend:** Next.js 16, React 19, TypeScript, Tailwind CSS 4, Framer Motion
-- **Backend:** Node.js, PostgreSQL, Prisma, Redis, Socket.io
-- **3D/Motion:** Three.js, GSAP
-- **Infrastructure:** Docker, AWS S3, Vercel
+I build thoughtful web products, internal systems, and digital experiences that solve practical problems.
 
----
+[![Email](https://img.shields.io/badge/Email-omondielvin%40gmail.com-111827?style=flat-square&logo=gmail&logoColor=white)](mailto:omondielvin@gmail.com)
+[![GitHub](https://img.shields.io/badge/GitHub-Elvinoacer-111827?style=flat-square&logo=github&logoColor=white)](https://github.com/Elvinoacer)
 
-### 📈 GitHub Stats
-
-<p align="left">
-  <img src="https://github-readme-stats.vercel.app/api?username=Elvinoacer&show_icons=true&theme=dark&count_private=true&hide_border=true&cache_seconds=86400" alt="Elvin's GitHub Stats" height="170" />
-  &nbsp;
-  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=Elvinoacer&layout=compact&theme=dark&hide_border=true&cache_seconds=86400" alt="Top Languages" height="170" />
-</p>
-
-<p align="left">
-  <img src="https://streak-stats.demolab.com?user=Elvinoacer&theme=dark&hide_border=true&date_format=M%20j%5B%2C%20Y%5D" alt="GitHub Streak Stats" />
-</p>
+</div>
 
 ---
 
-### 🏗 Featured Systems
-#### **GTSS Platform** | Full-Stack Developer
-> *Enterprise Product Management Platform*
-Built a comprehensive SaaS portfolio management platform serving as a central hub for product documentation, sales enablement, and team coordination.
-**Tech:** `Next.js 16` `React 19` `TypeScript` `PostgreSQL` `Prisma` `NextAuth v5`
-**Impact:**
-- Built 60+ dynamic pages and **188 reusable React components**.
-- Implemented RBAC with multi-tier authentication (Admin, Team, Client).
-- Integrated CRM, support ticketing, and real-time analytics.
-[Live Platform](https://gtss.vercel.app/)
+## About
 
-#### **JustInTime** | Full Stack Developer
-> *Hyperlocal Service Marketplace Platform*
-Production-ready marketplace connecting service providers with clients in Kenya, featuring real-time matching and KRA tax compliance.
-**Tech:** `Next.js 15` `Socket.io` `TensorFlow.js` `PostgreSQL` `IntaSend (M-Pesa)`
-**Impact:**
-- **99.9% uptime design** & <30 min average provider response time.
-- Built AI-powered matching engine using **TensorFlow.js**.
-- Integrated eTIMS Gatekeeper for automated tax compliance.
-[Live Platform](https://justintimeservices.vercel.app)
+I'm a Kenya-based developer focused on turning ideas into useful, maintainable software.
 
-#### **Hotel Manager** | System Architect
-> *Offline Intranet Ordering & Management System*
-Offline-first hotel management platform operating as a local WiFi captive portal for instant guest ordering and staff operations.
-**Tech:** `Node.js` `React.js` `Electron.js` `Socket.IO` `SQLite` `Captive Portal`
-**Impact:**
-- Reduced order-to-kitchen latency to **<50ms** using WebSocket communication.
-- Achieved **99.9% uptime** through offline-first architecture.
-- Streamlined operations across Admin, Kitchen, and Waiter roles.
-[Product Page](https://gtss.vercel.app/products/cmkwglu7u000004jv50w2cmcj)
+My work sits around **full-stack web development, product interfaces, business systems, and real-world digital products**. I enjoy taking something from an early idea or rough requirement and shaping it into a polished experience people can actually use.
 
-#### **ZION-HILL** | Full-Stack Developer
-> *Comprehensive Church Management Ecosystem*
-Role-based platform supporting 28+ user roles for congregation management, online giving, and pastoral care.
-**Tech:** `Next.js 16` `TypeScript` `PostgreSQL` `Prisma` `Pusher` `Firebase`
-**Impact:**
-- Architected **50+ database models** & **135 RESTful APIs**.
-- Integrated M-Pesa payment gateway for secure online donations.
-- Reduced manual admin work via automated workflows.
-[Live Platform](https://zion-hill.vercel.app/)
+I care about three things in particular:
 
-#### **Kampus** | Full Stack Developer
-> *University Hyperlocal Social Platform*
-Microservices-based social networking platform for university students with real-time messaging and peer-to-peer marketplace.
-**Tech:** `React Native` `Expo` `Node.js` `Redis` `Socket.io` `PostgreSQL`
-**Impact:**
-- Implemented messaging achieving **sub-300ms latency**.
-- Built fan-out/fan-in feed generation handling influencer-scale followers.
-- Designed 24+ database models w/ GDPR-compliant data handling.
-[Product Page](https://gtss.vercel.app/products/cmkxqm2ag000004kz7vhkvpza)
+- **Clarity** — interfaces should feel obvious, not complicated.
+- **Reliability** — software should behave consistently in the real world.
+- **Craft** — small details matter, from responsive layouts to thoughtful interactions.
 
-#### **Concept Builders** | Full-Stack Developer
-> *Architectural Design E-Commerce Platform*
-Full-stack e-commerce platform for purchasing architectural house plans with multi-gateway payments and project management.
-**Tech:** `Next.js 16` `React 19` `PostgreSQL` `PayPal` `M-Pesa`
-**Impact:**
-- Implemented multi-currency support & cost calculator tools.
-- Created project management system with milestones and invoices.
-- Integrated Vercel Analytics for user behavior insights.
-[Live Platform](https://www.conceptbuilders.co.ke/)
+---
 
-#### **German Virtual School** | Full-Stack Developer
-> *Virtual Language Education Platform*
-Secure virtual school platform for delivering German language education with live video classes and structured courses.
-**Tech:** `Next.js 16` `Jitsi` `WebSockets` `PostgreSQL` `Intasend`
-**Impact:**
-- Built **66+ distinct features** across student, teacher, and admin modules.
-- Integrated video conferencing with automatic attendance tracking.
-- Implemented RBAC with 3 user types and GDPR compliance.
-[Live Platform](https://germanvirtualschool.com)
+## What I Build
+
+| Area | What I work on |
+| --- | --- |
+| **Web applications** | Full-stack applications, dashboards, portals, marketplaces and business platforms |
+| **Product experiences** | Responsive UI, landing pages, interaction design and polished user flows |
+| **Business systems** | Internal tools, management systems, workflows, payments and operational software |
+| **Real-time products** | Messaging, notifications, live updates and collaborative experiences |
+
+---
+
+## Tools I Use
+
+<div align="center">
+
+**Frontend**
+
+![Next.js](https://img.shields.io/badge/Next.js-000000?style=flat-square&logo=nextdotjs&logoColor=white)
+![React](https://img.shields.io/badge/React-20232A?style=flat-square&logo=react&logoColor=61DAFB)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-0F172A?style=flat-square&logo=tailwindcss&logoColor=38BDF8)
+
+**Backend & Data**
+
+![Node.js](https://img.shields.io/badge/Node.js-111827?style=flat-square&logo=nodedotjs&logoColor=68A063)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-111827?style=flat-square&logo=postgresql&logoColor=4169E1)
+![Prisma](https://img.shields.io/badge/Prisma-111827?style=flat-square&logo=prisma&logoColor=white)
+![Redis](https://img.shields.io/badge/Redis-111827?style=flat-square&logo=redis&logoColor=DC382D)
+
+**Cloud & Product**
+
+![Vercel](https://img.shields.io/badge/Vercel-111827?style=flat-square&logo=vercel&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-111827?style=flat-square&logo=docker&logoColor=2496ED)
+![Git](https://img.shields.io/badge/Git-111827?style=flat-square&logo=git&logoColor=F05032)
+
+</div>
+
+---
+
+## Selected Work
+
+A few projects that represent the kind of software I like building.
+
+### Healthcare & Pharmacy
+Web experiences for medical centres and pharmacies, with a focus on **clear information architecture, mobile-first UX, patient-facing journeys, and practical business functionality**.
+
+### GTSS
+Product and business software built around **content, operations, customer workflows and internal processes**.
+
+### JustInTime
+A service marketplace concept connecting customers with local service providers, exploring **matching, real-time communication and digital payments**.
+
+### Hotel Management
+An offline-first operational system for hotel teams, focused on **fast ordering, real-time updates and simple staff workflows**.
+
+### ZION-HILL
+A church management platform covering **roles, member workflows, communications and online giving**.
+
+### German Virtual School
+A virtual learning platform for **students, teachers, courses, live classes and administration**.
+
+> More projects live across my GitHub repositories. I prefer showing the work itself over filling this page with inflated statistics.
+
+---
+
+## Currently
+
+**Building:** practical digital products for businesses and organisations.
+
+**Learning:** stronger product thinking, system design, and better ways to turn software into something genuinely useful.
+
+**Open to:** thoughtful collaborations, interesting product ideas, and opportunities where engineering and product thinking meet.
+
+---
+
+## A little beyond code
+
+I'm interested in **product design, entrepreneurship, automation, AI-assisted software development, digital business, and the intersection between technology and everyday problems**.
+
+I don't believe good software is just about writing more code. The best result is usually the simplest product that solves the right problem well.
+
+---
+
+## Let's build something useful
+
+<div align="center">
+
+**Have an idea, product, or problem worth solving?**
+
+[Start a conversation](mailto:omondielvin@gmail.com)
+
+</div>
