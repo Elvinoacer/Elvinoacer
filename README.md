@@ -22,34 +22,53 @@ I design and ship end-to-end products across **healthcare, local commerce, educa
 
 <br/>
 
+<div align="center">
+<img src="./assets/engineering-signal.svg" width="100%" alt="Animated engineering signal" />
+</div>
+
+<div align="center">
+<img src="./assets/signal-divider.svg" width="100%" alt="" />
+</div>
+
 ## What I engineer
 
 <table>
 <tr>
 <td width="33%" valign="top">
 
-### Product systems
+### ⚙️ Product systems
+
 Multi-tenant platforms, role-based workflows, dashboards, onboarding, internal tools, commerce, and operational software.
 
 </td>
 <td width="33%" valign="top">
 
-### Real-world infrastructure
+### ⚡ Real-world infrastructure
+
 M-Pesa payments, real-time events, offline-first flows, notifications, geolocation, background jobs, and integrations.
 
 </td>
 <td width="33%" valign="top">
 
-### AI-assisted workflows
+### 🧠 AI-assisted workflows
+
 AI features and agent-assisted engineering workflows used to move faster without giving up architecture, testing, or judgment.
 
 </td>
 </tr>
 </table>
 
-<br/>
+<div align="center">
+<img src="./assets/signal-divider.svg" width="100%" alt="" />
+</div>
 
 ## Selected work
+
+<div align="center">
+<img src="./assets/project-radar.svg" width="100%" alt="Animated project constellation showing selected products" />
+</div>
+
+<br/>
 
 <table>
 <tr>
@@ -134,9 +153,17 @@ A virtual learning platform for students, teachers, live classes, course adminis
   <sub>Real products, operational constraints, and systems designed to be used — not just demoed.</sub>
 </div>
 
-<br/>
+<div align="center">
+<img src="./assets/signal-divider.svg" width="100%" alt="" />
+</div>
 
 ## Engineering toolkit
+
+<div align="center">
+<img src="./assets/stack-orbit.svg" width="100%" alt="Animated technology orbit" />
+</div>
+
+<br/>
 
 <div align="center">
 
@@ -155,7 +182,9 @@ A virtual learning platform for students, teachers, live classes, course adminis
 | **Integrations** | M-Pesa / Daraja · webhooks · notifications · maps / geolocation |
 | **Workflow** | AI-assisted engineering · agentic tooling · rapid prototyping · iterative delivery |
 
-<br/>
+<div align="center">
+<img src="./assets/signal-divider.svg" width="100%" alt="" />
+</div>
 
 ## How I like to build
 
@@ -163,14 +192,14 @@ A virtual learning platform for students, teachers, live classes, course adminis
 <tr>
 <td width="50%" valign="top">
 
-**01 — Start with the workflow**
+### 01 // START WITH THE WORKFLOW
 
 A technically elegant system is still wrong if it misunderstands the people and operations it is supposed to serve.
 
 </td>
 <td width="50%" valign="top">
 
-**02 — Design the failure path**
+### 02 // DESIGN THE FAILURE PATH
 
 Payments fail. Networks disappear. Jobs retry. Users double-click. The unhappy path is part of the product.
 
@@ -179,14 +208,14 @@ Payments fail. Networks disappear. Jobs retry. Users double-click. The unhappy p
 <tr>
 <td width="50%" valign="top">
 
-**03 — Keep state explicit**
+### 03 // KEEP STATE EXPLICIT
 
 Permissions, tenant boundaries, transaction state, background work, and data ownership should be obvious in the architecture.
 
 </td>
 <td width="50%" valign="top">
 
-**04 — Use AI as leverage**
+### 04 // USE AI AS LEVERAGE
 
 AI can compress research, implementation, testing, and iteration — but engineering judgment still owns the final system.
 
@@ -194,20 +223,20 @@ AI can compress research, implementation, testing, and iteration — but enginee
 </tr>
 </table>
 
-<br/>
+<div align="center">
+<img src="./assets/signal-divider.svg" width="100%" alt="" />
+</div>
 
 ## Current vector
 
-| | |
-| --- | --- |
-| **Building** | Production software through GTSS, with a strong focus on pharmacy, marketplace, healthcare, and operational platforms |
-| **Deepening** | System design, reliability, product thinking, AI-assisted engineering, and scalable multi-tenant architecture |
-| **Interested in** | Ambitious product engineering work, technical collaborations, and systems with real operational depth |
+<div align="center">
+<img src="./assets/current-vector.svg" width="100%" alt="Animated current engineering focus telemetry" />
+</div>
 
 <br/>
 
 <details>
-<summary><b>GitHub activity</b></summary>
+<summary><b>◉ Open GitHub telemetry</b></summary>
 <br/>
 
 <div align="center">
@@ -229,6 +258,6 @@ If you're working on a product with meaningful technical or operational complexi
 
 <br/><br/>
 
-<sub>Designed in code · Shipped from Nairobi 🇰🇪</sub>
+<img src="./assets/footer-pulse.svg" width="100%" alt="Build, ship, observe, evolve" />
 
 </div>
