@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="260" viewBox="0 0 1200 260" role="img" aria-label="Animated technology orbit">
+<defs>
+  <radialGradient id="bg" cx=".5" cy=".5" r=".7">
+    <stop offset="0%" stop-color="#0B1F36"/>
+    <stop offset="100%" stop-color="#050A13"/>
+  </radialGradient>
+  <linearGradient id="g" x1="0" x2="1">
+    <stop offset="0%" stop-color="#22D3EE"/><stop offset="50%" stop-color="#60A5FA"/><stop offset="100%" stop-color="#A78BFA"/>
+  </linearGradient>
+  <filter id="glow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<rect x="1" y="1" width="1198" height="258" rx="24" fill="url(#bg)" stroke="#38BDF8" stroke-opacity=".18"/>
+<g transform="translate(600 130)" fill="none">
+  <ellipse rx="500" ry="78" stroke="#38BDF8" stroke-opacity=".15" stroke-dasharray="8 12">
+    <animateTransform attributeName="transform" type="rotate" values="0;360" dur="42s" repeatCount="indefinite"/>
+  </ellipse>
+  <ellipse rx="390" ry="58" stroke="#A78BFA" stroke-opacity=".17" stroke-dasharray="4 10">
+    <animateTransform attributeName="transform" type="rotate" values="360;0" dur="31s" repeatCount="indefinite"/>
+  </ellipse>
+  <circle r="56" fill="#071426" stroke="url(#g)" stroke-width="2" filter="url(#glow)">
+    <animate attributeName="r" values="52;60;52" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  <text text-anchor="middle" y="-4" fill="#E0F2FE" font-family="ui-sans-serif,system-ui" font-size="14" font-weight="800" letter-spacing="1.4">ENGINEERING</text>
+  <text text-anchor="middle" y="18" fill="#94A3B8" font-family="ui-monospace,monospace" font-size="11">TOOLKIT</text>
+</g>
+<g font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="13" font-weight="700" fill="#D7F4FF">
+  <g transform="translate(600 130)">
+    <g><circle cx="-500" cy="0" r="5" fill="#22D3EE" filter="url(#glow)"/><text x="-480" y="5">TypeScript</text><animateTransform attributeName="transform" type="rotate" values="0;360" dur="42s" repeatCount="indefinite"/></g>
+    <g><circle cx="500" cy="0" r="5" fill="#A78BFA" filter="url(#glow)"/><text x="420" y="5">Next.js</text><animateTransform attributeName="transform" type="rotate" values="0;360" dur="42s" repeatCount="indefinite"/></g>
+    <g><circle cx="0" cy="-78" r="5" fill="#38BDF8" filter="url(#glow)"/><text x="18" y="-73">PostgreSQL</text><animateTransform attributeName="transform" type="rotate" values="0;360" dur="42s" repeatCount="indefinite"/></g>
+    <g><circle cx="0" cy="78" r="5" fill="#34D399" filter="url(#glow)"/><text x="18" y="83">Node.js</text><animateTransform attributeName="transform" type="rotate" values="0;360" dur="42s" repeatCount="indefinite"/></g>
+  </g>
+</g>
+<g font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="12" fill="#CBD5E1">
+  <text x="44" y="35">REACT · PRISMA · REDIS · SOCKET.IO · ELECTRON · DOCKER · VERCEL · LINUX · CLOUDFLARE · M-PESA</text>
+  <text x="1156" y="232" text-anchor="end" fill="#64748B">tools change · systems thinking persists</text>
+</g>
+</svg>
