@@ -1,85 +1,132 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="380" viewBox="0 0 1200 380" role="img" aria-labelledby="title desc">
-  <title id="title">Elvin Omondi Juma — Full-Stack Product Engineer</title>
-  <desc id="desc">GitHub profile banner for Elvin Omondi Juma, a full-stack product engineer in Nairobi, Kenya.</desc>
-  <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#050B14"/>
-      <stop offset="45%" stop-color="#071426"/>
-      <stop offset="100%" stop-color="#0B1F36"/>
-    </linearGradient>
-    <radialGradient id="glowA" cx="0.18" cy="0.2" r="0.9">
-      <stop offset="0%" stop-color="#22D3EE" stop-opacity="0.22"/>
-      <stop offset="55%" stop-color="#0EA5E9" stop-opacity="0.05"/>
-      <stop offset="100%" stop-color="#0EA5E9" stop-opacity="0"/>
-    </radialGradient>
-    <radialGradient id="glowB" cx="0.86" cy="0.45" r="0.6">
-      <stop offset="0%" stop-color="#8B5CF6" stop-opacity="0.18"/>
-      <stop offset="65%" stop-color="#8B5CF6" stop-opacity="0.03"/>
-      <stop offset="100%" stop-color="#8B5CF6" stop-opacity="0"/>
-    </radialGradient>
-    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="#22D3EE"/>
-      <stop offset="50%" stop-color="#38BDF8"/>
-      <stop offset="100%" stop-color="#A78BFA"/>
-    </linearGradient>
-    <pattern id="grid" width="38" height="38" patternUnits="userSpaceOnUse">
-      <path d="M 38 0 L 0 0 0 38" fill="none" stroke="#8AB4F8" stroke-opacity="0.055" stroke-width="1"/>
-    </pattern>
-    <filter id="blur">
-      <feGaussianBlur stdDeviation="18"/>
-    </filter>
-  </defs>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="430" viewBox="0 0 1200 430" role="img" aria-labelledby="title desc">
+<title id="title">Elvin Omondi Juma — Full-Stack Product Engineer</title>
+<desc id="desc">Animated cybernetic profile banner for Elvin Omondi Juma.</desc>
+<defs>
+  <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0%" stop-color="#030711"><animate attributeName="stop-color" values="#030711;#061526;#030711" dur="9s" repeatCount="indefinite"/></stop>
+    <stop offset="48%" stop-color="#071426"><animate attributeName="stop-color" values="#071426;#091B33;#071426" dur="7s" repeatCount="indefinite"/></stop>
+    <stop offset="100%" stop-color="#0A1730"><animate attributeName="stop-color" values="#0A1730;#150B2E;#0A1730" dur="11s" repeatCount="indefinite"/></stop>
+  </linearGradient>
+  <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0%" stop-color="#22D3EE"><animate attributeName="stop-color" values="#22D3EE;#60A5FA;#A78BFA;#22D3EE" dur="5s" repeatCount="indefinite"/></stop>
+    <stop offset="50%" stop-color="#38BDF8"><animate attributeName="stop-color" values="#38BDF8;#A78BFA;#34D399;#38BDF8" dur="6s" repeatCount="indefinite"/></stop>
+    <stop offset="100%" stop-color="#A78BFA"><animate attributeName="stop-color" values="#A78BFA;#22D3EE;#F472B6;#A78BFA" dur="7s" repeatCount="indefinite"/></stop>
+  </linearGradient>
+  <radialGradient id="halo">
+    <stop offset="0%" stop-color="#38BDF8" stop-opacity=".28"/>
+    <stop offset="50%" stop-color="#8B5CF6" stop-opacity=".08"/>
+    <stop offset="100%" stop-color="#000" stop-opacity="0"/>
+  </radialGradient>
+  <pattern id="grid" width="36" height="36" patternUnits="userSpaceOnUse">
+    <path d="M36 0H0V36" fill="none" stroke="#7DD3FC" stroke-opacity=".055"/>
+  </pattern>
+  <filter id="soft"><feGaussianBlur stdDeviation="18"/></filter>
+  <filter id="glow"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  <clipPath id="clip"><rect width="1200" height="430" rx="28"/></clipPath>
+</defs>
 
-  <rect width="1200" height="380" rx="28" fill="url(#bg)"/>
-  <rect width="1200" height="380" rx="28" fill="url(#glowA)"/>
-  <rect width="1200" height="380" rx="28" fill="url(#glowB)"/>
-  <rect x="1" y="1" width="1198" height="378" rx="27" fill="none" stroke="#7DD3FC" stroke-opacity="0.13"/>
-  <rect x="0" y="0" width="1200" height="380" rx="28" fill="url(#grid)"/>
+<g clip-path="url(#clip)">
+  <rect width="1200" height="430" fill="url(#bg)"/>
+  <circle cx="970" cy="196" r="260" fill="url(#halo)" opacity=".8">
+    <animate attributeName="r" values="220;285;220" dur="8s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values=".45;.85;.45" dur="6s" repeatCount="indefinite"/>
+  </circle>
 
-  <g opacity="0.95">
-    <circle cx="1020" cy="188" r="124" fill="none" stroke="#38BDF8" stroke-opacity="0.12" stroke-width="1.2"/>
-    <circle cx="1020" cy="188" r="90" fill="none" stroke="#A78BFA" stroke-opacity="0.18" stroke-width="1.2"/>
-    <circle cx="1020" cy="188" r="56" fill="none" stroke="#22D3EE" stroke-opacity="0.24" stroke-width="1.2"/>
-    <path d="M898 188 C930 96 1112 96 1142 188 C1112 280 930 280 898 188Z" fill="none" stroke="url(#accent)" stroke-opacity="0.22" stroke-width="1.1"/>
-    <circle cx="1108" cy="113" r="4" fill="#22D3EE"/>
-    <circle cx="947" cy="258" r="3" fill="#A78BFA"/>
-    <circle cx="1020" cy="188" r="7" fill="#E2F7FF"/>
-    <circle cx="1020" cy="188" r="22" fill="#38BDF8" opacity="0.08" filter="url(#blur)"/>
+  <g opacity=".85">
+    <rect x="-36" y="0" width="1272" height="466" fill="url(#grid)">
+      <animateTransform attributeName="transform" type="translate" values="0 0;36 36" dur="5.5s" repeatCount="indefinite"/>
+    </rect>
   </g>
 
-  <g font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif">
-    <g transform="translate(64 48)">
-      <rect width="174" height="32" rx="16" fill="#0B2239" stroke="#22D3EE" stroke-opacity="0.28"/>
-      <circle cx="19" cy="16" r="4.5" fill="#34D399"/>
-      <text x="33" y="21" fill="#CFFAFE" font-size="13" font-weight="600" letter-spacing="1.2">NAIROBI · KENYA</text>
-    </g>
-
-    <text x="64" y="142" fill="#F8FAFC" font-size="48" font-weight="800" letter-spacing="-1.4">ELVIN OMONDI JUMA</text>
-    <rect x="64" y="164" width="510" height="4" rx="2" fill="url(#accent)"/>
-    <text x="64" y="212" fill="#BAE6FD" font-size="19" font-weight="700" letter-spacing="2.2">FULL-STACK PRODUCT ENGINEER</text>
-    <text x="64" y="250" fill="#94A3B8" font-size="17" font-weight="500">Building reliable software for real businesses, real users, and real constraints.</text>
-
-    <g transform="translate(64 292)">
-      <rect width="145" height="38" rx="19" fill="#0B1D31" stroke="#38BDF8" stroke-opacity="0.20"/>
-      <text x="20" y="25" fill="#D7F4FF" font-size="14" font-weight="650">Product systems</text>
-
-      <g transform="translate(158 0)">
-        <rect width="136" height="38" rx="19" fill="#0B1D31" stroke="#38BDF8" stroke-opacity="0.20"/>
-        <text x="20" y="25" fill="#D7F4FF" font-size="14" font-weight="650">Real-time apps</text>
-      </g>
-
-      <g transform="translate(307 0)">
-        <rect width="139" height="38" rx="19" fill="#0B1D31" stroke="#A78BFA" stroke-opacity="0.22"/>
-        <text x="20" y="25" fill="#EDE9FE" font-size="14" font-weight="650">AI workflows</text>
-      </g>
-
-      <g transform="translate(459 0)">
-        <rect width="140" height="38" rx="19" fill="#0B1D31" stroke="#34D399" stroke-opacity="0.20"/>
-        <text x="20" y="25" fill="#D1FAE5" font-size="14" font-weight="650">Africa-first UX</text>
-      </g>
-    </g>
-
-    <text x="1020" y="195" text-anchor="middle" fill="#F8FAFC" font-size="25" font-weight="800" letter-spacing="1.5">EOJ</text>
-    <text x="1134" y="342" text-anchor="end" fill="#64748B" font-size="12" font-weight="600" letter-spacing="1.6">SHIP · LEARN · ITERATE</text>
+  <!-- traveling circuit traces -->
+  <g fill="none" stroke="url(#accent)" stroke-width="1.3" opacity=".34">
+    <path d="M0 92H155L190 127H410" stroke-dasharray="18 22">
+      <animate attributeName="stroke-dashoffset" values="0;-160" dur="4s" repeatCount="indefinite"/>
+    </path>
+    <path d="M1200 338H1064L1028 302H770" stroke-dasharray="12 26">
+      <animate attributeName="stroke-dashoffset" values="0;152" dur="5s" repeatCount="indefinite"/>
+    </path>
+    <path d="M726 0V57L761 92H874" stroke-dasharray="10 18">
+      <animate attributeName="stroke-dashoffset" values="0;-112" dur="3.8s" repeatCount="indefinite"/>
+    </path>
   </g>
+
+  <!-- scan beam -->
+  <rect x="0" y="-25" width="1200" height="45" fill="url(#accent)" opacity=".055" filter="url(#soft)">
+    <animate attributeName="y" values="-35;455" dur="6.5s" repeatCount="indefinite"/>
+  </rect>
+  <line x1="0" y1="-1" x2="1200" y2="-1" stroke="#67E8F9" stroke-width="1" opacity=".22">
+    <animate attributeName="y1" values="-1;430" dur="6.5s" repeatCount="indefinite"/>
+    <animate attributeName="y2" values="-1;430" dur="6.5s" repeatCount="indefinite"/>
+  </line>
+
+  <!-- orbital engine -->
+  <g transform="translate(1010 205)">
+    <circle r="144" fill="none" stroke="#38BDF8" stroke-opacity=".15" stroke-width="1.2" stroke-dasharray="8 11">
+      <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="22s" repeatCount="indefinite"/>
+    </circle>
+    <circle r="110" fill="none" stroke="#A78BFA" stroke-opacity=".26" stroke-width="1.4" stroke-dasharray="5 15">
+      <animateTransform attributeName="transform" type="rotate" from="360" to="0" dur="13s" repeatCount="indefinite"/>
+    </circle>
+    <circle r="75" fill="none" stroke="#22D3EE" stroke-opacity=".38" stroke-width="1.4" stroke-dasharray="22 8">
+      <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="9s" repeatCount="indefinite"/>
+    </circle>
+    <circle r="44" fill="#071426" stroke="url(#accent)" stroke-width="2" filter="url(#glow)">
+      <animate attributeName="r" values="42;47;42" dur="2.7s" repeatCount="indefinite"/>
+    </circle>
+    <text text-anchor="middle" y="8" fill="#F8FAFC" font-family="ui-sans-serif,system-ui" font-size="26" font-weight="800" letter-spacing="2">EOJ</text>
+    <circle cx="0" cy="-110" r="5" fill="#22D3EE" filter="url(#glow)">
+      <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="5.2s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="75" cy="0" r="4" fill="#A78BFA" filter="url(#glow)">
+      <animateTransform attributeName="transform" type="rotate" from="360" to="0" dur="3.8s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+
+  <!-- moving particles -->
+  <g fill="#67E8F9" filter="url(#glow)">
+    <circle r="2.4"><animateMotion dur="6s" repeatCount="indefinite" path="M82 364 C280 330 385 395 590 344 S850 318 1080 350"/></circle>
+    <circle r="2"><animateMotion dur="7.8s" begin="-2s" repeatCount="indefinite" path="M50 66 C280 20 430 100 650 62 S950 48 1160 86"/></circle>
+    <circle r="1.8" fill="#C084FC"><animateMotion dur="5.6s" begin="-1s" repeatCount="indefinite" path="M180 22 C320 180 530 48 720 170 S1000 260 1160 174"/></circle>
+  </g>
+
+  <!-- copy -->
+  <g font-family="ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif">
+    <g transform="translate(64 46)">
+      <rect width="194" height="34" rx="17" fill="#071B2F" stroke="#22D3EE" stroke-opacity=".34"/>
+      <circle cx="20" cy="17" r="4.5" fill="#34D399"><animate attributeName="opacity" values="1;.25;1" dur="1.3s" repeatCount="indefinite"/></circle>
+      <text x="35" y="22" fill="#CFFAFE" font-size="13" font-weight="700" letter-spacing="1.2">SYSTEM ONLINE · NBO</text>
+    </g>
+
+    <text x="64" y="148" fill="#F8FAFC" font-size="51" font-weight="850" letter-spacing="-1.8">ELVIN OMONDI JUMA</text>
+    <rect x="64" y="172" width="530" height="4" rx="2" fill="url(#accent)">
+      <animate attributeName="width" values="120;530;420;530" dur="5s" repeatCount="indefinite"/>
+    </rect>
+    <text x="64" y="222" fill="#BAE6FD" font-size="20" font-weight="800" letter-spacing="2.7">FULL-STACK PRODUCT ENGINEER</text>
+    <text x="64" y="263" fill="#94A3B8" font-size="17">Building software for real businesses, real users, and real constraints.</text>
+
+    <g transform="translate(64 306)">
+      <g><rect width="150" height="40" rx="20" fill="#091B30" stroke="#38BDF8" stroke-opacity=".28"/><text x="21" y="26" fill="#D7F4FF" font-size="14" font-weight="700">Product systems</text></g>
+      <g transform="translate(162)"><rect width="144" height="40" rx="20" fill="#091B30" stroke="#22D3EE" stroke-opacity=".28"/><text x="21" y="26" fill="#D7F4FF" font-size="14" font-weight="700">Real-time apps</text></g>
+      <g transform="translate(318)"><rect width="140" height="40" rx="20" fill="#091B30" stroke="#A78BFA" stroke-opacity=".32"/><text x="21" y="26" fill="#EDE9FE" font-size="14" font-weight="700">AI workflows</text></g>
+      <g transform="translate(470)"><rect width="148" height="40" rx="20" fill="#091B30" stroke="#34D399" stroke-opacity=".28"/><text x="21" y="26" fill="#D1FAE5" font-size="14" font-weight="700">Africa-first UX</text></g>
+    </g>
+
+    <g transform="translate(64 380)" fill="#64748B" font-size="11" font-weight="700" letter-spacing="1.8">
+      <text x="0" y="0">ARCHITECT</text>
+      <text x="105" y="0">→</text>
+      <text x="135" y="0">BUILD</text>
+      <text x="202" y="0">→</text>
+      <text x="232" y="0">SHIP</text>
+      <text x="292" y="0">→</text>
+      <text x="322" y="0">OBSERVE</text>
+      <text x="410" y="0">→</text>
+      <text x="440" y="0">ITERATE</text>
+    </g>
+  </g>
+</g>
+
+<rect x="1" y="1" width="1198" height="428" rx="27" fill="none" stroke="url(#accent)" stroke-opacity=".24">
+  <animate attributeName="stroke-opacity" values=".14;.38;.14" dur="4s" repeatCount="indefinite"/>
+</rect>
 </svg>
