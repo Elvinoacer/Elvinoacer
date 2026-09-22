@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="150" viewBox="0 0 1200 150" role="img" aria-label="Animated footer pulse">
+<defs>
+  <linearGradient id="g" x1="0" x2="1"><stop offset="0%" stop-color="#22D3EE"/><stop offset="50%" stop-color="#60A5FA"/><stop offset="100%" stop-color="#A78BFA"/></linearGradient>
+  <filter id="glow"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<rect width="1200" height="150" rx="24" fill="#050A13"/>
+<g opacity=".32" stroke="#334155"><path d="M0 110H1200"/><path d="M0 40H1200"/></g>
+<path d="M0 92H160L190 62L225 108L260 73L296 92H410L438 54L472 118L510 81L545 92H705L732 67L762 101L796 92H930L956 48L992 116L1026 78L1060 92H1200" fill="none" stroke="url(#g)" stroke-width="2.2" stroke-dasharray="160 1040" filter="url(#glow)">
+  <animate attributeName="stroke-dashoffset" values="0;-1200" dur="5s" repeatCount="indefinite"/>
+</path>
+<g font-family="ui-sans-serif,system-ui">
+  <text x="600" y="68" text-anchor="middle" fill="#F8FAFC" font-size="18" font-weight="800" letter-spacing="2">BUILD · SHIP · OBSERVE · EVOLVE</text>
+  <text x="600" y="123" text-anchor="middle" fill="#64748B" font-size="12" font-weight="700" letter-spacing="1.8">NAIROBI / KENYA / GTSS</text>
+</g>
+<circle cx="600" cy="92" r="4" fill="#E0F2FE" filter="url(#glow)">
+  <animate attributeName="r" values="3;7;3" dur="1.8s" repeatCount="indefinite"/>
+</circle>
+</svg>
