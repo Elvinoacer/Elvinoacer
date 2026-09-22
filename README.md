@@ -1,162 +1,234 @@
 <div align="center">
-  <img src="./banner.png" width="100%" alt="" />
-  <br/>
 
-  ```text
-  $ whoami
-  ```
-
-  # Elvin Omondi Juma
-
-  `Founding Engineer @ GTSS` · `Full-Stack Developer` · `BSc CS @ Moi University`
-
-  Nairobi, Kenya — shipping production software for real clients since 2023.
-
-  <p>
-    <a href="mailto:omondielvin@gmail.com"><img src="https://img.shields.io/badge/Email-omondielvin%40gmail.com-000?style=for-the-badge&logo=gmail&logoColor=white" /></a>
-    <a href="https://github.com/Elvinoacer"><img src="https://img.shields.io/badge/GitHub-Elvinoacer-000?style=for-the-badge&logo=github&logoColor=white" /></a>
-  </p>
-</div>
+<img src="./assets/profile-hero.svg" width="100%" alt="Elvin Omondi Juma — Full-Stack Product Engineer" />
 
 <br/>
 
-## Stack
-
-<div align="center">
-
-**Core**
-
-<img src="https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white" />
-<img src="https://img.shields.io/badge/Next.js-000?style=flat-square&logo=nextdotjs&logoColor=white" />
-<img src="https://img.shields.io/badge/React-20232A?style=flat-square&logo=react&logoColor=61DAFB" />
-<img src="https://img.shields.io/badge/Node.js-339933?style=flat-square&logo=nodedotjs&logoColor=white" />
-<img src="https://img.shields.io/badge/React_Native-20232A?style=flat-square&logo=react&logoColor=61DAFB" />
-
-**Data**
-
-<img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=flat-square&logo=postgresql&logoColor=white" />
-<img src="https://img.shields.io/badge/Prisma-2D3748?style=flat-square&logo=prisma&logoColor=white" />
-<img src="https://img.shields.io/badge/Redis-DC382D?style=flat-square&logo=redis&logoColor=white" />
-
-**Tooling & infra**
-
-<img src="https://img.shields.io/badge/Electron-2B2E3A?style=flat-square&logo=electron&logoColor=white" />
-<img src="https://img.shields.io/badge/Socket.IO-010101?style=flat-square&logo=socketdotio&logoColor=white" />
-<img src="https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white" />
-<img src="https://img.shields.io/badge/Vercel-000?style=flat-square&logo=vercel&logoColor=white" />
-<img src="https://img.shields.io/badge/M--Pesa%2FDaraja-00A651?style=flat-square&logo=safaripay&logoColor=white" />
-<img src="https://img.shields.io/badge/Git-F05032?style=flat-square&logo=git&logoColor=white" />
+<a href="mailto:omondielvin@gmail.com"><img src="https://img.shields.io/badge/Email-omondielvin%40gmail.com-0B1220?style=for-the-badge&logo=gmail&logoColor=EA4335" alt="Email Elvin" /></a>
+<a href="https://github.com/Elvinoacer"><img src="https://img.shields.io/badge/GitHub-Elvinoacer-0B1220?style=for-the-badge&logo=github&logoColor=white" alt="GitHub profile" /></a>
+<img src="https://img.shields.io/badge/Founding_Engineer-GTSS-0B1220?style=for-the-badge&logoColor=white" alt="Founding Engineer at GTSS" />
 
 </div>
 
 <br/>
 
-## Selected builds
+## Software that survives contact with reality.
 
-Real client and product work, not tutorial projects.
+I'm **Elvin Omondi Juma** — a full-stack product engineer, founding engineer at **GTSS**, and Computer Science student at **Moi University**.
+
+I design and ship end-to-end products across **healthcare, local commerce, education, hospitality, and marketplaces**. Most of my work lives where software meets messy operations: multi-role access, payments, real-time state, offline constraints, back-office tooling, and users who simply need the system to work.
+
+> **My bias:** understand the workflow deeply, reduce the complexity aggressively, then ship the smallest reliable system that can grow.
+
+<br/>
+
+## What I engineer
 
 <table>
-  <tr>
-    <td width="50%" valign="top">
+<tr>
+<td width="33%" valign="top">
 
-### 🎓 Kampus
+### Product systems
+Multi-tenant platforms, role-based workflows, dashboards, onboarding, internal tools, commerce, and operational software.
 
-University social platform — monorepo, React Native mobile app, 88 Prisma models. Feed, marketplace, reels, live streaming, map/radar discovery.
+</td>
+<td width="33%" valign="top">
 
-`Next.js` `React Native` `Expo` `Prisma` `PostgreSQL`
+### Real-world infrastructure
+M-Pesa payments, real-time events, offline-first flows, notifications, geolocation, background jobs, and integrations.
 
-    </td>
-    <td width="50%" valign="top">
+</td>
+<td width="33%" valign="top">
 
-### 🛠️ JustInTime
+### AI-assisted workflows
+AI features and agent-assisted engineering workflows used to move faster without giving up architecture, testing, or judgment.
 
-Hyperlocal service marketplace for Kenya — multi-role auth, provider onboarding, M-Pesa checkout.
+</td>
+</tr>
+</table>
 
-[justintime.gtss.software →](https://justintime.gtss.software/)
+<br/>
 
-`Next.js` `Prisma` `M-Pesa` `Multi-role auth`
+## Selected work
 
-    </td>
-  </tr>
-  <tr>
-    <td width="50%" valign="top">
+<table>
+<tr>
+<td width="50%" valign="top">
 
 ### 💊 Aether Pharmacy
 
-Pharmacy management platform — inventory, prescriptions, revenue tracking, loyalty automation.
+A pharmacy operations platform built around the workflows that actually matter: inventory, prescriptions, revenue visibility, customer journeys, loyalty, and platform administration.
 
-`Next.js` `Prisma` `PostgreSQL`
+**Focus:** multi-tenant architecture · healthcare workflows · operations
 
-    </td>
-    <td width="50%" valign="top">
+<code>Next.js</code> <code>TypeScript</code> <code>Prisma</code> <code>PostgreSQL</code>
+
+</td>
+<td width="50%" valign="top">
+
+### 🛠️ JustInTime
+
+A hyperlocal services marketplace for Kenya connecting customers and providers through discovery, proposals, bookings, communication, and M-Pesa-enabled flows.
+
+**Focus:** marketplace systems · multi-role auth · payments
+
+<a href="https://justintime.gtss.software/">View live →</a>
+
+<code>Next.js</code> <code>Prisma</code> <code>M-Pesa</code> <code>Real-time</code>
+
+</td>
+</tr>
+
+<tr>
+<td width="50%" valign="top">
 
 ### 🍽️ Restaurant Manager
 
-Offline-first captive-portal POS for Kenyan restaurants. Runs on local network hardware, no internet dependency at the till.
+An offline-first ordering and restaurant operations system designed to keep working on a local network even when internet connectivity is unreliable.
 
-`Electron` `hostapd/dnsmasq` `IndexedDB` `Socket.IO`
+**Focus:** local-first architecture · POS workflows · real-time ordering
 
-    </td>
-  </tr>
-  <tr>
-    <td width="50%" valign="top">
+<code>Electron</code> <code>Socket.IO</code> <code>IndexedDB</code> <code>Local network</code>
+
+</td>
+<td width="50%" valign="top">
+
+### 🎓 Kampus
+
+A university social platform spanning community, marketplace, content, discovery, live experiences, and mobile-first student workflows.
+
+**Focus:** social systems · mobile product · large domain model
+
+<code>Next.js</code> <code>React Native</code> <code>Expo</code> <code>PostgreSQL</code>
+
+</td>
+</tr>
+
+<tr>
+<td width="50%" valign="top">
 
 ### 🏠 Concept Builders
 
-Architectural house-plans platform for the Kenyan market.
+A digital platform for architectural house plans and client workflows in the Kenyan market.
 
-[conceptbuilders.co.ke →](https://conceptbuilders.co.ke/)
+<a href="https://conceptbuilders.co.ke/">conceptbuilders.co.ke →</a>
 
-`Next.js` `Prisma`
+<code>Next.js</code> <code>Prisma</code> <code>Product design</code>
 
-    </td>
-    <td width="50%" valign="top">
+</td>
+<td width="50%" valign="top">
 
 ### 🏫 German Virtual School
 
-Virtual learning platform — students, teachers, live classes, course administration.
+A virtual learning platform for students, teachers, live classes, course administration, and day-to-day school operations.
 
-[germanvirtualschool.com →](https://germanvirtualschool.com/)
+<a href="https://germanvirtualschool.com/">germanvirtualschool.com →</a>
 
-`Next.js` `Prisma`
+<code>Next.js</code> <code>Prisma</code> <code>Real-time</code>
 
-    </td>
-  </tr>
+</td>
+</tr>
 </table>
 
 <div align="center">
-
-More at [github.com/Elvinoacer](https://github.com/Elvinoacer) — repos over rhetoric.
-
+  <sub>Real products, operational constraints, and systems designed to be used — not just demoed.</sub>
 </div>
 
 <br/>
 
-## GitHub stats
+## Engineering toolkit
 
 <div align="center">
-  <img height="165" src="https://github-readme-stats.vercel.app/api?username=Elvinoacer&show_icons=true&theme=react&hide_border=true&bg_color=0D1117&title_color=58A6FF&icon_color=58A6FF" />
-  <img height="165" src="https://github-readme-stats.vercel.app/api/top-langs/?username=Elvinoacer&layout=compact&theme=react&hide_border=true&bg_color=0D1117&title_color=58A6FF" />
-  <img src="https://github-readme-streak-stats.herokuapp.com/?user=Elvinoacer&theme=react&hide_border=true&background=0D1117&stroke=58A6FF&ring=58A6FF&fire=58A6FF" />
-  <img src="https://github-readme-activity-graph.vercel.app/graph?username=Elvinoacer&theme=react-dark&hide_border=true&bg_color=0D1117&color=58A6FF&line=58A6FF&point=FFFFFF" width="100%" />
+
+<img src="https://skillicons.dev/icons?i=ts,nextjs,react,nodejs,postgres,prisma,redis,docker,vercel,git,github,linux&perline=12" alt="TypeScript, Next.js, React, Node.js, PostgreSQL, Prisma, Redis, Docker, Vercel, Git, GitHub and Linux" />
+
 </div>
 
 <br/>
 
-## Currently
+| Layer | Tools I reach for |
+| --- | --- |
+| **Frontend** | TypeScript · Next.js · React · React Native · Tailwind CSS |
+| **Backend** | Node.js · PostgreSQL · Prisma · Redis · REST APIs · server actions |
+| **Real-time & desktop** | Socket.IO · Electron · local/offline-first patterns |
+| **Infrastructure** | Vercel · Docker · Linux · GitHub · Cloudflare |
+| **Integrations** | M-Pesa / Daraja · webhooks · notifications · maps / geolocation |
+| **Workflow** | AI-assisted engineering · agentic tooling · rapid prototyping · iterative delivery |
+
+<br/>
+
+## How I like to build
+
+<table>
+<tr>
+<td width="50%" valign="top">
+
+**01 — Start with the workflow**
+
+A technically elegant system is still wrong if it misunderstands the people and operations it is supposed to serve.
+
+</td>
+<td width="50%" valign="top">
+
+**02 — Design the failure path**
+
+Payments fail. Networks disappear. Jobs retry. Users double-click. The unhappy path is part of the product.
+
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top">
+
+**03 — Keep state explicit**
+
+Permissions, tenant boundaries, transaction state, background work, and data ownership should be obvious in the architecture.
+
+</td>
+<td width="50%" valign="top">
+
+**04 — Use AI as leverage**
+
+AI can compress research, implementation, testing, and iteration — but engineering judgment still owns the final system.
+
+</td>
+</tr>
+</table>
+
+<br/>
+
+## Current vector
 
 | | |
-| --------------- | ------------------------------------------------------------------------------------------- |
-| 🔨 **Building** | GTSS's client roster — pharmacy, marketplace, and education platforms in active development |
-| 📚 **Learning** | System design, product thinking, AI-assisted engineering workflows |
-| 🤝 **Open to** | Collaborations at the intersection of engineering and product |
+| --- | --- |
+| **Building** | Production software through GTSS, with a strong focus on pharmacy, marketplace, healthcare, and operational platforms |
+| **Deepening** | System design, reliability, product thinking, AI-assisted engineering, and scalable multi-tenant architecture |
+| **Interested in** | Ambitious product engineering work, technical collaborations, and systems with real operational depth |
+
+<br/>
+
+<details>
+<summary><b>GitHub activity</b></summary>
+<br/>
+
+<div align="center">
+  <img height="165" src="https://github-readme-stats.vercel.app/api?username=Elvinoacer&show_icons=true&theme=transparent&hide_border=true&title_color=38BDF8&icon_color=22D3EE&text_color=94A3B8" alt="Elvin's GitHub stats" />
+  <img height="165" src="https://github-readme-streak-stats.herokuapp.com/?user=Elvinoacer&theme=transparent&hide_border=true&ring=38BDF8&fire=A78BFA&currStreakLabel=22D3EE&sideLabels=94A3B8&dates=64748B" alt="Elvin's GitHub streak" />
+</div>
+
+</details>
 
 <br/>
 
 <div align="center">
 
-**Have a product worth building?**
+### Build something worth using.
 
-[**omondielvin@gmail.com**](mailto:omondielvin@gmail.com)
+If you're working on a product with meaningful technical or operational complexity, I'm always interested in a good engineering conversation.
+
+<a href="mailto:omondielvin@gmail.com"><b>omondielvin@gmail.com</b></a>
+
+<br/><br/>
+
+<sub>Designed in code · Shipped from Nairobi 🇰🇪</sub>
 
 </div>
