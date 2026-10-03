@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="108" viewBox="0 0 1200 108" role="img" aria-labelledby="title desc">
+<title id="title">Built in Kenya. Built to be used.</title>
+<desc id="desc">A quiet green signature for Elvin Omondi Juma.</desc>
+<rect width="1200" height="108" rx="12" fill="#0d1117"/>
+<path d="M32 1H1168" stroke="#30363d"/>
+<text x="32" y="63" fill="#f0f6fc" font-family="DejaVu Sans,Segoe UI,sans-serif" font-size="24" font-weight="600">Built in Kenya. <tspan fill="#39d353">Built to be used.</tspan></text>
+<rect x="968" y="48" width="15" height="15" rx="3" fill="#0e4429"/><rect x="992" y="48" width="15" height="15" rx="3" fill="#006d32"/><rect x="1016" y="48" width="15" height="15" rx="3" fill="#26a641"/><rect x="1040" y="48" width="15" height="15" rx="3" fill="#39d353"/>
+</svg>
