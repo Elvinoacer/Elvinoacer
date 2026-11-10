@@ -1,4 +1,4 @@
-"""Generate the Central Gargantua Black Hole & Orbital Project Cards Suite with 100% seamless C-infinity periodic animations."""
+"""Generate the Deep-Space Gargantua Black Hole, Passing Comets, and Sequential Card Awakening Suite."""
 
 from __future__ import annotations
 
@@ -43,86 +43,50 @@ def project_3d(
     return cx + x * scale, cy + y * scale, z
 
 
-def render_gargantua_center_b64(width: int = 1200, height: int = 880, bh_cx: float = 600.0, bh_cy: float = 435.0) -> str:
-    """Raymarch a 24-bit TrueColor relativistic Gargantua Black Hole at the dead center of the Main Card."""
+def render_deep_space_backdrop_b64(width: int = 1200, height: int = 880, bh_cx: float = 600.0, bh_cy: float = 435.0) -> str:
+    """Render the deep-space cosmic void & Einstein-lensed distant starfield (Layer 1, behind everything)."""
     y, x = np.mgrid[0:height, 0:width].astype(np.float32)
-    dx = (x - bh_cx) / 185.0
-    dy = (y - bh_cy) / 185.0
-
-    # Tilt black hole axis by -12 degrees
-    tilt = np.deg2rad(12.0)
-    tx = dx * np.cos(tilt) - dy * np.sin(tilt)
-    ty = dx * np.sin(tilt) + dy * np.cos(tilt)
-
-    r2 = tx * tx + ty * ty
+    dx = (x - bh_cx) / 195.0
+    dy = (y - bh_cy) / 195.0
+    r2 = dx * dx + dy * dy
     r = np.sqrt(r2 + 1e-6)
 
     r_eh = 0.35
-    r_photon = 0.375
-    r_einstein = 0.66
+    r_einstein = 0.68
 
-    disk_in = 0.38
-    disk_out = 2.35
-
-    r_disk_front = np.sqrt(tx * tx + (ty / 0.145) ** 2 + 1e-6)
-    phi_front = np.arctan2(ty / 0.145, tx)
-
-    r_disk_lensed = np.sqrt(tx * tx + (ty / 0.80) ** 2 + 1e-6)
-    phi_lensed = np.arctan2(ty / 0.80, tx)
-
-    def accretion_spiral(rd, phi, r_peak=0.82, w_spread=0.58):
-        radial = np.exp(-((rd - r_peak) / w_spread) ** 2) * (rd > disk_in) * (rd < disk_out)
-        radial *= np.clip((rd - disk_in) / 0.065, 0.0, 1.0)
-        twist = phi + 8.8 / (rd + 0.22)
-        s1 = 0.5 + 0.5 * np.sin(twist * 3.0 + np.cos(rd * 11.0))
-        s2 = 0.5 + 0.5 * np.cos(twist * 6.0 - rd * 17.0)
-        turb = 0.42 + 0.58 * (0.65 * s1 + 0.35 * s2)
-        doppler = 1.0 - 0.46 * (tx / (rd + 0.24))
-        return radial * turb * np.clip(doppler, 0.28, 1.80)
-
-    front_mask = (ty > -0.015) | (r > r_eh)
-    I_primary = accretion_spiral(r_disk_front, phi_front, 0.84, 0.60) * front_mask
-    I_lensed = accretion_spiral(r_disk_lensed, phi_lensed, 0.63, 0.29) * (r > r_eh) * 0.92
-    I_photon = 2.3 * np.exp(-((r - r_photon) / 0.015) ** 2)
-    I_corona = 0.65 * np.exp(-((r - r_photon) / 0.22) ** 2) * (r > r_eh)
-
-    I_total = I_primary + I_lensed + I_photon + I_corona
-    I_total = np.where((r < r_eh) & (ty < -0.01), 0.0, I_total)
-
-    # Deep Cosmic Void Base
+    # Deep Cosmic Void Base with subtle nebula depth
     R = np.full((height, width), 2.0, dtype=np.float32)
     G = np.full((height, width), 5.0, dtype=np.float32)
     B = np.full((height, width), 12.0, dtype=np.float32)
 
-    # Gravitational lens halo + Einstein-lensed background starfield
-    e_glow = np.exp(-((r - r_einstein) / 0.38) ** 2) * (r > r_eh)
+    # Subtle deep-space cosmic dust clouds in the far background
+    nebula = (
+        0.5 * (1.0 + np.sin(dx * 1.1 + np.cos(dy * 1.4)))
+        * np.exp(-((dy * 0.55) ** 2))
+        * np.clip(r / 1.4, 0.2, 1.0)
+    )
+    R += nebula * 4.0
+    G += nebula * 14.0
+    B += nebula * 26.0
+
+    # Einstein gravitational lens glow + lensed background starfield
+    e_glow = np.exp(-((r - r_einstein) / 0.45) ** 2) * (r > r_eh)
     deflect = 1.0 - (r_einstein ** 2) / (r2 + 0.04)
     bx = dx * deflect
     by = dy * deflect
-    inner_fade = np.clip((r - r_einstein * 0.72) / 0.22, 0.0, 1.0) ** 2
+    inner_fade = np.clip((r - r_einstein * 0.70) / 0.22, 0.0, 1.0) ** 2
+
     sx_cell = np.floor(bx * 16.0)
     sy_cell = np.floor(by * 16.0)
     fx = (bx * 16.0) - sx_cell - 0.5
     fy = (by * 16.0) - sy_cell - 0.5
     star_hash = np.sin(sx_cell * 127.1 + sy_cell * 311.7) * 43758.5453
     star_prob = star_hash - np.floor(star_hash)
-    stars = (star_prob > 0.942) * np.exp(-(fx * fx + fy * fy) / 0.012) * inner_fade * 0.88
+    stars = (star_prob > 0.938) * np.exp(-(fx * fx + fy * fy) / 0.013) * inner_fade * 0.92
 
-    R += e_glow * 16.0 + stars * 215.0
-    G += e_glow * 46.0 + stars * 238.0
-    B += e_glow * 84.0 + stars * 255.0
-
-    # Doppler relativistic plasma color mapping
-    blue_shift = np.clip(-tx * 0.55 + 0.28, 0.0, 1.0)
-    R += I_total * (255.0 * (1.0 - 0.10 * blue_shift))
-    G += I_total * (168.0 + 75.0 * blue_shift + 48.0 * np.clip(I_total - 0.75, 0.0, 1.0))
-    B += I_total * (52.0 + 195.0 * blue_shift + 98.0 * np.clip(I_total - 0.95, 0.0, 1.0))
-
-    # Pure pitch-black Event Horizon shadow
-    in_shadow = (r < r_eh) & ((ty < 0.0) | (I_primary < 0.08))
-    R = np.where(in_shadow, 1.0, R)
-    G = np.where(in_shadow, 2.0, G)
-    B = np.where(in_shadow, 5.0, B)
+    R += e_glow * 14.0 + stars * 220.0
+    G += e_glow * 42.0 + stars * 240.0
+    B += e_glow * 78.0 + stars * 255.0
 
     rgb_arr = np.stack([np.clip(R, 0, 255), np.clip(G, 0, 255), np.clip(B, 0, 255)], axis=-1).astype(np.uint8)
     img = Image.fromarray(rgb_arr)
@@ -131,101 +95,119 @@ def render_gargantua_center_b64(width: int = 1200, height: int = 880, bh_cx: flo
     return base64.b64encode(buf.getvalue()).decode("ascii")
 
 
-def einstein_lensed_point(bx: float, by: float, bh_cx: float, bh_cy: float, scale: float, r_einstein: float) -> tuple[float, float]:
-    """Map an un-lensed coordinate (bx, by) to its exact Einstein-lensed screen position."""
-    b = math.sqrt(bx * bx + by * by + 1e-5)
-    r_lensed = 0.5 * (b + math.sqrt(b * b + 4.0 * r_einstein * r_einstein))
-    factor = r_lensed / b
-    return bh_cx + bx * factor * scale, bh_cy + by * factor * scale
-
-
-def generate_seamless_spacetime_grid_svg(bh_cx: float = 600.0, bh_cy: float = 435.0) -> str:
+def render_gargantua_foreground_rgba_b64(width: int = 1200, height: int = 880, bh_cx: float = 600.0, bh_cy: float = 435.0) -> str:
     """
-    Generate an Einstein-lensed 3D spacetime grid that NEVER resets or jumps:
-    1. Every grid geodesic sways with a pure C-infinity periodic sine/cosine wave (f / keyframes * 2*pi, so f=0 and f=N are 100% identical!).
-    2. Continuous photonic energy pulses flow along the warped grid lines via exact-period stroke-dashoffset!
+    Raymarch the foreground Gargantua Black Hole as a 32-bit RGBA PNG!
+    - The Event Horizon shadow is 100% opaque pitch black (occluding comets & deep space behind it).
+    - Rich golden-amber & Doppler-cyan Keplerian spiral arms with high-contrast dark dust lanes.
+    - Smooth front equatorial plasma belt slicing across the Event Horizon shadow.
+    - Translucent outer spiral wings sweep IN FRONT OF the dormant deep-space project cards!
     """
-    scale = 185.0
-    r_einstein = 0.68
-    spacing = 0.28
-    keyframes = 20
+    y, x = np.mgrid[0:height, 0:width].astype(np.float32)
+    dx = (x - bh_cx) / 195.0
+    dy = (y - bh_cy) / 195.0
 
-    # Symmetric non-zero indices so no line ever sits on or crosses the b=0 singularity!
-    v_indices = [-11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1.2, -0.55, 0.55, 1.2, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
-    h_indices = [-8, -7, -6, -5, -4, -3, -2, -1.2, -0.55, 0.55, 1.2, 2, 3, 4, 5, 6, 7, 8]
+    # Tilt black hole axis by -13 degrees so the equatorial plasma wings sweep across the left/right card sectors
+    tilt = np.deg2rad(13.0)
+    tx = dx * np.cos(tilt) - dy * np.sin(tilt)
+    ty = dx * np.sin(tilt) + dy * np.cos(tilt)
 
-    elements = []
+    r2 = tx * tx + ty * ty
+    r = np.sqrt(r2 + 1e-6)
 
-    for idx in v_indices:
-        d_frames = []
-        for f in range(keyframes + 1):
-            # Pure periodic angle theta in [0, 2*pi] -> f=0 and f=keyframes are 100.000% identical!
-            theta = (f / keyframes) * 2.0 * math.pi
-            pts = []
-            steps = 36
-            for s in range(steps + 1):
-                by = -2.45 + (s / steps) * 4.90
-                # Smooth gravitational tidal breathing wave along the geodesic
-                tidal = 0.045 * math.sin(theta + by * 1.6 + idx * 0.4)
-                r_e_breath = r_einstein + 0.035 * math.cos(theta)
-                sx, sy = einstein_lensed_point(idx * spacing + tidal, by, bh_cx, bh_cy, scale, r_e_breath)
-                pts.append(f"{'M' if s == 0 else 'L'}{sx:.1f},{py_clamp(sy):.1f}")
-            d_frames.append("".join(pts))
+    r_eh = 0.36
+    r_photon = 0.382
 
-        near = abs(idx) < 2.5
-        col = "#38bdf8" if near else "#0284c7"
-        op = 0.36 if near else 0.17
-        d_joined = ";".join(d_frames)
-        elements.append(
-            f'<path d="{d_frames[0]}" fill="none" stroke="{col}" stroke-opacity="{op}" stroke-width="1.05">'
-            f'<animate attributeName="d" values="{d_joined}" dur="6s" repeatCount="indefinite"/>'
-            f'</path>'
-        )
-        # Add continuous zero-reset light pulse along the central warped geodesics
-        if near:
-            elements.append(
-                f'<path d="{d_frames[0]}" fill="none" stroke="#fef08a" stroke-opacity="0.45" stroke-width="1.4" stroke-dasharray="40 200">'
-                f'<animate attributeName="d" values="{d_joined}" dur="6s" repeatCount="indefinite"/>'
-                f'<animate attributeName="stroke-dashoffset" from="240" to="0" dur="3s" repeatCount="indefinite"/>'
-                f'</path>'
-            )
+    disk_in = 0.385
+    disk_out = 2.75
 
-    for idx in h_indices:
-        d_frames = []
-        for f in range(keyframes + 1):
-            theta = (f / keyframes) * 2.0 * math.pi
-            pts = []
-            steps = 44
-            for s in range(steps + 1):
-                bx = -3.35 + (s / steps) * 6.70
-                tidal = 0.045 * math.cos(theta + bx * 1.4 + idx * 0.4)
-                r_e_breath = r_einstein + 0.035 * math.cos(theta)
-                sx, sy = einstein_lensed_point(bx, idx * spacing + tidal, bh_cx, bh_cy, scale, r_e_breath)
-                pts.append(f"{'M' if s == 0 else 'L'}{sx:.1f},{py_clamp(sy):.1f}")
-            d_frames.append("".join(pts))
+    # Front equatorial disk slightly offset vertically due to inclination angle
+    ty_front = ty - 0.028
+    r_disk_front = np.sqrt(tx * tx + (ty_front / 0.135) ** 2 + 1e-6)
+    phi_front = np.arctan2(ty_front / 0.135, tx)
 
-        near = abs(idx) < 2.5
-        col = "#22d3ee" if near else "#0369a1"
-        op = 0.34 if near else 0.15
-        d_joined = ";".join(d_frames)
-        elements.append(
-            f'<path d="{d_frames[0]}" fill="none" stroke="{col}" stroke-opacity="{op}" stroke-width="1.05">'
-            f'<animate attributeName="d" values="{d_joined}" dur="6s" repeatCount="indefinite"/>'
-            f'</path>'
-        )
+    # Gravitationally lensed upper & lower arches of the back disk
+    r_disk_lensed = np.sqrt(tx * tx + (ty / 0.78) ** 2 + 1e-6)
+    phi_lensed = np.arctan2(ty / 0.78, tx)
 
-    return "\n    ".join(elements)
+    def accretion_spiral(rd, phi, r_peak=0.80, w_spread=0.58, outer_boost=0.26):
+        core_radial = np.exp(-((rd - r_peak) / w_spread) ** 2) * (rd > disk_in) * (rd < disk_out)
+        core_radial *= np.clip((rd - disk_in) / 0.06, 0.0, 1.0)
+        # Extended translucent spiral wings that sweep across the background cards
+        wing_radial = outer_boost * np.exp(-((rd - 1.58) / 0.75) ** 2) * (rd > 0.75) * (rd < disk_out)
+        radial = np.maximum(core_radial, wing_radial)
 
+        twist = phi + 9.2 / (rd + 0.20)
+        s1 = 0.5 + 0.5 * np.sin(twist * 3.0 + np.cos(rd * 12.0))
+        s2 = 0.5 + 0.5 * np.cos(twist * 7.0 - rd * 19.0)
+        s3 = 0.5 + 0.5 * np.sin(twist * 11.0 + rd * 27.0)
+        # High-contrast spiral filaments with dark dust lanes so it never washes out to flat white
+        turb = 0.18 + 0.82 * (0.50 * (s1 ** 1.6) + 0.35 * (s2 ** 1.8) + 0.15 * s3)
+        doppler = 1.0 - 0.36 * (tx / (rd + 0.28))
+        return radial * turb * np.clip(doppler, 0.38, 1.42)
 
-def py_clamp(v: float) -> float:
-    return max(-100.0, min(980.0, v))
+    # Smooth transition across the front of the Event Horizon (no sharp horizontal line!)
+    eh_blend = np.clip((r - r_eh) / 0.022, 0.0, 1.0)
+    front_equatorial_bridge = np.exp(-((ty_front) / 0.048) ** 2) * np.clip((r_disk_front - 0.42) / 0.18, 0.0, 1.0)
+    front_visibility = np.maximum(eh_blend, front_equatorial_bridge * 0.92)
+
+    I_primary = accretion_spiral(r_disk_front, phi_front, 0.82, 0.58, 0.28) * front_visibility
+    I_lensed = accretion_spiral(r_disk_lensed, phi_lensed, 0.62, 0.25, 0.08) * eh_blend * 0.82
+    I_photon = 1.45 * np.exp(-((r - r_photon) / 0.011) ** 2) * np.clip(eh_blend + 0.35, 0.0, 1.0)
+    I_corona = 0.28 * np.exp(-((r - r_photon) / 0.22) ** 2) * eh_blend
+
+    I_total = I_primary + I_lensed + I_photon + I_corona
+
+    # Filmic HDR tone curve on intensity so golden/amber/cyan colors stay rich and saturated
+    I_toned = I_total / (1.0 + 0.42 * I_total)
+
+    # Relativistic Doppler color grading:
+    # - Approaching left wing (tx < 0) shifts warmer-white / ice-cyan on outer filaments
+    # - Core & right wing glow in rich Interstellar solar gold & deep amber
+    blue_shift = np.clip(-tx * 0.45 + 0.20, 0.0, 1.0)
+    hot_core = np.clip((I_total - 0.85) * 0.85, 0.0, 1.0)
+
+    R = I_toned * (255.0 * (1.0 - 0.06 * blue_shift)) + hot_core * 45.0
+    G = I_toned * (152.0 + 64.0 * blue_shift) + hot_core * 78.0
+    B = I_toned * (34.0 + 165.0 * blue_shift) + hot_core * 110.0
+
+    # Subtle outer cyan relativistic magnetic halo
+    outer_halo = 0.22 * np.exp(-((r - 0.95) / 0.55) ** 2) * eh_blend
+    R += outer_halo * 18.0
+    G += outer_halo * 95.0
+    B += outer_halo * 165.0
+
+    # Event Horizon interior (where not covered by the front equatorial plasma bridge)
+    shadow_weight = (1.0 - eh_blend) * (1.0 - front_equatorial_bridge * 0.88)
+    R = R * (1.0 - shadow_weight) + 1.0 * shadow_weight
+    G = G * (1.0 - shadow_weight) + 2.0 * shadow_weight
+    B = B * (1.0 - shadow_weight) + 5.0 * shadow_weight
+
+    # Compute Alpha channel:
+    # - 1.0 inside the Event Horizon shadow (completely eclipses comets behind it!)
+    # - Proportional to tone-mapped luminance in the accretion disk wings so background cards shine through
+    lum = np.maximum(R, np.maximum(G, B)) / 255.0
+    plasma_alpha = np.clip(lum * 1.08, 0.0, 1.0)
+    core_shadow_alpha = np.clip((r_photon + 0.02 - r) / 0.03, 0.0, 1.0)
+    A_norm = np.maximum(core_shadow_alpha, plasma_alpha)
+
+    # Un-premultiply RGB cleanly without blowing out midtones
+    denom = np.maximum(A_norm, 0.08)
+    R_out = np.where(core_shadow_alpha > 0.8, R, np.clip(R / denom, 0, 255))
+    G_out = np.where(core_shadow_alpha > 0.8, G, np.clip(G / denom, 0, 255))
+    B_out = np.where(core_shadow_alpha > 0.8, B, np.clip(B / denom, 0, 255))
+
+    rgba_arr = np.stack([R_out, G_out, B_out, np.clip(A_norm * 255.0, 0, 255)], axis=-1).astype(np.uint8)
+    img = Image.fromarray(rgba_arr)
+    buf = BytesIO()
+    img.save(buf, format="PNG", optimize=True)
+    return base64.b64encode(buf.getvalue()).decode("ascii")
 
 
 def make_3d_wireframe_keyframes(kind: str, cx: float, cy: float, keyframes: int = 24) -> list[str]:
     """Generate 3D rotating wireframe keyframes where f=keyframes is at 2*pi (identical to f=0, zero reset!)."""
     paths: list[str] = []
     for f in range(keyframes + 1):
-        # NOTE: NO modulo `% keyframes`! At f=keyframes, angle = 2*pi, so cos(2*pi)=cos(0) & sin(2*pi)=sin(0)!
         angle = (f / keyframes) * 2.0 * math.pi
         segs: list[str] = []
 
@@ -335,143 +317,305 @@ def make_3d_wireframe_keyframes(kind: str, cx: float, cy: float, keyframes: int 
     return paths
 
 
+def make_comet_svg(path_id: str, k_times: str, k_points: str, op_times: str, op_vals: str, tail_col: str, begin_offset: str = "-1.6s") -> str:
+    """Build a realistic blazing deep-space comet with white-hot nucleus, glowing coma, and tapered ion + dust tails."""
+    return f'''
+    <g opacity="0">
+      <animate attributeName="opacity" values="{op_vals}" keyTimes="{op_times}" dur="24s" begin="{begin_offset}" repeatCount="indefinite"/>
+      <!-- Outer Ion Tail -->
+      <path d="M 0,-7 L -210,0 L 0,7 Z" fill="url(#cometIonTail_{tail_col})"/>
+      <!-- Curved Golden Dust Tail -->
+      <path d="M 0,-4 Q -85,-14 -165,-26 L -145,-3 Q -70,2 0,4 Z" fill="url(#cometDustTail)"/>
+      <!-- Inner High-Energy Plasma Core Tail -->
+      <path d="M 0,-3 L -115,0 L 0,3 Z" fill="url(#cometCoreTail)"/>
+      <!-- Glowing Coma Halo -->
+      <circle cx="0" cy="0" r="14" fill="url(#cometComa_{tail_col})" filter="url(#softGlow)"/>
+      <!-- White-Hot Comet Nucleus -->
+      <circle cx="0" cy="0" r="4.5" fill="#ffffff" filter="url(#cometGlow)"/>
+      <!-- Trailing Sparkle Particles -->
+      <circle cx="-32" cy="-3" r="1.5" fill="#fef08a" opacity="0.85"/>
+      <circle cx="-64" cy="2" r="1.2" fill="#bae6fd" opacity="0.75"/>
+      <circle cx="-98" cy="-4" r="1.0" fill="#ffffff" opacity="0.65"/>
+      <animateMotion dur="24s" begin="{begin_offset}" repeatCount="indefinite" rotate="auto" calcMode="linear" keyPoints="{k_points}" keyTimes="{k_times}">
+        <mpath href="#{path_id}"/>
+      </animateMotion>
+    </g>'''
+
+
 def generate_unified_main_card_svg() -> None:
     width, height = 1200, 880
     bh_cx, bh_cy = 600.0, 435.0
+    begin_offset = "-1.6s"
 
-    b64_backdrop = render_gargantua_center_b64(width, height, bh_cx, bh_cy)
-    lensed_grid_svg = generate_seamless_spacetime_grid_svg(bh_cx, bh_cy)
+    b64_backdrop = render_deep_space_backdrop_b64(width, height, bh_cx, bh_cy)
+    b64_bh_foreground = render_gargantua_foreground_rgba_b64(width, height, bh_cx, bh_cy)
 
-    # 6 Project Sub-Cards Orbiting Around the Central Black Hole (3 on Left Wing, 3 on Right Wing)
-    # Left Wing: x=28..356 (width 328)
-    # Right Wing: x=844..1172 (width 328)
-    # Center (x=356..844) is wide open for the Gargantua Black Hole Singularity!
+    # 6 Deep-Space Project Cards (positioned closer to center so the Black Hole's outer accretion disk wings
+    # visibly pass IN FRONT of their inner edges when dormant!)
+    # Each tuple includes:
+    # (cx_card, cy_card, badge, title, metrics, stack_line, accent, shape_kind, active_keytimes, sweep_dir)
+    # Schedule over 24s cycle (W = 1/3 = 0.3333 per comet slingshot):
+    # - Comet Alpha (t = 0.000..0.333): hits Card 01 (Top-Left) -> slingshots behind BH -> hits Card 02 (Top-Right)
+    # - Comet Beta  (t = 0.333..0.667): hits Card 04 (Mid-Right) -> slingshots behind BH -> hits Card 03 (Mid-Left)
+    # - Comet Gamma (t = 0.667..1.000): hits Card 05 (Bot-Left) -> slingshots behind BH -> hits Card 06 (Bot-Right)
     subcards_spec = [
-        # Left Wing (col=0)
+        # Card 01: Top-Left (active in Comet Alpha first half: t = 0.035 .. 0.165)
         (
-            28, 138,
+            68, 138,
             "01 // HEALTHCARE OS",
             "AFYVIA · PHARMACARE",
             [("57", "MODELS"), ("308", "ROUTES"), ("4", "PORTALS")],
             "NEXT.JS 16 · PRISMA · GROQ AI · M-PESA",
             "#10b981",
             "helix",
-            (356, 224, 495, 390),
+            "0;0.032;0.052;0.150;0.172;1",
+            ("0;0.032;0.155;1", "-180;-180;380;380"),
         ),
+        # Card 02: Top-Right (active in Comet Alpha second half: t = 0.195 .. 0.325)
         (
-            28, 348,
-            "03 // OFFLINE-FIRST POS",
-            "RESTAURANT POS",
-            [("39", "SCREENS"), ("5", "ROLES"), ("0ms", "CLOUD")],
-            "ELECTRON · NODE.JS · SOCKET.IO · LAN",
-            "#f59e0b",
-            "tesseract",
-            (356, 434, 475, 435),
-        ),
-        (
-            28, 558,
-            "05 // ARCHITECTURAL CAD",
-            "CONCEPT BUILDERS",
-            [("35MB", "SUITE"), ("3D", "PLANS"), ("LIVE", "SOCKETS")],
-            "NEXT.JS · TYPESCRIPT · SOCKET.IO",
-            "#fbbf24",
-            "tower",
-            (356, 644, 495, 480),
-        ),
-        # Right Wing (col=1)
-        (
-            844, 138,
+            804, 138,
             "02 // GIG MARKETPLACE",
             "JUSTINTIME",
             [("22MB", "CORE"), ("4", "ROLES"), ("LIVE", "SOCKETS")],
             "NEXT.JS · SOCKET.IO · PRISMA · M-PESA",
             "#22d3ee",
             "sphere",
-            (844, 224, 705, 390),
+            "0;0.192;0.212;0.310;0.332;1",
+            ("0;0.192;0.315;1", "-180;-180;380;380"),
         ),
+        # Card 04: Mid-Right (active in Comet Beta first half: t = 0.365 .. 0.495)
         (
-            844, 348,
+            804, 348,
             "04 // CAMPUS ECOSYSTEM",
             "KAMPUS &amp; MASHINANI",
             [("18MB+", "SUITE"), ("EXPO", "iOS/AND"), ("P2P", "MARKET")],
             "REACT NATIVE · EXPO · NEXT.JS · PGSQL",
             "#38bdf8",
             "gyro",
-            (844, 434, 725, 435),
+            "0;0.365;0.385;0.483;0.505;1",
+            ("0;0.365;0.488;1", "380;380;-180;-180"),
         ),
+        # Card 03: Mid-Left (active in Comet Beta second half: t = 0.525 .. 0.655)
         (
-            844, 558,
+            68, 348,
+            "03 // OFFLINE-FIRST POS",
+            "RESTAURANT POS",
+            [("39", "SCREENS"), ("5", "ROLES"), ("0ms", "CLOUD")],
+            "ELECTRON · NODE.JS · SOCKET.IO · LAN",
+            "#f59e0b",
+            "tesseract",
+            "0;0.525;0.545;0.643;0.665;1",
+            ("0;0.525;0.648;1", "380;380;-180;-180"),
+        ),
+        # Card 05: Bottom-Left (active in Comet Gamma first half: t = 0.698 .. 0.828)
+        (
+            68, 558,
+            "05 // ARCHITECTURAL CAD",
+            "CONCEPT BUILDERS",
+            [("35MB", "SUITE"), ("3D", "PLANS"), ("LIVE", "SOCKETS")],
+            "NEXT.JS · TYPESCRIPT · SOCKET.IO",
+            "#fbbf24",
+            "tower",
+            "0;0.698;0.718;0.816;0.838;1",
+            ("0;0.698;0.821;1", "-180;-180;380;380"),
+        ),
+        # Card 06: Bottom-Right (active in Comet Gamma second half: t = 0.858 .. 0.988)
+        (
+            804, 558,
             "06 // LIVE EDTECH OS",
             "GERMAN SCHOOL",
             [("A1–C2", "6 TIERS"), ("LIVE", "SYNC"), ("3", "PORTALS")],
             "NEXT.JS · SOCKET.IO · PRISMA · WEBRTC",
             "#34d399",
             "crystal",
-            (844, 644, 705, 480),
+            "0;0.858;0.878;0.976;0.996;1",
+            ("0;0.858;0.981;1", "-180;-180;380;380"),
         ),
     ]
 
-    conduits_svg = []
-    subcards_svg = []
+    dormant_cards_svg = []
+    active_cards_svg = []
+    clip_defs_svg = []
 
-    for idx, (cx_card, cy_card, badge, title, metrics, stack_line, accent, shape_kind, (x1, y1, x2, y2)) in enumerate(subcards_spec):
+    for idx, (cx_card, cy_card, badge, title, metrics, stack_line, accent, shape_kind, active_kt, (sweep_kt, sweep_vals)) in enumerate(subcards_spec):
         cw, ch = 328, 184
-        # Curved gravitational energy filament connecting card into the central Black Hole
-        ctrl_x = (x1 + x2) * 0.5
-        ctrl_y = y1
-        d_conduit = f"M{x1},{y1} Q{ctrl_x:.1f},{ctrl_y:.1f} {x2},{y2}"
-        conduits_svg.append(
-            f'<path d="{d_conduit}" fill="none" stroke="{accent}" stroke-opacity="0.28" stroke-width="1.4" stroke-dasharray="6 6"/>'
-            f'<path d="{d_conduit}" fill="none" stroke="{accent}" stroke-opacity="0.85" stroke-width="2.2" stroke-dasharray="24 156">'
-            f'<animate attributeName="stroke-dashoffset" from="180" to="0" dur="{2.4 + (idx % 3) * 0.4:.1f}s" repeatCount="indefinite"/>'
-            f'</path>'
-        )
-
         holo_x = cx_card + cw - 48
         holo_y = cy_card + 52
         wire_paths = make_3d_wireframe_keyframes(shape_kind, holo_x, holo_y)
+        wire_d_joined = ";".join(wire_paths)
 
-        m_blocks = []
+        clip_defs_svg.append(f'<clipPath id="subClip_{idx}"><rect x="{cx_card}" y="{cy_card}" width="{cw}" height="{ch}" rx="14"/></clipPath>')
+
+        # Metric pods for Dormant state (recessed deep-space monolith)
+        m_blocks_dormant = []
+        # Metric pods for Active state (high-contrast comet-energized card)
+        m_blocks_active = []
         for m_i, (m_val, m_lbl) in enumerate(metrics):
             mx = cx_card + 16 + m_i * 99
             my = cy_card + 90
-            m_blocks.append(
-                f'<rect x="{mx}" y="{my}" width="92" height="50" rx="8" fill="#040a15" fill-opacity="0.88" stroke="{accent}" stroke-opacity="0.38"/>'
+            m_blocks_dormant.append(
+                f'<rect x="{mx}" y="{my}" width="92" height="50" rx="8" fill="#030812" fill-opacity="0.75" stroke="{accent}" stroke-opacity="0.22"/>'
                 f'<text x="{mx + 46}" y="{my + 25}" text-anchor="middle" fill="{accent}" font-family="ui-monospace,SFMono-Regular,JetBrains Mono,monospace" font-size="16.5" font-weight="900">{m_val}</text>'
-                f'<text x="{mx + 46}" y="{my + 41}" text-anchor="middle" fill="#94a3b8" font-family="ui-monospace,SFMono-Regular,monospace" font-size="7.5" font-weight="700" letter-spacing="0.7">{m_lbl}</text>'
+                f'<text x="{mx + 46}" y="{my + 41}" text-anchor="middle" fill="#64748b" font-family="ui-monospace,SFMono-Regular,monospace" font-size="7.5" font-weight="700" letter-spacing="0.7">{m_lbl}</text>'
+            )
+            m_blocks_active.append(
+                f'<rect x="{mx}" y="{my}" width="92" height="50" rx="8" fill="#061226" fill-opacity="0.95" stroke="{accent}" stroke-opacity="0.85" stroke-width="1.3"/>'
+                f'<text x="{mx + 46}" y="{my + 25}" text-anchor="middle" fill="#ffffff" font-family="ui-monospace,SFMono-Regular,JetBrains Mono,monospace" font-size="17" font-weight="900">{m_val}</text>'
+                f'<text x="{mx + 46}" y="{my + 41}" text-anchor="middle" fill="{accent}" font-family="ui-monospace,SFMono-Regular,monospace" font-size="7.5" font-weight="800" letter-spacing="0.8">{m_lbl}</text>'
             )
 
-        subcards_svg.append(f'''
-  <g>
-    <rect x="{cx_card}" y="{cy_card}" width="{cw}" height="{ch}" rx="14" fill="#050c19" fill-opacity="0.82" stroke="{accent}" stroke-opacity="0.48" stroke-width="1.2"/>
-    <path d="M {cx_card + 18} {cy_card + 1} H {cx_card + 150}" stroke="{accent}" stroke-width="2.2"/>
-    <circle cx="{cx_card + 22}" cy="{cy_card + 23}" r="3.5" fill="{accent}"/>
+        # 1. DORMANT CARD (Layer 2: Deep in space BEHIND the Black Hole's outer accretion disk wings, noticeable at 0.34 opacity)
+        dormant_cards_svg.append(f'''
+  <g opacity="0.34">
+    <rect x="{cx_card}" y="{cy_card}" width="{cw}" height="{ch}" rx="14" fill="#030710" fill-opacity="0.80" stroke="{accent}" stroke-opacity="0.32" stroke-width="1.0"/>
+    <circle cx="{cx_card + 22}" cy="{cy_card + 23}" r="3" fill="{accent}" opacity="0.7"/>
     <text x="{cx_card + 33}" y="{cy_card + 27}" fill="{accent}" font-family="ui-monospace,SFMono-Regular,monospace" font-size="9.5" font-weight="800" letter-spacing="1.1">{badge}</text>
-    <text x="{cx_card + 16}" y="{cy_card + 60}" fill="#ffffff" font-family="Inter,ui-sans-serif,system-ui,sans-serif" font-size="18.5" font-weight="900" letter-spacing="-0.4">{title}</text>
-    <circle cx="{holo_x}" cy="{holo_y}" r="34" fill="none" stroke="{accent}" stroke-opacity="0.18" stroke-dasharray="4 6"/>
-    <path fill="none" stroke="{accent}" stroke-width="1.35" stroke-linejoin="round">
-      <animate attributeName="d" values="{";".join(wire_paths)}" dur="8s" repeatCount="indefinite"/>
+    <text x="{cx_card + 16}" y="{cy_card + 60}" fill="#cbd5e1" font-family="Inter,ui-sans-serif,system-ui,sans-serif" font-size="18.5" font-weight="900" letter-spacing="-0.4">{title}</text>
+    <circle cx="{holo_x}" cy="{holo_y}" r="34" fill="none" stroke="{accent}" stroke-opacity="0.15" stroke-dasharray="4 6"/>
+    <path d="{wire_paths[0]}" fill="none" stroke="{accent}" stroke-opacity="0.65" stroke-width="1.1" stroke-linejoin="round">
+      <animate attributeName="d" values="{wire_d_joined}" dur="8s" repeatCount="indefinite"/>
     </path>
-    {"".join(m_blocks)}
-    <text x="{cx_card + 16}" y="{cy_card + 164}" fill="#64748b" font-family="ui-monospace,SFMono-Regular,monospace" font-size="9" font-weight="700" letter-spacing="0.6">{stack_line}</text>
+    {"".join(m_blocks_dormant)}
+    <text x="{cx_card + 16}" y="{cy_card + 164}" fill="#475569" font-family="ui-monospace,SFMono-Regular,monospace" font-size="9" font-weight="700" letter-spacing="0.6">{stack_line}</text>
   </g>''')
 
-    svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img" aria-label="Elvin Omondi Juma — Central Gargantua Black Hole &amp; Orbiting Systems">
+        # 2. ACTIVE ILLUMINATED CARD (Layer 4: Ignites to 100% visibility & clarity ONLY when the Comet passes through it!)
+        active_cards_svg.append(f'''
+  <g opacity="0">
+    <animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="{active_kt}" dur="24s" begin="{begin_offset}" repeatCount="indefinite"/>
+    <!-- Outer Comet-Strike Energy Halo -->
+    <rect x="{cx_card - 3}" y="{cy_card - 3}" width="{cw + 6}" height="{ch + 6}" rx="17" fill="none" stroke="{accent}" stroke-opacity="0.75" stroke-width="2.6" filter="url(#softGlow)"/>
+    <!-- Translucent High-Contrast Active Card Body (Comet shines through the glass while metrics stay 100% crisp on top!) -->
+    <rect x="{cx_card}" y="{cy_card}" width="{cw}" height="{ch}" rx="14" fill="#040c1b" fill-opacity="0.70" stroke="{accent}" stroke-opacity="1.0" stroke-width="2.0"/>
+    <!-- Internal Comet Shockwave Shimmer Sweep -->
+    <g clip-path="url(#subClip_{idx})">
+      <rect x="{cx_card}" y="{cy_card - 20}" width="130" height="{ch + 40}" fill="url(#cometSweepGrad)" transform="skewX(-20)">
+        <animate attributeName="x" values="{sweep_vals}" keyTimes="{sweep_kt}" dur="24s" begin="{begin_offset}" repeatCount="indefinite"/>
+      </rect>
+    </g>
+    <path d="M {cx_card + 16} {cy_card + 1} H {cx_card + 190}" stroke="#ffffff" stroke-width="2.6" filter="url(#softGlow)"/>
+    <circle cx="{cx_card + 22}" cy="{cy_card + 23}" r="4.2" fill="#ffffff" filter="url(#softGlow)"/>
+    <text x="{cx_card + 34}" y="{cy_card + 27}" fill="{accent}" font-family="ui-monospace,SFMono-Regular,monospace" font-size="9.5" font-weight="900" letter-spacing="1.2">{badge}  ·  ACTIVE</text>
+    <text x="{cx_card + 16}" y="{cy_card + 60}" fill="#ffffff" font-family="Inter,ui-sans-serif,system-ui,sans-serif" font-size="19" font-weight="900" letter-spacing="-0.4" filter="url(#textShadow)">{title}</text>
+    <circle cx="{holo_x}" cy="{holo_y}" r="35" fill="#07162e" fill-opacity="0.78" stroke="{accent}" stroke-opacity="0.60" stroke-dasharray="5 5"/>
+    <path d="{wire_paths[0]}" fill="none" stroke="#ffffff" stroke-width="1.65" stroke-linejoin="round" filter="url(#softGlow)">
+      <animate attributeName="d" values="{wire_d_joined}" dur="8s" repeatCount="indefinite"/>
+    </path>
+    {"".join(m_blocks_active)}
+    <text x="{cx_card + 16}" y="{cy_card + 164}" fill="#e2e8f0" font-family="ui-monospace,SFMono-Regular,monospace" font-size="9" font-weight="800" letter-spacing="0.6">{stack_line}</text>
+  </g>''')
+
+    # Build the 3 Gravitational Slingshot Comets
+    # Comet Alpha: 0.000..0.333 (Card 01 -> behind Black Hole -> Card 02)
+    comet_alpha_bg = make_comet_svg(
+        "cometPathAlpha",
+        "0;0.333;1",
+        "0;1;1",
+        "0;0.015;0.318;0.333;1",
+        "0;1;1;0;0",
+        "cyan",
+        begin_offset,
+    )
+    # Comet Beta: 0.333..0.667 (Card 04 -> behind Black Hole -> Card 03)
+    comet_beta_bg = make_comet_svg(
+        "cometPathBeta",
+        "0;0.333;0.667;1",
+        "0;0;1;1",
+        "0;0.333;0.348;0.652;0.667;1",
+        "0;0;1;1;0;0",
+        "gold",
+        begin_offset,
+    )
+    # Comet Gamma: 0.667..1.000 (Card 05 -> behind Black Hole -> Card 06)
+    comet_gamma_bg = make_comet_svg(
+        "cometPathGamma",
+        "0;0.667;1",
+        "0;0;1",
+        "0;0.667;0.682;0.985;1",
+        "0;0;1;1;0",
+        "emerald",
+        begin_offset,
+    )
+
+    svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img" aria-label="Elvin Omondi Juma — Gargantua Black Hole, Deep-Space Cards &amp; Passing Comets">
 <defs>
   <clipPath id="cardClip">
     <rect width="{width}" height="{height}" rx="24"/>
   </clipPath>
-  <radialGradient id="gridFadeGrad" cx="{bh_cx}" cy="{bh_cy}" r="165" gradientUnits="userSpaceOnUse">
+  {"".join(clip_defs_svg)}
+
+  <!-- Mask so Foreground Comet Streak is visible over the Active Cards but ECLIPSED behind the Black Hole Center -->
+  <radialGradient id="bhEclipseGrad" cx="{bh_cx}" cy="{bh_cy}" r="175" gradientUnits="userSpaceOnUse">
     <stop offset="0%" stop-color="#000000"/>
-    <stop offset="52%" stop-color="#000000"/>
-    <stop offset="80%" stop-color="#ffffff"/>
+    <stop offset="62%" stop-color="#000000"/>
+    <stop offset="88%" stop-color="#ffffff"/>
     <stop offset="100%" stop-color="#ffffff"/>
   </radialGradient>
-  <mask id="gridMask">
-    <rect width="{width}" height="{height}" fill="url(#gridFadeGrad)"/>
+  <mask id="outsideBlackHoleMask">
+    <rect width="{width}" height="{height}" fill="url(#bhEclipseGrad)"/>
   </mask>
-  <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
-    <feGaussianBlur stdDeviation="3" result="b"/>
+
+  <!-- Comet Tail & Coma Gradients -->
+  <linearGradient id="cometIonTail_cyan" x1="1" y1="0" x2="0" y2="0">
+    <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/>
+    <stop offset="25%" stop-color="#22d3ee" stop-opacity="0.75"/>
+    <stop offset="65%" stop-color="#0284c7" stop-opacity="0.28"/>
+    <stop offset="100%" stop-color="#0284c7" stop-opacity="0"/>
+  </linearGradient>
+  <linearGradient id="cometIonTail_gold" x1="1" y1="0" x2="0" y2="0">
+    <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/>
+    <stop offset="25%" stop-color="#fbbf24" stop-opacity="0.78"/>
+    <stop offset="65%" stop-color="#f59e0b" stop-opacity="0.28"/>
+    <stop offset="100%" stop-color="#f59e0b" stop-opacity="0"/>
+  </linearGradient>
+  <linearGradient id="cometIonTail_emerald" x1="1" y1="0" x2="0" y2="0">
+    <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/>
+    <stop offset="25%" stop-color="#34d399" stop-opacity="0.78"/>
+    <stop offset="65%" stop-color="#10b981" stop-opacity="0.28"/>
+    <stop offset="100%" stop-color="#10b981" stop-opacity="0"/>
+  </linearGradient>
+  <linearGradient id="cometDustTail" x1="1" y1="0" x2="0" y2="0">
+    <stop offset="0%" stop-color="#fef08a" stop-opacity="0.65"/>
+    <stop offset="45%" stop-color="#f59e0b" stop-opacity="0.25"/>
+    <stop offset="100%" stop-color="#f59e0b" stop-opacity="0"/>
+  </linearGradient>
+  <linearGradient id="cometCoreTail" x1="1" y1="0" x2="0" y2="0">
+    <stop offset="0%" stop-color="#ffffff" stop-opacity="1"/>
+    <stop offset="50%" stop-color="#bae6fd" stop-opacity="0.7"/>
+    <stop offset="100%" stop-color="#22d3ee" stop-opacity="0"/>
+  </linearGradient>
+  <radialGradient id="cometComa_cyan">
+    <stop offset="0%" stop-color="#ffffff" stop-opacity="1"/>
+    <stop offset="40%" stop-color="#22d3ee" stop-opacity="0.65"/>
+    <stop offset="100%" stop-color="#22d3ee" stop-opacity="0"/>
+  </radialGradient>
+  <radialGradient id="cometComa_gold">
+    <stop offset="0%" stop-color="#ffffff" stop-opacity="1"/>
+    <stop offset="40%" stop-color="#fbbf24" stop-opacity="0.65"/>
+    <stop offset="100%" stop-color="#f59e0b" stop-opacity="0"/>
+  </radialGradient>
+  <radialGradient id="cometComa_emerald">
+    <stop offset="0%" stop-color="#ffffff" stop-opacity="1"/>
+    <stop offset="40%" stop-color="#34d399" stop-opacity="0.65"/>
+    <stop offset="100%" stop-color="#10b981" stop-opacity="0"/>
+  </radialGradient>
+  <linearGradient id="cometSweepGrad" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0%" stop-color="#ffffff" stop-opacity="0"/>
+    <stop offset="50%" stop-color="#38bdf8" stop-opacity="0.26"/>
+    <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+  </linearGradient>
+
+  <!-- Gravitational Slingshot Trajectories Passing Through the Cards & Behind the Central Black Hole -->
+  <path id="cometPathAlpha" d="M -140 145 C 80 195, 380 415, 600 415 C 820 415, 1120 195, 1340 145" fill="none"/>
+  <path id="cometPathBeta" d="M 1340 385 C 1100 430, 820 455, 600 445 C 380 435, 100 445, -140 495" fill="none"/>
+  <path id="cometPathGamma" d="M -140 735 C 80 685, 380 460, 600 460 C 820 460, 1120 685, 1340 735" fill="none"/>
+
+  <filter id="softGlow" x="-25%" y="-25%" width="150%" height="150%">
+    <feGaussianBlur stdDeviation="3.5" result="b"/>
+    <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+  <filter id="cometGlow" x="-50%" y="-50%" width="200%" height="200%">
+    <feGaussianBlur stdDeviation="5" result="b"/>
     <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
   </filter>
   <filter id="textShadow" x="-20%" y="-20%" width="140%" height="140%">
@@ -480,33 +624,41 @@ def generate_unified_main_card_svg() -> None:
 </defs>
 
 <g clip-path="url(#cardClip)">
-  <!-- 1. 24-Bit TrueColor Raymarched Gargantua Black Hole at Dead Center (600, 435) -->
+  <!-- LAYER 1: Deep-Space Void & Einstein-Lensed Starfield Backdrop (NO Grids!) -->
   <image href="data:image/png;base64,{b64_backdrop}" width="{width}" height="{height}"/>
 
-  <!-- 2. 60fps Seamless C-Infinity Periodic Einstein-Lensed Spacetime Grid (ZERO Reset!) -->
-  <g mask="url(#gridMask)">
-    {lensed_grid_svg}
-  </g>
+  <!-- LAYER 2: The 6 Deep-Space Project Cards in Dormant State (Resting Behind the Black Hole!) -->
+  {"".join(dormant_cards_svg)}
 
-  <!-- 3. Continuous 360-Degree Relativistic Plasma Streams in Tilted 3D Perspective (ZERO Reset!) -->
-  <g transform="translate({bh_cx}, {bh_cy}) rotate(-12)">
-    <path d="M -255 0 A 255 37 0 0 0 255 0" fill="none" stroke="#fef08a" stroke-width="2.2" stroke-opacity="0.88" stroke-dasharray="60 120" filter="url(#softGlow)">
+  <!-- LAYER 2.5: Deep-Space Comets Slingshotting Behind the Black Hole's Event Horizon -->
+  {comet_alpha_bg}
+  {comet_beta_bg}
+  {comet_gamma_bg}
+
+  <!-- LAYER 3: Foreground 32-Bit RGBA Gargantua Black Hole (Event Horizon & Accretion Disk Wings IN FRONT of Background Cards!) -->
+  <image href="data:image/png;base64,{b64_bh_foreground}" width="{width}" height="{height}"/>
+
+  <!-- Subtle Relativistic Plasma Streams Along the Black Hole's Tilted Accretion Disk -->
+  <g transform="translate({bh_cx}, {bh_cy}) rotate(-13)">
+    <path d="M -275 0 A 275 38 0 0 0 275 0" fill="none" stroke="#fef08a" stroke-width="2.0" stroke-opacity="0.82" stroke-dasharray="60 120" filter="url(#softGlow)">
       <animate attributeName="stroke-dashoffset" from="360" to="0" dur="2.4s" repeatCount="indefinite"/>
     </path>
-    <path d="M -198 0 A 198 29 0 0 0 198 0" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-opacity="0.92" stroke-dasharray="45 95" filter="url(#softGlow)">
+    <path d="M -205 0 A 205 29 0 0 0 205 0" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-opacity="0.88" stroke-dasharray="45 95" filter="url(#softGlow)">
       <animate attributeName="stroke-dashoffset" from="280" to="0" dur="1.8s" repeatCount="indefinite"/>
     </path>
-    <path d="M -305 0 A 305 44 0 0 0 305 0" fill="none" stroke="#38bdf8" stroke-width="1.5" stroke-opacity="0.75" stroke-dasharray="40 140" filter="url(#softGlow)">
-      <animate attributeName="stroke-dashoffset" from="360" to="0" dur="3.0s" repeatCount="indefinite"/>
-    </path>
   </g>
 
-  <!-- 4. Gravitational Energy Conduits Pulling All 6 Orbiting Cards Into the Black Hole -->
-  <g filter="url(#softGlow)">
-    {"".join(conduits_svg)}
+  <!-- LAYER 3.5: Foreground Comet Streak (Shines Through the Translucent Glass of the Active Card, Eclipsed Behind the Black Hole Core!) -->
+  <g mask="url(#outsideBlackHoleMask)">
+    {comet_alpha_bg}
+    {comet_beta_bg}
+    {comet_gamma_bg}
   </g>
 
-  <!-- 5. Top Hero Identity Floating Above the Central Black Hole -->
+  <!-- LAYER 4: Comet-Triggered Active Card Illumination (Lights Up 1 Card at a Time as Comet Passes Through!) -->
+  {"".join(active_cards_svg)}
+
+  <!-- LAYER 5: Top Hero Identity Floating Above the Central Black Hole -->
   <g transform="translate(415, 22)">
     <rect width="370" height="28" rx="14" fill="#040a16" fill-opacity="0.85" stroke="#22d3ee" stroke-opacity="0.45"/>
     <circle cx="18" cy="14" r="4" fill="#10b981" filter="url(#softGlow)">
@@ -522,10 +674,7 @@ def generate_unified_main_card_svg() -> None:
     </text>
   </g>
 
-  <!-- 6. 6 Orbiting Flagship Sub-Cards (3 Left Wing, 3 Right Wing Surrounding the Black Hole) -->
-  {"".join(subcards_svg)}
-
-  <!-- 7. 4 Translucent Telemetry Pods Docked Along the Bottom Horizon -->
+  <!-- LAYER 6: 4 Translucent Telemetry Pods Docked Along the Bottom Horizon -->
   <g transform="translate(28, 774)" font-family="ui-monospace,SFMono-Regular,JetBrains Mono,monospace">
     <g transform="translate(0, 0)">
       <rect width="272" height="74" rx="12" fill="#050c1a" fill-opacity="0.86" stroke="#f59e0b" stroke-opacity="0.48"/>
@@ -554,7 +703,7 @@ def generate_unified_main_card_svg() -> None:
 </svg>
 '''
     (ASSETS / "hero-3d.svg").write_text(svg, encoding="utf-8")
-    print("hero-3d.svg (Central Black Hole & 6 Orbiting Sub-Cards) generated.")
+    print("hero-3d.svg (Foreground Black Hole + Deep-Space Background Cards + Passing Comets) generated.")
 
 
 def starfield_svg(width: int, height: int, count: int = 85, seed: int = 909) -> str:
