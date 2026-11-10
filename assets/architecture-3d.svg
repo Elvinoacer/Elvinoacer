@@ -98,14 +98,12 @@
   <circle cx="850.0" cy="243.3" r="0.6" fill="#fef08a" opacity="0.40"/>
   <circle cx="802.9" cy="274.9" r="1.6" fill="#ffffff" opacity="0.54"><animate attributeName="opacity" values="0.54;0.12;0.54" dur="4.7s" repeatCount="indefinite"/></circle></g>
 
-<!-- 3 Tilted 3D Orbital Tracks -->
 <g fill="none">
   <path id="orbitInner" d="M 410 165 A 190 48 0 1 0 790 165 A 190 48 0 1 0 410 165" stroke="#f59e0b" stroke-opacity="0.25" stroke-width="1.2" stroke-dasharray="6 8"/>
   <path id="orbitMid" d="M 280 165 A 320 78 0 1 1 920 165 A 320 78 0 1 1 280 165" stroke="#22d3ee" stroke-opacity="0.22" stroke-width="1.2" stroke-dasharray="8 10"/>
   <path id="orbitOuter" d="M 150 165 A 450 108 0 1 0 1050 165 A 450 108 0 1 0 150 165" stroke="#10b981" stroke-opacity="0.20" stroke-width="1.2" stroke-dasharray="10 12"/>
 </g>
 
-<!-- Central Gravity Star -->
 <g transform="translate(600, 165)">
   <circle r="44" fill="#071426" stroke="#fbbf24" stroke-width="2.2" filter="url(#sGlow)"/>
   <circle r="52" fill="none" stroke="#22d3ee" stroke-opacity="0.4" stroke-dasharray="4 8"/>
@@ -113,7 +111,6 @@
   <text y="14" text-anchor="middle" fill="#fbbf24" font-family="ui-monospace,SFMono-Regular,monospace" font-size="9.5" font-weight="700">CORE ENGINE</text>
 </g>
 
-<!-- Orbiting Tech Satellites (Smooth 60fps Motion Along Elliptical Orbits) -->
 <g font-family="ui-monospace,SFMono-Regular,JetBrains Mono,monospace" font-size="10.5" font-weight="800" text-anchor="middle">
   <g>
     <circle r="5.5" fill="#fbbf24" filter="url(#sGlow)"/>
