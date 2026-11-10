@@ -1,32 +1,35 @@
-"""Generate state-of-the-art 3D SVG & raster animations for Elvin Omondi Juma's profile."""
+"""Generate the Deep-Space & Black-Hole 3D visual suite for Elvin Omondi Juma's GitHub profile."""
 
 from __future__ import annotations
 
 import math
 import os
+import random
 from io import BytesIO
 from pathlib import Path
 
-from PIL import Image, ImageDraw, ImageFilter, ImageFont
+from PIL import Image, ImageDraw, ImageFont
 
 
 ROOT = Path(__file__).resolve().parents[1]
 ASSETS = ROOT / "assets"
 
-BG = "#060911"
-BG_ALT = "#0b1120"
-PANEL = "#0f172a"
-BORDER = "#1e293b"
+# Deep Space Palette (ZERO purple!)
+VOID = "#02040a"
+SPACE = "#050a14"
+PANEL = "#081121"
+BORDER = "#16243d"
 TEXT = "#f8fafc"
 MUTED = "#94a3b8"
 DIM = "#64748b"
-GREEN = "#39d353"
+
+GOLD = "#f59e0b"
+BRIGHT_GOLD = "#fbbf24"
+SOLAR = "#fef08a"
 CYAN = "#22d3ee"
-BLUE = "#38bdf8"
-VIOLET = "#a78bfa"
-AMBER = "#f59e0b"
-ROSE = "#f43f5e"
-GREENS = ["#0e4429", "#006d32", "#26a641", "#39d353"]
+ICE = "#38bdf8"
+EMERALD = "#10b981"
+GREEN = "#34d399"
 
 SCALE = 2
 FRAMES = 36
@@ -71,28 +74,11 @@ def rgba(color: str, alpha: int = 255) -> tuple[int, int, int, int]:
     return (r, g, b, alpha)
 
 
-def blend(a: str, b: str, t: float) -> tuple[int, int, int]:
-    t = max(0.0, min(1.0, t))
-    return tuple(round(x + (y - x) * t) for x, y in zip(rgb(a), rgb(b)))
-
-
-def hex_blend(a: str, b: str, t: float) -> str:
-    r, g, bl = blend(a, b, t)
-    return f"#{r:02x}{g:02x}{bl:02x}"
-
-
-# ---------------------------------------------------------------------------
-# 3D Math & Projection Helpers
-# ---------------------------------------------------------------------------
-
 def rotate_3d(x: float, y: float, z: float, ax: float, ay: float, az: float) -> tuple[float, float, float]:
-    # Rotate around X
     cy, sy = math.cos(ax), math.sin(ax)
     y, z = y * cy - z * sy, y * sy + z * cy
-    # Rotate around Y
     cx, sx = math.cos(ay), math.sin(ay)
     x, z = x * cx + z * sx, -x * sx + z * cx
-    # Rotate around Z
     cz, sz = math.cos(az), math.sin(az)
     x, y = x * cz - y * sz, x * sz + y * cz
     return x, y, z
@@ -101,1084 +87,675 @@ def rotate_3d(x: float, y: float, z: float, ax: float, ay: float, az: float) -> 
 def project_3d(
     x: float, y: float, z: float,
     cx: float, cy: float,
-    fov: float = 340.0, dist: float = 4.2,
+    fov: float = 280.0, dist: float = 3.8,
 ) -> tuple[float, float, float]:
     scale = fov / max(0.5, dist - z)
     return cx + x * scale, cy + y * scale, z
 
 
-def iso_project(gx: float, gy: float, gz: float, ox: float, oy: float, tile_w: float = 24.0, tile_h: float = 12.0) -> tuple[float, float]:
-    sx = ox + (gx - gy) * (tile_w * 0.5)
-    sy = oy + (gx + gy) * (tile_h * 0.5) - gz
-    return sx, sy
-
-
-def icosahedron_geometry() -> tuple[list[tuple[float, float, float]], list[tuple[int, int]], list[tuple[int, int, int]]]:
-    phi = (1.0 + math.sqrt(5.0)) / 2.0
-    raw = [
-        (-1,  phi, 0), ( 1,  phi, 0), (-1, -phi, 0), ( 1, -phi, 0),
-        ( 0, -1,  phi), ( 0,  1,  phi), ( 0, -1, -phi), ( 0,  1, -phi),
-        ( phi, 0, -1), ( phi, 0,  1), (-phi, 0, -1), (-phi, 0,  1),
-    ]
-    verts = []
-    for x, y, z in raw:
-        length = math.sqrt(x * x + y * y + z * z)
-        verts.append((x / length, y / length, z / length))
-    faces = [
-        (0, 11, 5), (0, 5, 1), (0, 1, 7), (0, 7, 10), (0, 10, 11),
-        (1, 5, 9), (5, 11, 4), (11, 10, 2), (10, 7, 6), (7, 1, 8),
-        (3, 9, 4), (3, 4, 2), (3, 2, 6), (3, 6, 8), (3, 8, 9),
-        (4, 9, 5), (2, 4, 11), (6, 2, 10), (8, 6, 7), (9, 8, 1),
-    ]
-    edges_set: set[tuple[int, int]] = set()
-    for a, b, c in faces:
-        for u, v in ((a, b), (b, c), (c, a)):
-            edges_set.add((min(u, v), max(u, v)))
-    return verts, sorted(edges_set), faces
-
-
-def octahedron_geometry(scale: float = 0.56) -> tuple[list[tuple[float, float, float]], list[tuple[int, int]]]:
-    verts = [
-        (scale, 0, 0), (-scale, 0, 0),
-        (0, scale, 0), (0, -scale, 0),
-        (0, 0, scale), (0, 0, -scale),
-    ]
-    edges = [
-        (0, 2), (0, 3), (0, 4), (0, 5),
-        (1, 2), (1, 3), (1, 4), (1, 5),
-        (2, 4), (4, 3), (3, 5), (5, 2),
-    ]
-    return verts, edges
-
-
-def svg_3d_cube_faces(cx: float, cy: float, w: float, h: float, depth: float, top_c: str, left_c: str, right_c: str, stroke: str = "#38bdf8", stroke_op: float = 0.35) -> str:
-    hw = w * 0.5
-    hh = h * 0.5
-    top = f"M{cx:.1f},{cy - depth - hh:.1f} L{cx + hw:.1f},{cy - depth:.1f} L{cx:.1f},{cy - depth + hh:.1f} L{cx - hw:.1f},{cy - depth:.1f} Z"
-    left = f"M{cx - hw:.1f},{cy - depth:.1f} L{cx:.1f},{cy - depth + hh:.1f} L{cx:.1f},{cy + hh:.1f} L{cx - hw:.1f},{cy:.1f} Z"
-    right = f"M{cx:.1f},{cy - depth + hh:.1f} L{cx + hw:.1f},{cy - depth:.1f} L{cx + hw:.1f},{cy:.1f} L{cx:.1f},{cy + hh:.1f} Z"
-    return (
-        f'<path d="{left}" fill="{left_c}" stroke="{stroke}" stroke-opacity="{stroke_op}" stroke-width="0.8"/>'
-        f'<path d="{right}" fill="{right_c}" stroke="{stroke}" stroke-opacity="{stroke_op}" stroke-width="0.8"/>'
-        f'<path d="{top}" fill="{top_c}" stroke="{stroke}" stroke-opacity="{min(1.0, stroke_op + 0.25)}" stroke-width="1"/>'
-    )
-
-
-# ---------------------------------------------------------------------------
-# 1. HERO-3D.SVG: 60fps Vector 3D Command Deck & Rotating Icosahedral Reactor
-# ---------------------------------------------------------------------------
-
-def generate_hero_3d_svg() -> None:
-    verts, edges, _ = icosahedron_geometry()
-    oct_verts, oct_edges = octahedron_geometry(0.54)
-
-    cx, cy = 975.0, 232.0
-    keyframes = 36
-
-    outer_paths: list[str] = []
-    inner_paths: list[str] = []
-    ring1_paths: list[str] = []
-    ring2_paths: list[str] = []
-
-    ring_pts = 32
-    for frame in range(keyframes + 1):
-        t = (frame % keyframes) / keyframes
-        angle = t * 2.0 * math.pi
-
-        # Outer icosahedron path
-        segs = []
-        pverts = [
-            project_3d(*rotate_3d(vx, vy, vz, angle * 0.7 + 0.35, angle, angle * 0.4), cx, cy, fov=315.0, dist=3.6)
-            for vx, vy, vz in verts
-        ]
-        for u, v in edges:
-            x1, y1, _ = pverts[u]
-            x2, y2, _ = pverts[v]
-            segs.append(f"M{x1:.1f},{y1:.1f}L{x2:.1f},{y2:.1f}")
-        outer_paths.append("".join(segs))
-
-        # Inner counter-rotating octahedron path
-        isegs = []
-        ipverts = [
-            project_3d(*rotate_3d(vx, vy, vz, -angle, -angle * 1.3 + 0.5, angle * 0.8), cx, cy, fov=315.0, dist=3.6)
-            for vx, vy, vz in oct_verts
-        ]
-        for u, v in oct_edges:
-            x1, y1, _ = ipverts[u]
-            x2, y2, _ = ipverts[v]
-            isegs.append(f"M{x1:.1f},{y1:.1f}L{x2:.1f},{y2:.1f}")
-        inner_paths.append("".join(isegs))
-
-        # 3D Tilted Orbital Ring 1
-        r1 = []
-        for k in range(ring_pts):
-            theta = (k / ring_pts) * 2.0 * math.pi
-            rx, ry, rz = rotate_3d(1.32 * math.cos(theta), 1.32 * math.sin(theta), 0.0, 1.05, angle * 0.5, 0.35)
-            px, py, _ = project_3d(rx, ry, rz, cx, cy, fov=315.0, dist=3.6)
-            r1.append(f"{'M' if k == 0 else 'L'}{px:.1f},{py:.1f}")
-        r1.append("Z")
-        ring1_paths.append("".join(r1))
-
-        # 3D Tilted Orbital Ring 2
-        r2 = []
-        for k in range(ring_pts):
-            theta = (k / ring_pts) * 2.0 * math.pi
-            rx, ry, rz = rotate_3d(1.52 * math.cos(theta), 0.0, 1.52 * math.sin(theta), -0.55, -angle * 0.5, 0.8)
-            px, py, _ = project_3d(rx, ry, rz, cx, cy, fov=315.0, dist=3.6)
-            r2.append(f"{'M' if k == 0 else 'L'}{px:.1f},{py:.1f}")
-        r2.append("Z")
-        ring2_paths.append("".join(r2))
-
-    # Build 3D Isometric Voxel Wave Ribbon across bottom-center/right
-    voxels_svg = []
-    cols, rows = 15, 3
-    base_ox, base_oy = 420.0, 442.0
-    for r in range(rows):
-        for c in range(cols):
-            sx = base_ox + c * 21.0 + r * 11.0
-            sy = base_oy + r * 6.5
-            wave_val = math.sin(c * 0.52 + r * 0.75) * 0.5 + 0.5
-            h_base = 5.0 + wave_val * 16.0
-            h_peak = 5.0 + (1.0 - wave_val) * 20.0
-            delay = (c * 0.14 + r * 0.22)
-            if wave_val > 0.65:
-                tc, lc, rc, sc = "#39d353", "#006d32", "#0e4429", "#39d353"
-            elif wave_val > 0.35:
-                tc, lc, rc, sc = "#22d3ee", "#0284c7", "#0f172a", "#22d3ee"
-            else:
-                tc, lc, rc, sc = "#1e293b", "#0f172a", "#090d16", "#334155"
-            cube = svg_3d_cube_faces(sx, sy, 18.0, 8.5, h_base, tc, lc, rc, sc, 0.45)
-            voxels_svg.append(
-                f'<g>{cube}'
-                f'<animateTransform attributeName="transform" type="translate" '
-                f'values="0,0; 0,{- (h_peak - h_base) * 0.45:.1f}; 0,0" '
-                f'dur="3.2s" begin="-{delay:.2f}s" repeatCount="indefinite"/>'
-                f'</g>'
+def starfield_svg(width: int, height: int, count: int = 90, seed: int = 42) -> str:
+    rng = random.Random(seed)
+    items = []
+    palette = ["#ffffff", "#bae6fd", "#fef08a", "#67e8f9", "#a7f3d0"]
+    for i in range(count):
+        x = rng.uniform(12, width - 12)
+        y = rng.uniform(12, height - 12)
+        r = rng.choice([0.6, 0.8, 1.0, 1.3, 1.7])
+        op = rng.uniform(0.25, 0.85)
+        col = rng.choice(palette)
+        if i % 7 == 0:
+            dur = rng.uniform(2.2, 5.0)
+            items.append(
+                f'<circle cx="{x:.1f}" cy="{y:.1f}" r="{r}" fill="{col}" opacity="{op:.2f}">'
+                f'<animate attributeName="opacity" values="{op:.2f};0.12;{op:.2f}" dur="{dur:.1f}s" repeatCount="indefinite"/>'
+                f'</circle>'
             )
-
-    svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="485" viewBox="0 0 1200 485" role="img" aria-label="Elvin Omondi Juma — Founding Engineer &amp; Full-Stack Systems Architect">
-<defs>
-  <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
-    <stop offset="0%" stop-color="#050811"/>
-    <stop offset="52%" stop-color="#09101f"/>
-    <stop offset="100%" stop-color="#050b14"/>
-  </linearGradient>
-  <radialGradient id="coreGlow" cx="0.81" cy="0.48" r="0.36">
-    <stop offset="0%" stop-color="#22d3ee" stop-opacity="0.28"/>
-    <stop offset="45%" stop-color="#39d353" stop-opacity="0.10"/>
-    <stop offset="100%" stop-color="#050811" stop-opacity="0"/>
-  </radialGradient>
-  <radialGradient id="leftGlow" cx="0.18" cy="0.28" r="0.42">
-    <stop offset="0%" stop-color="#39d353" stop-opacity="0.14"/>
-    <stop offset="60%" stop-color="#38bdf8" stop-opacity="0.05"/>
-    <stop offset="100%" stop-color="#050811" stop-opacity="0"/>
-  </radialGradient>
-  <linearGradient id="cyberAccent" x1="0" y1="0" x2="1" y2="0">
-    <stop offset="0%" stop-color="#39d353"/>
-    <stop offset="50%" stop-color="#22d3ee"/>
-    <stop offset="100%" stop-color="#a78bfa"/>
-  </linearGradient>
-  <linearGradient id="titleGrad" x1="0" y1="0" x2="1" y2="0">
-    <stop offset="0%" stop-color="#ffffff"/>
-    <stop offset="65%" stop-color="#e2e8f0"/>
-    <stop offset="100%" stop-color="#67e8f9"/>
-  </linearGradient>
-  <linearGradient id="cardGrad" x1="0" y1="0" x2="0" y2="1">
-    <stop offset="0%" stop-color="#0f172a" stop-opacity="0.9"/>
-    <stop offset="100%" stop-color="#090d16" stop-opacity="0.95"/>
-  </linearGradient>
-  <filter id="neonGlow" x="-25%" y="-25%" width="150%" height="150%">
-    <feGaussianBlur stdDeviation="4" result="blur"/>
-    <feMerge>
-      <feMergeNode in="blur"/>
-      <feMergeNode in="SourceGraphic"/>
-    </feMerge>
-  </filter>
-  <filter id="heavyGlow" x="-40%" y="-40%" width="180%" height="180%">
-    <feGaussianBlur stdDeviation="9" result="blur"/>
-    <feMerge>
-      <feMergeNode in="blur"/>
-      <feMergeNode in="SourceGraphic"/>
-    </feMerge>
-  </filter>
-  <pattern id="isoGrid" width="40" height="40" patternUnits="userSpaceOnUse">
-    <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.7" stroke-opacity="0.45"/>
-  </pattern>
-</defs>
-
-<!-- Deep Space & Cyber Grid Background -->
-<rect width="1200" height="485" rx="22" fill="url(#bgGrad)"/>
-<rect width="1200" height="485" rx="22" fill="url(#isoGrid)"/>
-<rect width="1200" height="485" rx="22" fill="url(#coreGlow)"/>
-<rect width="1200" height="485" rx="22" fill="url(#leftGlow)"/>
-
-<!-- 3D Perspective Floor Grid Lines -->
-<g stroke="#22d3ee" stroke-opacity="0.10" stroke-width="1">
-  <line x1="0" y1="440" x2="1200" y2="440"/>
-  <line x1="0" y1="462" x2="1200" y2="462"/>
-  <line x1="600" y1="320" x2="120" y2="485"/>
-  <line x1="600" y1="320" x2="360" y2="485"/>
-  <line x1="600" y1="320" x2="600" y2="485"/>
-  <line x1="600" y1="320" x2="840" y2="485"/>
-  <line x1="600" y1="320" x2="1080" y2="485"/>
-</g>
-
-<!-- Scanning Horizon Laser -->
-<line x1="2" y1="0" x2="1198" y2="0" stroke="url(#cyberAccent)" stroke-width="1.5" stroke-opacity="0.35">
-  <animate attributeName="y1" values="18;468;18" dur="9s" repeatCount="indefinite"/>
-  <animate attributeName="y2" values="18;468;18" dur="9s" repeatCount="indefinite"/>
-</line>
-
-<!-- 3D Isometric Voxel Contribution Wave -->
-<g opacity="0.92">
-  {"".join(voxels_svg)}
-</g>
-
-<!-- RIGHT SIDE: True 3D Projected Geodesic Icosahedron & Octahedron Reactor -->
-<g>
-  <!-- Outer HUD Rings -->
-  <circle cx="{cx}" cy="{cy}" r="182" fill="none" stroke="#1e293b" stroke-width="1"/>
-  <circle cx="{cx}" cy="{cy}" r="170" fill="none" stroke="#38bdf8" stroke-opacity="0.22" stroke-width="1.5" stroke-dasharray="6 14">
-    <animateTransform attributeName="transform" type="rotate" from="0 {cx} {cy}" to="360 {cx} {cy}" dur="28s" repeatCount="indefinite"/>
-  </circle>
-  <circle cx="{cx}" cy="{cy}" r="144" fill="none" stroke="#39d353" stroke-opacity="0.25" stroke-width="1.2" stroke-dasharray="18 10 4 10">
-    <animateTransform attributeName="transform" type="rotate" from="360 {cx} {cy}" to="0 {cx} {cy}" dur="18s" repeatCount="indefinite"/>
-  </circle>
-
-  <!-- 3D Perspective Orbital Rings -->
-  <path fill="none" stroke="#a78bfa" stroke-width="1.4" stroke-opacity="0.45" stroke-dasharray="8 6">
-    <animate attributeName="d" values="{";".join(ring1_paths)}" dur="11s" repeatCount="indefinite"/>
-  </path>
-  <path fill="none" stroke="#39d353" stroke-width="1.4" stroke-opacity="0.45" stroke-dasharray="10 8">
-    <animate attributeName="d" values="{";".join(ring2_paths)}" dur="11s" repeatCount="indefinite"/>
-  </path>
-
-  <!-- True 3D Projected Rotating Geodesic Icosahedron Wireframe -->
-  <path fill="none" stroke="#22d3ee" stroke-width="1.85" stroke-opacity="0.88" stroke-linejoin="round" filter="url(#neonGlow)">
-    <animate attributeName="d" values="{";".join(outer_paths)}" dur="11s" repeatCount="indefinite"/>
-  </path>
-
-  <!-- True 3D Counter-Rotating Inner Octahedron Core -->
-  <path fill="none" stroke="#39d353" stroke-width="2.2" stroke-opacity="0.95" stroke-linejoin="round" filter="url(#neonGlow)">
-    <animate attributeName="d" values="{";".join(inner_paths)}" dur="8s" repeatCount="indefinite"/>
-  </path>
-
-  <!-- Glowing Energy Singularity Center -->
-  <circle cx="{cx}" cy="{cy}" r="24" fill="#071526" stroke="url(#cyberAccent)" stroke-width="2" filter="url(#neonGlow)">
-    <animate attributeName="r" values="21;27;21" dur="2.6s" repeatCount="indefinite"/>
-  </circle>
-  <text x="{cx}" y="{cy + 5}" text-anchor="middle" fill="#f8fafc" font-family="ui-monospace,SFMono-Regular,JetBrains Mono,monospace" font-size="14" font-weight="800" letter-spacing="1.5">3D·OS</text>
-
-  <!-- Floating 3D Telemetry Callout Badges Around Core -->
-  <g transform="translate(770, 56)">
-    <rect width="142" height="32" rx="8" fill="#0b1324" fill-opacity="0.9" stroke="#39d353" stroke-opacity="0.5"/>
-    <circle cx="15" cy="16" r="4" fill="#39d353"><animate attributeName="opacity" values="1;0.2;1" dur="1.4s" repeatCount="indefinite"/></circle>
-    <text x="27" y="20" fill="#d1fae5" font-family="ui-monospace,SFMono-Regular,monospace" font-size="11" font-weight="700">5,107+ COMMITS</text>
-  </g>
-  <g transform="translate(1038, 62)">
-    <rect width="134" height="32" rx="8" fill="#0b1324" fill-opacity="0.9" stroke="#22d3ee" stroke-opacity="0.5"/>
-    <text x="14" y="20" fill="#cffafe" font-family="ui-monospace,SFMono-Regular,monospace" font-size="11" font-weight="700">124 REPOS SHIP</text>
-  </g>
-  <g transform="translate(765, 382)">
-    <rect width="152" height="32" rx="8" fill="#0b1324" fill-opacity="0.9" stroke="#a78bfa" stroke-opacity="0.5"/>
-    <text x="14" y="20" fill="#ede9fe" font-family="ui-monospace,SFMono-Regular,monospace" font-size="11" font-weight="700">57 PRISMA MODELS</text>
-  </g>
-  <g transform="translate(1022, 382)">
-    <rect width="150" height="32" rx="8" fill="#0b1324" fill-opacity="0.9" stroke="#f59e0b" stroke-opacity="0.5"/>
-    <text x="14" y="20" fill="#fef3c7" font-family="ui-monospace,SFMono-Regular,monospace" font-size="11" font-weight="700">0ms LAN OFFLINE</text>
-  </g>
-</g>
-
-<!-- LEFT SIDE: Identity, Role & Live Metric Matrix -->
-<g font-family="Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif">
-  <!-- Status Pill -->
-  <g transform="translate(48, 36)">
-    <rect width="382" height="32" rx="16" fill="#091526" stroke="#39d353" stroke-opacity="0.45"/>
-    <circle cx="18" cy="16" r="5" fill="#39d353" filter="url(#neonGlow)">
-      <animate attributeName="opacity" values="1;0.25;1" dur="1.2s" repeatCount="indefinite"/>
-    </circle>
-    <text x="32" y="20" fill="#86efac" font-family="ui-monospace,SFMono-Regular,monospace" font-size="11.5" font-weight="700" letter-spacing="1.3">FOUNDING ENGINEER @ GTSS  ·  KENYA (NBO / ELD)</text>
-  </g>
-
-  <!-- Main Name & Animated Gradient Bar -->
-  <text x="48" y="128" fill="url(#titleGrad)" font-size="52" font-weight="900" letter-spacing="-1.5">ELVIN OMONDI JUMA</text>
-  <rect x="48" y="144" width="640" height="4" rx="2" fill="url(#cyberAccent)" filter="url(#neonGlow)">
-    <animate attributeName="width" values="180;660;520;660" dur="6s" repeatCount="indefinite"/>
-  </rect>
-
-  <!-- Headline -->
-  <text x="48" y="186" fill="#22d3ee" font-family="ui-monospace,SFMono-Regular,monospace" font-size="16" font-weight="800" letter-spacing="2.4">FULL-STACK PRODUCT ARCHITECT  //  SYSTEMS ENGINEER</text>
-  <text x="48" y="218" fill="#cbd5e1" font-size="17" font-weight="500">Architecting multi-tenant SaaS, offline-first POS &amp; real-time financial ecosystems.</text>
-
-  <!-- 4 High-Impact 3D Metric Cards -->
-  <g transform="translate(48, 248)">
-    <!-- Metric 1 -->
-    <g transform="translate(0, 0)">
-      <rect width="162" height="92" rx="12" fill="url(#cardGrad)" stroke="#39d353" stroke-opacity="0.45"/>
-      <path d="M12 1 L150 1" stroke="#39d353" stroke-width="2"/>
-      <text x="18" y="38" fill="#39d353" font-family="ui-monospace,SFMono-Regular,monospace" font-size="28" font-weight="900">5,100+</text>
-      <text x="18" y="60" fill="#f8fafc" font-size="11.5" font-weight="700" letter-spacing="0.8">CONTRIBUTIONS</text>
-      <text x="18" y="78" fill="#64748b" font-family="ui-monospace,SFMono-Regular,monospace" font-size="10">+310% YoY velocity</text>
-    </g>
-    <!-- Metric 2 -->
-    <g transform="translate(176, 0)">
-      <rect width="162" height="92" rx="12" fill="url(#cardGrad)" stroke="#22d3ee" stroke-opacity="0.45"/>
-      <path d="M12 1 L150 1" stroke="#22d3ee" stroke-width="2"/>
-      <text x="18" y="38" fill="#22d3ee" font-family="ui-monospace,SFMono-Regular,monospace" font-size="28" font-weight="900">124</text>
-      <text x="84" y="34" fill="#0891b2" font-family="ui-monospace,SFMono-Regular,monospace" font-size="12" font-weight="800">REPOS</text>
-      <text x="18" y="60" fill="#f8fafc" font-size="11.5" font-weight="700" letter-spacing="0.8">116+ OPEN SOURCE</text>
-      <text x="18" y="78" fill="#64748b" font-family="ui-monospace,SFMono-Regular,monospace" font-size="10">80+ Cloud Deploys</text>
-    </g>
-    <!-- Metric 3 -->
-    <g transform="translate(352, 0)">
-      <rect width="162" height="92" rx="12" fill="url(#cardGrad)" stroke="#a78bfa" stroke-opacity="0.45"/>
-      <path d="M12 1 L150 1" stroke="#a78bfa" stroke-width="2"/>
-      <text x="18" y="38" fill="#a78bfa" font-family="ui-monospace,SFMono-Regular,monospace" font-size="28" font-weight="900">6 LIVE</text>
-      <text x="18" y="60" fill="#f8fafc" font-size="11.5" font-weight="700" letter-spacing="0.8">SAAS PLATFORMS</text>
-      <text x="18" y="78" fill="#64748b" font-family="ui-monospace,SFMono-Regular,monospace" font-size="10">Health · POS · FinTech</text>
-    </g>
-    <!-- Metric 4 -->
-    <g transform="translate(528, 0)">
-      <rect width="162" height="92" rx="12" fill="url(#cardGrad)" stroke="#f59e0b" stroke-opacity="0.45"/>
-      <path d="M12 1 L150 1" stroke="#f59e0b" stroke-width="2"/>
-      <text x="18" y="38" fill="#f59e0b" font-family="ui-monospace,SFMono-Regular,monospace" font-size="28" font-weight="900">99.98%</text>
-      <text x="18" y="60" fill="#f8fafc" font-size="11.5" font-weight="700" letter-spacing="0.8">UPTIME &amp; SLA</text>
-      <text x="18" y="78" fill="#64748b" font-family="ui-monospace,SFMono-Regular,monospace" font-size="10">Offline-First + Cloud</text>
-    </g>
-  </g>
-
-  <!-- Tech Pill Strip -->
-  <g transform="translate(48, 366)" font-family="ui-monospace,SFMono-Regular,monospace" font-size="11.5" font-weight="700">
-    <rect x="0" y="0" width="108" height="28" rx="6" fill="#0d1b2a" stroke="#38bdf8" stroke-opacity="0.35"/>
-    <text x="54" y="18" text-anchor="middle" fill="#7dd3fc">NEXT.JS 16</text>
-
-    <rect x="118" y="0" width="108" height="28" rx="6" fill="#0d1b2a" stroke="#22d3ee" stroke-opacity="0.35"/>
-    <text x="172" y="18" text-anchor="middle" fill="#67e8f9">TYPESCRIPT</text>
-
-    <rect x="236" y="0" width="124" height="28" rx="6" fill="#0d1b2a" stroke="#39d353" stroke-opacity="0.35"/>
-    <text x="298" y="18" text-anchor="middle" fill="#86efac">PRISMA + PGSQL</text>
-
-    <rect x="370" y="0" width="108" height="28" rx="6" fill="#0d1b2a" stroke="#a78bfa" stroke-opacity="0.35"/>
-    <text x="424" y="18" text-anchor="middle" fill="#c4b5fd">SOCKET.IO</text>
-
-    <rect x="488" y="0" width="118" height="28" rx="6" fill="#0d1b2a" stroke="#f59e0b" stroke-opacity="0.35"/>
-    <text x="547" y="18" text-anchor="middle" fill="#fcd34d">M-PESA DARAJA</text>
-  </g>
-
-  <text x="48" y="452" fill="#64748b" font-family="ui-monospace,SFMono-Regular,monospace" font-size="11" letter-spacing="1.6">
-    MOI UNIVERSITY (CS)  //  GREAT THUMBS SOFTWARE SOLUTIONS  //  PRODUCTION TELEMETRY ACTIVE
-  </text>
-</g>
-
-<!-- Outer Neon Frame -->
-<rect x="1" y="1" width="1198" height="483" rx="21" fill="none" stroke="url(#cyberAccent)" stroke-opacity="0.35" stroke-width="1.5"/>
-</svg>
-'''
-    (ASSETS / "hero-3d.svg").write_text(svg, encoding="utf-8")
-    print("hero-3d.svg generated.")
+        else:
+            items.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="{r}" fill="{col}" opacity="{op:.2f}"/>')
+    return "\n  ".join(items)
 
 
 # ---------------------------------------------------------------------------
-# 2. TELEMETRY-3D.SVG: 60fps 3D Isometric Engineering Metrics & Velocity HUD
+# 1. HERO-3D.SVG: Black Hole Gravitational Lensing + Spacetime Funnel + Warp
 # ---------------------------------------------------------------------------
 
-def generate_telemetry_3d_svg() -> None:
-    # 3D Isometric bar chart for contribution growth & domain velocity
-    bars_data = [
-        ("2024", 18, "#1e293b", "#0f172a", "#090d16", "#38bdf8"),
-        ("Q1'25", 42, "#0e4429", "#092e1c", "#051b10", "#26a641"),
-        ("Q3'25", 68, "#006d32", "#0e4429", "#082918", "#39d353"),
-        ("Q1'26", 104, "#26a641", "#006d32", "#0e4429", "#39d353"),
-        ("Q3'26", 132, "#39d353", "#26a641", "#006d32", "#86efac"),
-        ("NOW", 156, "#22d3ee", "#0284c7", "#0369a1", "#67e8f9"),
-    ]
-    iso_bars = []
-    for i, (lbl, h, tc, lc, rc, sc) in enumerate(bars_data):
-        bx = 92 + i * 44
-        by = 248
-        cube = svg_3d_cube_faces(bx, by, 28, 13, h, tc, lc, rc, sc, 0.65)
-        iso_bars.append(
-            f'<g>{cube}'
-            f'<text x="{bx}" y="{by - h - 12}" text-anchor="middle" fill="{sc}" font-family="ui-monospace,monospace" font-size="9.5" font-weight="700">{lbl}</text>'
-            f'</g>'
+def generate_hero_blackhole_svg() -> None:
+    width, height = 1200, 540
+    bh_x, bh_y = 600.0, 215.0
+
+    # 1. 3D Warped Spacetime Gravity Well Mesh underneath the Black Hole
+    mesh_lines = []
+    # Concentric relativistic gravity well rings
+    for r_idx, radius in enumerate([58, 82, 112, 148, 192, 246, 310, 385, 470]):
+        pts = []
+        steps = 64
+        for s in range(steps + 1):
+            theta = (s / steps) * 2.0 * math.pi
+            gx = radius * math.cos(theta)
+            gz = radius * math.sin(theta)
+            # Gravitational potential well depth z_well = -G / sqrt(r^2 + r0^2)
+            well_depth = 118.0 / math.sqrt((radius / 62.0) ** 2 + 0.75)
+            # Tilt the spacetime fabric toward viewer
+            px = bh_x + gx * 1.18
+            py = (bh_y + 18) + gz * 0.34 + well_depth
+            pts.append(f"{'M' if s == 0 else 'L'}{px:.1f},{py:.1f}")
+        op = 0.32 if r_idx < 4 else 0.16
+        col = GOLD if r_idx < 2 else (CYAN if r_idx < 5 else "#1e3a5f")
+        mesh_lines.append(f'<path d="{"".join(pts)}" fill="none" stroke="{col}" stroke-opacity="{op}" stroke-width="1"/>')
+
+    # Radial spacetime geodesics curving into the singularity
+    num_spokes = 24
+    for k in range(num_spokes):
+        theta = (k / num_spokes) * 2.0 * math.pi
+        pts = []
+        for step in range(28):
+            r = 48.0 + step * 16.5
+            # Slight frame-dragging swirl near event horizon
+            swirl = theta + (42.0 / (r + 20.0))
+            gx = r * math.cos(swirl)
+            gz = r * math.sin(swirl)
+            well_depth = 118.0 / math.sqrt((r / 62.0) ** 2 + 0.75)
+            px = bh_x + gx * 1.18
+            py = (bh_y + 18) + gz * 0.34 + well_depth
+            pts.append(f"{'M' if step == 0 else 'L'}{px:.1f},{py:.1f}")
+        mesh_lines.append(f'<path d="{"".join(pts)}" fill="none" stroke="#22d3ee" stroke-opacity="0.15" stroke-width="0.9"/>')
+
+    # 2. Warp-Speed Space Travel Star Streaks (4 staggered 3D depth waves emerging outside event horizon)
+    rng = random.Random(108)
+    warp_groups = []
+    for g_idx in range(4):
+        streaks = []
+        for _ in range(18):
+            angle = rng.uniform(0, 2.0 * math.pi)
+            r1 = rng.uniform(145, 250)
+            r2 = r1 + rng.uniform(28, 70)
+            x1 = math.cos(angle) * r1 * 1.35
+            y1 = math.sin(angle) * r1 * 0.72
+            x2 = math.cos(angle) * r2 * 1.35
+            y2 = math.sin(angle) * r2 * 0.72
+            col = rng.choice(["#ffffff", "#67e8f9", "#fde68a", "#34d399"])
+            w = rng.uniform(1.0, 2.2)
+            streaks.append(f'<line x1="{x1:.1f}" y1="{y1:.1f}" x2="{x2:.1f}" y2="{y2:.1f}" stroke="{col}" stroke-width="{w:.1f}" stroke-linecap="round"/>')
+        begin = -g_idx * 1.25
+        warp_groups.append(
+            f'<g transform="translate({bh_x},{bh_y})">'
+            f'<g>{"".join(streaks)}'
+            f'<animateTransform attributeName="transform" type="scale" values="0.52;2.35" dur="5s" begin="{begin}s" repeatCount="indefinite"/>'
+            f'<animate attributeName="opacity" values="0;0.85;0" dur="5s" begin="{begin}s" repeatCount="indefinite"/>'
+            f'</g></g>'
         )
 
-    svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="310" viewBox="0 0 1200 310" role="img" aria-label="3D Engineering Telemetry and System Scale Metrics">
+    stars = starfield_svg(width, height, count=120, seed=77)
+
+    svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img" aria-label="Elvin Omondi Juma — Deep Space Black Hole Singularity Header">
 <defs>
-  <linearGradient id="tBg" x1="0" y1="0" x2="1" y2="1">
-    <stop offset="0%" stop-color="#060a14"/>
-    <stop offset="100%" stop-color="#0a1122"/>
+  <radialGradient id="voidBg" cx="0.5" cy="0.4" r="0.75">
+    <stop offset="0%" stop-color="#0a1628"/>
+    <stop offset="45%" stop-color="#040812"/>
+    <stop offset="100%" stop-color="#010307"/>
+  </radialGradient>
+  <radialGradient id="bhCoreGlow" cx="0.5" cy="0.4" r="0.34">
+    <stop offset="0%" stop-color="#fbbf24" stop-opacity="0.38"/>
+    <stop offset="38%" stop-color="#f59e0b" stop-opacity="0.16"/>
+    <stop offset="70%" stop-color="#22d3ee" stop-opacity="0.08"/>
+    <stop offset="100%" stop-color="#010307" stop-opacity="0"/>
+  </radialGradient>
+  <linearGradient id="accretionMain" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0%" stop-color="#22d3ee" stop-opacity="0.1"/>
+    <stop offset="18%" stop-color="#38bdf8" stop-opacity="0.85"/>
+    <stop offset="38%" stop-color="#fef08a" stop-opacity="1"/>
+    <stop offset="50%" stop-color="#ffffff" stop-opacity="1"/>
+    <stop offset="62%" stop-color="#fbbf24" stop-opacity="1"/>
+    <stop offset="82%" stop-color="#f59e0b" stop-opacity="0.85"/>
+    <stop offset="100%" stop-color="#ea580c" stop-opacity="0.1"/>
   </linearGradient>
-  <linearGradient id="tAccent" x1="0" y1="0" x2="1" y2="0">
-    <stop offset="0%" stop-color="#39d353"/>
-    <stop offset="50%" stop-color="#22d3ee"/>
-    <stop offset="100%" stop-color="#a78bfa"/>
+  <linearGradient id="lensArcGrad" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.2"/>
+    <stop offset="30%" stop-color="#fef08a" stop-opacity="0.95"/>
+    <stop offset="50%" stop-color="#ffffff" stop-opacity="1"/>
+    <stop offset="70%" stop-color="#f59e0b" stop-opacity="0.95"/>
+    <stop offset="100%" stop-color="#22d3ee" stop-opacity="0.2"/>
   </linearGradient>
-  <filter id="tGlow" x="-20%" y="-20%" width="140%" height="140%">
-    <feGaussianBlur stdDeviation="3.5" result="b"/>
+  <filter id="bloom" x="-35%" y="-35%" width="170%" height="170%">
+    <feGaussianBlur stdDeviation="6" result="b1"/>
+    <feGaussianBlur stdDeviation="14" result="b2"/>
+    <feMerge>
+      <feMergeNode in="b2"/>
+      <feMergeNode in="b1"/>
+      <feMergeNode in="SourceGraphic"/>
+    </feMerge>
+  </filter>
+  <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
+    <feGaussianBlur stdDeviation="3" result="b"/>
     <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
   </filter>
 </defs>
 
-<rect width="1200" height="310" rx="20" fill="url(#tBg)" stroke="#1e293b" stroke-width="1.5"/>
+<!-- Deep Cosmic Void -->
+<rect width="{width}" height="{height}" rx="22" fill="url(#voidBg)"/>
+<rect width="{width}" height="{height}" rx="22" fill="url(#bhCoreGlow)"/>
 
-<!-- Header Bar -->
-<g font-family="ui-monospace,SFMono-Regular,JetBrains Mono,monospace" font-size="11.5" font-weight="800" letter-spacing="1.6">
-  <circle cx="36" cy="28" r="4.5" fill="#39d353" filter="url(#tGlow)">
+<!-- Starfield -->
+<g>
+  {stars}
+</g>
+
+<!-- 3D Curved Spacetime Gravity Funnel -->
+<g>
+  {"".join(mesh_lines)}
+</g>
+
+<!-- Pulsing Gravitational Wave Rings Contracting Into the Singularity -->
+<g transform="translate({bh_x}, {bh_y + 24})" fill="none">
+  <ellipse rx="320" ry="96" stroke="#22d3ee" stroke-width="1.5" stroke-opacity="0">
+    <animate attributeName="rx" values="360;62" dur="4.5s" repeatCount="indefinite"/>
+    <animate attributeName="ry" values="110;20" dur="4.5s" repeatCount="indefinite"/>
+    <animate attributeName="stroke-opacity" values="0;0.45;0" dur="4.5s" repeatCount="indefinite"/>
+  </ellipse>
+  <ellipse rx="320" ry="96" stroke="#fbbf24" stroke-width="1.5" stroke-opacity="0">
+    <animate attributeName="rx" values="360;62" dur="4.5s" begin="-2.25s" repeatCount="indefinite"/>
+    <animate attributeName="ry" values="110;20" dur="4.5s" begin="-2.25s" repeatCount="indefinite"/>
+    <animate attributeName="stroke-opacity" values="0;0.45;0" dur="4.5s" begin="-2.25s" repeatCount="indefinite"/>
+  </ellipse>
+</g>
+
+<!-- 3D Warp-Drive Space Travel Streaks -->
+{"".join(warp_groups)}
+
+<!-- GARGANTUA BLACK HOLE & GRAVITATIONAL LENSING -->
+<g transform="translate({bh_x}, {bh_y}) rotate(-11)">
+  <!-- Back Half of Accretion Disk -->
+  <path d="M -255 0 A 255 44 0 0 1 255 0" fill="none" stroke="url(#accretionMain)" stroke-width="18" filter="url(#bloom)" opacity="0.85"/>
+  <path d="M -210 0 A 210 34 0 0 1 210 0" fill="none" stroke="#fef08a" stroke-width="5" filter="url(#softGlow)"/>
+
+  <!-- Gravitationally Lensed Upper Relativistic Halo (Light bent over top of Black Hole) -->
+  <path d="M -112 -4 A 112 96 0 0 1 112 -4" fill="none" stroke="url(#lensArcGrad)" stroke-width="8" filter="url(#bloom)"/>
+  <path d="M -98 -2 A 98 84 0 0 1 98 -2" fill="none" stroke="#ffffff" stroke-width="2.2" opacity="0.9"/>
+
+  <!-- Gravitationally Lensed Lower Relativistic Halo (Light bent under bottom of Black Hole) -->
+  <path d="M -102 6 A 102 82 0 0 0 102 6" fill="none" stroke="url(#lensArcGrad)" stroke-width="5" filter="url(#bloom)" opacity="0.8"/>
+
+  <!-- Event Horizon Shadow (The Singularity) -->
+  <circle cx="0" cy="0" r="68" fill="#010206"/>
+  <!-- Photon Sphere Razor Ring -->
+  <circle cx="0" cy="0" r="69" fill="none" stroke="#fef08a" stroke-width="2.2" filter="url(#softGlow)">
+    <animate attributeName="r" values="68.5;70.5;68.5" dur="2.8s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="0" cy="0" r="66" fill="none" stroke="#22d3ee" stroke-width="1" stroke-opacity="0.6"/>
+
+  <!-- Front Half of Relativistic Accretion Disk (Occludes Front of Black Hole Shadow!) -->
+  <path d="M -275 0 A 275 46 0 0 0 275 0" fill="none" stroke="url(#accretionMain)" stroke-width="22" filter="url(#bloom)"/>
+  <path d="M -235 0 A 235 38 0 0 0 235 0" fill="none" stroke="#ffffff" stroke-width="4" filter="url(#softGlow)"/>
+
+  <!-- High-Velocity Orbiting Accretion Plasma Stream (Front Arc Only so Event Horizon Stays Pitch Black) -->
+  <path d="M -195 0 A 195 32 0 0 0 195 0" fill="none" stroke="#fef08a" stroke-width="2.5" stroke-dasharray="45 95" filter="url(#softGlow)">
+    <animate attributeName="stroke-dashoffset" values="0;-280" dur="2.4s" repeatCount="indefinite"/>
+  </path>
+  <path d="M -245 0 A 245 41 0 0 0 245 0" fill="none" stroke="#38bdf8" stroke-width="2" stroke-dasharray="30 110" filter="url(#softGlow)">
+    <animate attributeName="stroke-dashoffset" values="0;-280" dur="3.2s" repeatCount="indefinite"/>
+  </path>
+</g>
+
+<!-- Top Orbital Status Pill -->
+<g transform="translate(415, 24)">
+  <rect width="370" height="30" rx="15" fill="#050d1a" fill-opacity="0.85" stroke="#22d3ee" stroke-opacity="0.4"/>
+  <circle cx="18" cy="15" r="4.5" fill="#10b981" filter="url(#softGlow)">
     <animate attributeName="opacity" values="1;0.2;1" dur="1.4s" repeatCount="indefinite"/>
   </circle>
-  <text x="50" y="32" fill="#94a3b8">ENGINEERING TELEMETRY  //  VERIFIED PRODUCTION METRICS (2024–2026)</text>
-  <text x="1164" y="32" text-anchor="end" fill="#39d353">STATUS: OPTIMAL · 60FPS</text>
-</g>
-<line x1="28" y1="48" x2="1172" y2="48" stroke="#1e293b"/>
-
-<!-- PANEL 1: 3D Isometric Contribution Velocity (x=28..370) -->
-<g transform="translate(28, 62)">
-  <rect width="352" height="224" rx="14" fill="#09101f" stroke="#39d353" stroke-opacity="0.32"/>
-  <text x="20" y="28" fill="#86efac" font-family="ui-monospace,monospace" font-size="11" font-weight="800" letter-spacing="1.2">01 // COMMIT &amp; SHIP VELOCITY</text>
-  <text x="332" y="28" text-anchor="end" fill="#39d353" font-family="ui-monospace,monospace" font-size="13" font-weight="900">5,107 TOTAL</text>
-  {"".join(iso_bars)}
-  <text x="20" y="210" fill="#64748b" font-family="ui-monospace,monospace" font-size="10.5">2024: 21  →  2025: 998  →  2026: 4,088+ (+310%)</text>
+  <text x="32" y="19" fill="#bae6fd" font-family="ui-monospace,SFMono-Regular,JetBrains Mono,monospace" font-size="11" font-weight="700" letter-spacing="1.6">FOUNDING ENGINEER @ GTSS  ·  KENYA</text>
 </g>
 
-<!-- PANEL 2: Flagship Healthcare OS Scale (x=396..784) -->
-<g transform="translate(396, 62)">
-  <rect width="388" height="224" rx="14" fill="#09101f" stroke="#22d3ee" stroke-opacity="0.32"/>
-  <text x="20" y="28" fill="#67e8f9" font-family="ui-monospace,monospace" font-size="11" font-weight="800" letter-spacing="1.2">02 // DEEP SYSTEM COMPLEXITY (BENCHMARKS)</text>
+<!-- Central Typography & Meaning -->
+<g font-family="Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif" text-anchor="middle">
+  <text x="600" y="378" fill="#ffffff" font-size="44" font-weight="900" letter-spacing="3">ELVIN OMONDI JUMA</text>
+  <text x="600" y="406" fill="#fbbf24" font-family="ui-monospace,SFMono-Regular,monospace" font-size="13" font-weight="800" letter-spacing="3.2">
+    PULLING COMPLEXITY INTO RELIABLE SYSTEMS
+  </text>
+</g>
 
-  <!-- 4 Metric Progress Rows -->
-  <g transform="translate(20, 48)" font-family="ui-monospace,monospace">
-    <text x="0" y="14" fill="#e2e8f0" font-size="11.5" font-weight="700">Afyvia / PharmaCare OS</text>
-    <text x="348" y="14" text-anchor="end" fill="#22d3ee" font-size="11.5" font-weight="800">57 Models · 308 Routes</text>
-    <rect x="0" y="22" width="348" height="7" rx="3.5" fill="#1e293b"/>
-    <rect x="0" y="22" width="330" height="7" rx="3.5" fill="url(#tAccent)" filter="url(#tGlow)">
-      <animate attributeName="width" values="240;330;310;330" dur="5s" repeatCount="indefinite"/>
-    </rect>
-
-    <g transform="translate(0, 44)">
-      <text x="0" y="14" fill="#e2e8f0" font-size="11.5" font-weight="700">Restaurant Manager POS (LAN)</text>
-      <text x="348" y="14" text-anchor="end" fill="#39d353" font-size="11.5" font-weight="800">39 Screens · 5 Roles</text>
-      <rect x="0" y="22" width="348" height="7" rx="3.5" fill="#1e293b"/>
-      <rect x="0" y="22" width="308" height="7" rx="3.5" fill="#39d353" filter="url(#tGlow)">
-        <animate attributeName="width" values="210;308;290;308" dur="5.6s" repeatCount="indefinite"/>
-      </rect>
-    </g>
-
-    <g transform="translate(0, 88)">
-      <text x="0" y="14" fill="#e2e8f0" font-size="11.5" font-weight="700">JustInTime Gig Marketplace</text>
-      <text x="348" y="14" text-anchor="end" fill="#a78bfa" font-size="11.5" font-weight="800">Real-Time Socket + M-Pesa</text>
-      <rect x="0" y="22" width="348" height="7" rx="3.5" fill="#1e293b"/>
-      <rect x="0" y="22" width="295" height="7" rx="3.5" fill="#a78bfa" filter="url(#tGlow)">
-        <animate attributeName="width" values="200;295;275;295" dur="4.8s" repeatCount="indefinite"/>
-      </rect>
-    </g>
-
-    <g transform="translate(0, 132)">
-      <text x="0" y="14" fill="#e2e8f0" font-size="11.5" font-weight="700">Concept Builders + Kampus + GVS</text>
-      <text x="348" y="14" text-anchor="end" fill="#f59e0b" font-size="11.5" font-weight="800">65MB+ Production Code</text>
-      <rect x="0" y="22" width="348" height="7" rx="3.5" fill="#1e293b"/>
-      <rect x="0" y="22" width="320" height="7" rx="3.5" fill="#f59e0b" filter="url(#tGlow)">
-        <animate attributeName="width" values="230;320;300;320" dur="6.2s" repeatCount="indefinite"/>
-      </rect>
-    </g>
+<!-- 4 Minimal Deep-Space Telemetry Pods -->
+<g transform="translate(108, 430)" font-family="ui-monospace,SFMono-Regular,JetBrains Mono,monospace">
+  <g transform="translate(0, 0)">
+    <rect width="228" height="78" rx="12" fill="#060e1c" fill-opacity="0.88" stroke="#f59e0b" stroke-opacity="0.45"/>
+    <text x="114" y="36" text-anchor="middle" fill="#fbbf24" font-size="28" font-weight="900">5,107+</text>
+    <text x="114" y="58" text-anchor="middle" fill="#94a3b8" font-size="10.5" font-weight="700" letter-spacing="1.5">COMMITS (+310% YoY)</text>
+  </g>
+  <g transform="translate(252, 0)">
+    <rect width="228" height="78" rx="12" fill="#060e1c" fill-opacity="0.88" stroke="#22d3ee" stroke-opacity="0.45"/>
+    <text x="114" y="36" text-anchor="middle" fill="#22d3ee" font-size="28" font-weight="900">117 / 124</text>
+    <text x="114" y="58" text-anchor="middle" fill="#94a3b8" font-size="10.5" font-weight="700" letter-spacing="1.5">PUBLIC REPOSITORIES</text>
+  </g>
+  <g transform="translate(504, 0)">
+    <rect width="228" height="78" rx="12" fill="#060e1c" fill-opacity="0.88" stroke="#10b981" stroke-opacity="0.45"/>
+    <text x="114" y="36" text-anchor="middle" fill="#34d399" font-size="28" font-weight="900">6 LIVE</text>
+    <text x="114" y="58" text-anchor="middle" fill="#94a3b8" font-size="10.5" font-weight="700" letter-spacing="1.5">SAAS ECOSYSTEMS</text>
+  </g>
+  <g transform="translate(756, 0)">
+    <rect width="228" height="78" rx="12" fill="#060e1c" fill-opacity="0.88" stroke="#38bdf8" stroke-opacity="0.45"/>
+    <text x="114" y="36" text-anchor="middle" fill="#38bdf8" font-size="28" font-weight="900">99.98%</text>
+    <text x="114" y="58" text-anchor="middle" fill="#94a3b8" font-size="10.5" font-weight="700" letter-spacing="1.5">UPTIME · 0ms LAN POS</text>
   </g>
 </g>
 
-<!-- PANEL 3: 3D Orbital Language & Architecture Distribution (x=800..1172) -->
-<g transform="translate(800, 62)">
-  <rect width="372" height="224" rx="14" fill="#09101f" stroke="#a78bfa" stroke-opacity="0.32"/>
-  <text x="20" y="28" fill="#ddd6fe" font-family="ui-monospace,monospace" font-size="11" font-weight="800" letter-spacing="1.2">03 // CODEBASE &amp; INFRASTRUCTURE</text>
-
-  <!-- Animated Holographic Ring Gauge -->
-  <g transform="translate(96, 128)">
-    <circle r="62" fill="none" stroke="#1e293b" stroke-width="12"/>
-    <circle r="62" fill="none" stroke="#22d3ee" stroke-width="12" stroke-dasharray="310 390" stroke-linecap="round" filter="url(#tGlow)">
-      <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="14s" repeatCount="indefinite"/>
-    </circle>
-    <circle r="44" fill="none" stroke="#39d353" stroke-width="6" stroke-dasharray="180 280" stroke-linecap="round">
-      <animateTransform attributeName="transform" type="rotate" from="360" to="0" dur="9s" repeatCount="indefinite"/>
-    </circle>
-    <text text-anchor="middle" y="4" fill="#f8fafc" font-family="ui-monospace,monospace" font-size="18" font-weight="900">92%</text>
-    <text text-anchor="middle" y="19" fill="#67e8f9" font-family="ui-monospace,monospace" font-size="8.5" font-weight="700">TYPESCRIPT</text>
-  </g>
-
-  <!-- Right Legend -->
-  <g transform="translate(182, 62)" font-family="ui-monospace,monospace" font-size="11">
-    <circle cx="8" cy="10" r="4" fill="#22d3ee"/>
-    <text x="20" y="14" fill="#f8fafc" font-weight="700">TypeScript / Next</text>
-    <text x="170" y="14" text-anchor="end" fill="#22d3ee" font-weight="800">94 Repos</text>
-
-    <circle cx="8" cy="42" r="4" fill="#39d353"/>
-    <text x="20" y="46" fill="#f8fafc" font-weight="700">Node / Socket.IO</text>
-    <text x="170" y="46" text-anchor="end" fill="#39d353" font-weight="800">18 Repos</text>
-
-    <circle cx="8" cy="74" r="4" fill="#a78bfa"/>
-    <text x="20" y="78" fill="#f8fafc" font-weight="700">Prisma + Postgres</text>
-    <text x="170" y="78" text-anchor="end" fill="#a78bfa" font-weight="800">150+ Tbls</text>
-
-    <circle cx="8" cy="106" r="4" fill="#f59e0b"/>
-    <text x="20" y="110" fill="#f8fafc" font-weight="700">M-Pesa / FinTech</text>
-    <text x="170" y="110" text-anchor="end" fill="#f59e0b" font-weight="800">12 Live</text>
-
-    <circle cx="8" cy="138" r="4" fill="#f43f5e"/>
-    <text x="20" y="142" fill="#f8fafc" font-weight="700">Expo / Electron</text>
-    <text x="170" y="142" text-anchor="end" fill="#f43f5e" font-weight="800">Cross-OS</text>
-  </g>
-</g>
+<rect x="1" y="1" width="{width - 2}" height="{height - 2}" rx="21" fill="none" stroke="#1e293b" stroke-width="1.5"/>
 </svg>
 '''
-    (ASSETS / "telemetry-3d.svg").write_text(svg, encoding="utf-8")
-    print("telemetry-3d.svg generated.")
+    (ASSETS / "hero-3d.svg").write_text(svg, encoding="utf-8")
+    print("hero-3d.svg (Black Hole Singularity) generated.")
 
 
 # ---------------------------------------------------------------------------
-# 3. PROJECT-CONSTELLATION-3D.SVG: 60fps 3D Isometric Production Ecosystem
+# 2. 6 IMPRESSIVE 3D HOLOGRAPHIC SPACE CARDS (card-01.svg .. card-06.svg)
 # ---------------------------------------------------------------------------
 
-def generate_constellation_3d_svg() -> None:
-    nodes = [
-        (210, 118, "01 // AFYVIA · PHARMACARE OS", "57 Prisma Models · 4 Portals · FEFO + AI Triage", "afyvia.gtss.software", "#39d353"),
-        (990, 118, "02 // JUSTINTIME MARKETPLACE", "Geo-Match · Socket.IO Proposals · M-Pesa Escrow", "justintime.gtss.software", "#22d3ee"),
-        (170, 260, "03 // RESTAURANT MANAGER POS", "39 Screens · 5 Roles · 0ms LAN Offline-First KDS", "hotel-intranet (LAN + Cloud)", "#f59e0b"),
-        (1030, 260, "04 // KAMPUS &amp; MOI MASHINANI", "React Native · Expo · Campus P2P Marketplace", "moimashinani.gtss.software", "#a78bfa"),
-        (230, 392, "05 // CONCEPT BUILDERS", "33MB CAD/3D Plan Store · Live Client Sockets", "conceptbuilders.co.ke", "#38bdf8"),
-        (970, 392, "06 // GERMAN VIRTUAL SCHOOL", "CEFR A1–C2 Live Cohorts · Real-Time Class Sync", "germanvirtualschool.com", "#f43f5e"),
+def make_3d_wireframe_keyframes(kind: str, cx: float, cy: float, keyframes: int = 30) -> list[str]:
+    paths: list[str] = []
+    for f in range(keyframes + 1):
+        angle = (f % keyframes) / keyframes * 2.0 * math.pi
+        segs: list[str] = []
+
+        if kind == "helix":
+            # 3D Double Helix for Healthcare OS (Afyvia)
+            n = 14
+            strand1, strand2 = [], []
+            for i in range(n):
+                t = (i / (n - 1)) * 2.0 - 1.0
+                theta = t * math.pi * 1.35 + angle
+                x1, y1, z1 = rotate_3d(0.75 * math.cos(theta), t * 1.15, 0.75 * math.sin(theta), 0.25, 0.0, 0.2)
+                x2, y2, z2 = rotate_3d(-0.75 * math.cos(theta), t * 1.15, -0.75 * math.sin(theta), 0.25, 0.0, 0.2)
+                p1 = project_3d(x1, y1, z1, cx, cy, fov=155.0, dist=3.6)
+                p2 = project_3d(x2, y2, z2, cx, cy, fov=155.0, dist=3.6)
+                strand1.append(p1)
+                strand2.append(p2)
+                if i % 2 == 0:
+                    segs.append(f"M{p1[0]:.1f},{p1[1]:.1f}L{p2[0]:.1f},{p2[1]:.1f}")
+            for i in range(n - 1):
+                segs.append(f"M{strand1[i][0]:.1f},{strand1[i][1]:.1f}L{strand1[i+1][0]:.1f},{strand1[i+1][1]:.1f}")
+                segs.append(f"M{strand2[i][0]:.1f},{strand2[i][1]:.1f}L{strand2[i+1][0]:.1f},{strand2[i+1][1]:.1f}")
+
+        elif kind == "sphere":
+            # 3D Geodesic Octa-Sphere for JustInTime Marketplace
+            for ring in range(3):
+                pts = []
+                for k in range(20):
+                    th = (k / 20) * 2.0 * math.pi
+                    if ring == 0:
+                        vx, vy, vz = math.cos(th), math.sin(th), 0.0
+                    elif ring == 1:
+                        vx, vy, vz = math.cos(th), 0.0, math.sin(th)
+                    else:
+                        vx, vy, vz = 0.0, math.cos(th), math.sin(th)
+                    rx, ry, rz = rotate_3d(vx, vy, vz, 0.5 + angle * 0.5, angle, 0.3)
+                    px, py, _ = project_3d(rx, ry, rz, cx, cy, fov=155.0, dist=3.5)
+                    pts.append(f"{'M' if k == 0 else 'L'}{px:.1f},{py:.1f}")
+                pts.append("Z")
+                segs.append("".join(pts))
+
+        elif kind == "tesseract":
+            # 3D Nested Cube / LAN Mesh for Restaurant Manager POS
+            verts = []
+            for s in (0.95, 0.48):
+                for dx in (-s, s):
+                    for dy in (-s, s):
+                        for dz in (-s, s):
+                            rx, ry, rz = rotate_3d(dx, dy, dz, 0.55, angle, angle * 0.5)
+                            verts.append(project_3d(rx, ry, rz, cx, cy, fov=145.0, dist=3.8))
+            cube_edges = [
+                (0, 1), (1, 3), (3, 2), (2, 0),
+                (4, 5), (5, 7), (7, 6), (6, 4),
+                (0, 4), (1, 5), (2, 6), (3, 7),
+            ]
+            for base in (0, 8):
+                for u, v in cube_edges:
+                    p1, p2 = verts[base + u], verts[base + v]
+                    segs.append(f"M{p1[0]:.1f},{p1[1]:.1f}L{p2[0]:.1f},{p2[1]:.1f}")
+            for i in range(8):
+                p1, p2 = verts[i], verts[i + 8]
+                segs.append(f"M{p1[0]:.1f},{p1[1]:.1f}L{p2[0]:.1f},{p2[1]:.1f}")
+
+        elif kind == "gyro":
+            # 3D Twin-Star Gyroscope for Kampus & Moi Mashinani
+            for r_scale, ax_m, ay_m in ((1.05, 1.0, 1.0), (0.78, -1.0, 1.5), (0.52, 1.5, -1.0)):
+                pts = []
+                for k in range(24):
+                    th = (k / 24) * 2.0 * math.pi
+                    rx, ry, rz = rotate_3d(r_scale * math.cos(th), r_scale * math.sin(th), 0.0, angle * ax_m + 0.6, angle * ay_m, 0.4)
+                    px, py, _ = project_3d(rx, ry, rz, cx, cy, fov=155.0, dist=3.5)
+                    pts.append(f"{'M' if k == 0 else 'L'}{px:.1f},{py:.1f}")
+                pts.append("Z")
+                segs.append("".join(pts))
+
+        elif kind == "tower":
+            # 3D Architectural Prism Structure for Concept Builders
+            raw_v = [
+                (-0.8, 0.9, -0.8), (0.8, 0.9, -0.8), (0.8, 0.9, 0.8), (-0.8, 0.9, 0.8),
+                (-0.55, -0.2, -0.55), (0.55, -0.2, -0.55), (0.55, -0.2, 0.55), (-0.55, -0.2, 0.55),
+                (0.0, -1.1, 0.0),
+            ]
+            pverts = [
+                project_3d(*rotate_3d(vx, vy, vz, 0.38, angle, 0.0), cx, cy, fov=155.0, dist=3.6)
+                for vx, vy, vz in raw_v
+            ]
+            edges = [
+                (0, 1), (1, 2), (2, 3), (3, 0),
+                (4, 5), (5, 6), (6, 7), (7, 4),
+                (0, 4), (1, 5), (2, 6), (3, 7),
+                (4, 8), (5, 8), (6, 8), (7, 8),
+            ]
+            for u, v in edges:
+                segs.append(f"M{pverts[u][0]:.1f},{pverts[u][1]:.1f}L{pverts[v][0]:.1f},{pverts[v][1]:.1f}")
+
+        else:
+            # 3D Hexagonal Bipyramid Crystal for German Virtual School
+            raw_v = [(0.0, -1.1, 0.0), (0.0, 1.1, 0.0)]
+            for k in range(6):
+                th = (k / 6) * 2.0 * math.pi
+                raw_v.append((0.95 * math.cos(th), 0.0, 0.95 * math.sin(th)))
+            pverts = [
+                project_3d(*rotate_3d(vx, vy, vz, 0.45, angle, 0.25), cx, cy, fov=155.0, dist=3.6)
+                for vx, vy, vz in raw_v
+            ]
+            for k in range(6):
+                curr_i = 2 + k
+                next_i = 2 + ((k + 1) % 6)
+                segs.append(f"M{pverts[curr_i][0]:.1f},{pverts[curr_i][1]:.1f}L{pverts[next_i][0]:.1f},{pverts[next_i][1]:.1f}")
+                segs.append(f"M{pverts[0][0]:.1f},{pverts[0][1]:.1f}L{pverts[curr_i][0]:.1f},{pverts[curr_i][1]:.1f}")
+                segs.append(f"M{pverts[1][0]:.1f},{pverts[1][1]:.1f}L{pverts[curr_i][0]:.1f},{pverts[curr_i][1]:.1f}")
+
+        paths.append("".join(segs))
+    return paths
+
+
+def generate_space_cards() -> None:
+    cards_spec = [
+        (
+            "card-01.svg",
+            "01 // HEALTHCARE OS",
+            "AFYVIA · PHARMACARE",
+            "Multi-Tenant Pharmacy &amp; Patient Cloud",
+            [("57", "PRISMA MODELS"), ("308", "APP ROUTES"), ("4", "PORTALS")],
+            ["NEXT.JS 16", "POSTGRESQL", "GROQ AI", "M-PESA"],
+            "#10b981",
+            "helix",
+            101,
+        ),
+        (
+            "card-02.svg",
+            "02 // GIG MARKETPLACE",
+            "JUSTINTIME",
+            "Real-Time Local Dispatch &amp; Escrow",
+            [("22MB", "CODEBASE"), ("4", "RBAC ROLES"), ("LIVE", "SOCKET.IO")],
+            ["NEXT.JS", "SOCKET.IO", "PRISMA", "M-PESA STK"],
+            "#22d3ee",
+            "sphere",
+            202,
+        ),
+        (
+            "card-03.svg",
+            "03 // OFFLINE-FIRST POS",
+            "RESTAURANT MANAGER",
+            "Zero-Internet LAN Hospitality Intranet",
+            [("39", "POS SCREENS"), ("5", "STAFF ROLES"), ("0ms", "CLOUD DEP.")],
+            ["ELECTRON", "NODE.JS", "SOCKET.IO", "LAN WIFI"],
+            "#f59e0b",
+            "tesseract",
+            303,
+        ),
+        (
+            "card-04.svg",
+            "04 // CAMPUS ECOSYSTEM",
+            "KAMPUS &amp; MASHINANI",
+            "Mobile Social Network &amp; P2P Market",
+            [("18MB+", "ECOSYSTEM"), ("iOS/AND", "NATIVE EXPO"), ("P2P", "COMMERCE")],
+            ["REACT NATIVE", "EXPO", "NEXT.JS", "POSTGRESQL"],
+            "#38bdf8",
+            "gyro",
+            404,
+        ),
+        (
+            "card-05.svg",
+            "05 // ARCHITECTURAL CAD",
+            "CONCEPT BUILDERS",
+            "3D House Plans &amp; Live Client Studio",
+            [("35MB", "PLATFORM"), ("LIVE", "PRESENCE"), ("CAD", "PIPELINE")],
+            ["NEXT.JS", "TYPESCRIPT", "SOCKET.IO", "PRISMA"],
+            "#fbbf24",
+            "tower",
+            505,
+        ),
+        (
+            "card-06.svg",
+            "06 // LIVE EDTECH OS",
+            "GERMAN VIRTUAL SCHOOL",
+            "Interactive Classrooms &amp; Cohort ERP",
+            [("A1–C2", "6 CEFR TIERS"), ("LIVE", "CLASS SYNC"), ("3", "PORTALS")],
+            ["NEXT.JS", "SOCKET.IO", "PRISMA", "WEBRTC"],
+            "#34d399",
+            "crystal",
+            606,
+        ),
     ]
 
-    cx, cy = 600, 250
-    conduits = []
-    cards = []
+    for filename, badge, title, subtitle, metrics, tags, accent, shape_kind, seed in cards_spec:
+        w, h = 580, 245
+        holo_cx, holo_cy = 482.0, 118.0
+        wire_paths = make_3d_wireframe_keyframes(shape_kind, holo_cx, holo_cy)
+        stars = starfield_svg(w, h, count=36, seed=seed)
 
-    for idx, (nx, ny, title, metrics, url, color) in enumerate(nodes):
-        # Curved 3D Bezier Conduit from center reactor to node
-        ctrl_x = (cx + nx) * 0.5
-        ctrl_y = cy + (ny - cy) * 0.25
-        path_id = f"conduit{idx}"
-        d_str = f"M{cx},{cy} Q{ctrl_x:.1f},{ctrl_y:.1f} {nx},{ny}"
-        conduits.append(
-            f'<path id="{path_id}" d="{d_str}" fill="none" stroke="{color}" stroke-width="1.8" stroke-opacity="0.32" stroke-dasharray="6 8"/>'
-            f'<circle r="4" fill="{color}" filter="url(#cGlow)">'
-            f'<animateMotion dur="{2.6 + idx * 0.35:.2f}s" repeatCount="indefinite"><mpath href="#{path_id}"/></animateMotion>'
-            f'</circle>'
-            f'<circle r="3" fill="#ffffff">'
-            f'<animateMotion dur="{2.6 + idx * 0.35:.2f}s" begin="-1.3s" repeatCount="indefinite"><mpath href="#{path_id}"/></animateMotion>'
-            f'</circle>'
-        )
+        metrics_svg = []
+        for idx, (m_val, m_lbl) in enumerate(metrics):
+            mx = 26 + idx * 116
+            metrics_svg.append(
+                f'<g transform="translate({mx}, 118)">'
+                f'<rect width="106" height="62" rx="10" fill="#071122" fill-opacity="0.9" stroke="{accent}" stroke-opacity="0.38"/>'
+                f'<text x="53" y="31" text-anchor="middle" fill="{accent}" font-family="ui-monospace,SFMono-Regular,JetBrains Mono,monospace" font-size="21" font-weight="900">{m_val}</text>'
+                f'<text x="53" y="49" text-anchor="middle" fill="#94a3b8" font-family="ui-monospace,SFMono-Regular,monospace" font-size="8.5" font-weight="700" letter-spacing="0.8">{m_lbl}</text>'
+                f'</g>'
+            )
 
-        # Node Card with 3D Isometric Pedestal Cube
-        card_w, card_h = 328, 86
-        card_x = nx - card_w // 2
-        card_y = ny - card_h // 2
-        cube_x = card_x + 28
-        cube_y = card_y + 54
-        cube = svg_3d_cube_faces(cube_x, cube_y, 26, 12, 18, color, "#0f172a", "#1e293b", color, 0.8)
+        tags_svg = []
+        tx = 26
+        for tag in tags:
+            tw = len(tag) * 7 + 18
+            tags_svg.append(
+                f'<rect x="{tx}" y="198" width="{tw}" height="24" rx="6" fill="#091528" stroke="#1e293b"/>'
+                f'<text x="{tx + tw // 2}" y="214" text-anchor="middle" fill="#cbd5e1" font-family="ui-monospace,SFMono-Regular,monospace" font-size="9.5" font-weight="700">{tag}</text>'
+            )
+            tx += tw + 8
 
-        cards.append(f'''
-        <g>
-          <rect x="{card_x}" y="{card_y}" width="{card_w}" height="{card_h}" rx="12" fill="#091121" fill-opacity="0.94" stroke="{color}" stroke-opacity="0.55" stroke-width="1.4"/>
-          {cube}
-          <text x="{card_x + 54}" y="{card_y + 28}" fill="{color}" font-family="ui-monospace,SFMono-Regular,monospace" font-size="11.5" font-weight="800" letter-spacing="0.8">{title}</text>
-          <text x="{card_x + 54}" y="{card_y + 49}" fill="#f1f5f9" font-family="Inter,ui-sans-serif,sans-serif" font-size="11.5" font-weight="600">{metrics}</text>
-          <text x="{card_x + 54}" y="{card_y + 69}" fill="#64748b" font-family="ui-monospace,SFMono-Regular,monospace" font-size="10.5">↗ {url}</text>
-        </g>''')
-
-    # Central 3D Isometric Multi-Layer Core
-    center_cubes = (
-        svg_3d_cube_faces(cx, cy + 36, 130, 62, 16, "#0f172a", "#090d16", "#050811", "#38bdf8", 0.5)
-        + svg_3d_cube_faces(cx, cy + 12, 104, 50, 16, "#0e4429", "#006d32", "#092e1c", "#39d353", 0.7)
-        + svg_3d_cube_faces(cx, cy - 12, 78, 38, 18, "#22d3ee", "#0284c7", "#0369a1", "#67e8f9", 0.9)
-    )
-
-    svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="465" viewBox="0 0 1200 465" role="img" aria-label="3D Production Ecosystem Constellation">
+        svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}" viewBox="0 0 {w} {h}" role="img" aria-label="{title}">
 <defs>
-  <radialGradient id="cBg" cx="0.5" cy="0.54" r="0.65">
-    <stop offset="0%" stop-color="#0d1f38"/>
-    <stop offset="55%" stop-color="#081020"/>
-    <stop offset="100%" stop-color="#050811"/>
+  <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0%" stop-color="#040812"/>
+    <stop offset="60%" stop-color="#071020"/>
+    <stop offset="100%" stop-color="#03060d"/>
+  </linearGradient>
+  <radialGradient id="holoGlow" cx="0.83" cy="0.48" r="0.32">
+    <stop offset="0%" stop-color="{accent}" stop-opacity="0.24"/>
+    <stop offset="100%" stop-color="#03060d" stop-opacity="0"/>
   </radialGradient>
-  <filter id="cGlow" x="-30%" y="-30%" width="160%" height="160%">
+  <filter id="glow" x="-25%" y="-25%" width="150%" height="150%">
+    <feGaussianBlur stdDeviation="3" result="b"/>
+    <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+</defs>
+
+<rect width="{w}" height="{h}" rx="18" fill="url(#bg)"/>
+<rect width="{w}" height="{h}" rx="18" fill="url(#holoGlow)"/>
+
+<!-- Starfield -->
+<g>{stars}</g>
+
+<!-- Top Neon Rim Bar -->
+<path d="M 28 1.5 H 260" stroke="{accent}" stroke-width="2.5"/>
+
+<!-- Right Side 3D Hologram Pedestal & Rotating 3D Wireframe -->
+<g>
+  <circle cx="{holo_cx}" cy="{holo_cy}" r="74" fill="none" stroke="{accent}" stroke-opacity="0.18" stroke-dasharray="5 9"/>
+  <ellipse cx="{holo_cx}" cy="{holo_cy + 74}" rx="54" ry="12" fill="none" stroke="{accent}" stroke-opacity="0.35" stroke-dasharray="6 6"/>
+  <path fill="none" stroke="{accent}" stroke-width="1.65" stroke-linejoin="round" filter="url(#glow)">
+    <animate attributeName="d" values="{";".join(wire_paths)}" dur="9s" repeatCount="indefinite"/>
+  </path>
+</g>
+
+<!-- Left Side Content -->
+<g font-family="Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif">
+  <circle cx="34" cy="31" r="4" fill="{accent}"/>
+  <text x="46" y="35" fill="{accent}" font-family="ui-monospace,SFMono-Regular,monospace" font-size="11" font-weight="800" letter-spacing="1.4">{badge}</text>
+
+  <text x="26" y="72" fill="#ffffff" font-size="25" font-weight="900" letter-spacing="-0.5">{title}</text>
+  <text x="26" y="96" fill="#94a3b8" font-size="13" font-weight="500">{subtitle}</text>
+
+  {"".join(metrics_svg)}
+  {"".join(tags_svg)}
+</g>
+
+<rect x="1" y="1" width="{w - 2}" height="{h - 2}" rx="17" fill="none" stroke="{accent}" stroke-opacity="0.32" stroke-width="1.2"/>
+</svg>
+'''
+        (ASSETS / filename).write_text(svg, encoding="utf-8")
+        print(f"{filename} generated.")
+
+
+# ---------------------------------------------------------------------------
+# 3. SPACE-ORBIT-STACK.SVG: Single Focused 3D Orbital Solar System of Tech
+# ---------------------------------------------------------------------------
+
+def generate_space_orbit_svg() -> None:
+    width, height = 1200, 320
+    cx, cy = 600, 165
+    stars = starfield_svg(width, height, count=85, seed=909)
+
+    svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img" aria-label="3D Orbital Engineering Stack">
+<defs>
+  <radialGradient id="sBg" cx="0.5" cy="0.52" r="0.65">
+    <stop offset="0%" stop-color="#0b192e"/>
+    <stop offset="55%" stop-color="#050a15"/>
+    <stop offset="100%" stop-color="#02040a"/>
+  </radialGradient>
+  <filter id="sGlow" x="-30%" y="-30%" width="160%" height="160%">
     <feGaussianBlur stdDeviation="4" result="b"/>
     <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
   </filter>
 </defs>
 
-<rect width="1200" height="465" rx="20" fill="url(#cBg)" stroke="#1e293b" stroke-width="1.5"/>
+<rect width="{width}" height="{height}" rx="20" fill="url(#sBg)" stroke="#16243d" stroke-width="1.5"/>
+<g>{stars}</g>
 
-<!-- Header -->
-<g font-family="ui-monospace,SFMono-Regular,monospace" font-size="11.5" font-weight="800" letter-spacing="1.5">
-  <text x="36" y="34" fill="#94a3b8">3D PRODUCTION CONSTELLATION  //  FLAGSHIP MULTI-TENANT &amp; OFFLINE-FIRST ECOSYSTEMS</text>
-  <text x="1164" y="34" text-anchor="end" fill="#22d3ee">GTSS CORE ENGINE</text>
-</g>
-<line x1="28" y1="48" x2="1172" y2="48" stroke="#1e293b"/>
-
-<!-- Central Orbital Radar Rings -->
-<g transform="translate({cx}, {cy})" fill="none">
-  <ellipse rx="210" ry="115" stroke="#38bdf8" stroke-opacity="0.14" stroke-width="1.2" stroke-dasharray="8 8"/>
-  <ellipse rx="150" ry="82" stroke="#39d353" stroke-opacity="0.20" stroke-width="1.2" stroke-dasharray="14 6"/>
-  <circle r="118" stroke="#22d3ee" stroke-opacity="0.18" stroke-dasharray="6 12">
-    <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="20s" repeatCount="indefinite"/>
-  </circle>
-  <circle r="86" stroke="#a78bfa" stroke-opacity="0.25" stroke-dasharray="18 10">
-    <animateTransform attributeName="transform" type="rotate" from="360" to="0" dur="12s" repeatCount="indefinite"/>
-  </circle>
+<!-- 3 Tilted 3D Orbital Tracks -->
+<g fill="none">
+  <path id="orbitInner" d="M 410 165 A 190 48 0 1 0 790 165 A 190 48 0 1 0 410 165" stroke="#f59e0b" stroke-opacity="0.25" stroke-width="1.2" stroke-dasharray="6 8"/>
+  <path id="orbitMid" d="M 280 165 A 320 78 0 1 1 920 165 A 320 78 0 1 1 280 165" stroke="#22d3ee" stroke-opacity="0.22" stroke-width="1.2" stroke-dasharray="8 10"/>
+  <path id="orbitOuter" d="M 150 165 A 450 108 0 1 0 1050 165 A 450 108 0 1 0 150 165" stroke="#10b981" stroke-opacity="0.20" stroke-width="1.2" stroke-dasharray="10 12"/>
 </g>
 
-<!-- Animated 3D Conduits & Data Packets -->
-{"".join(conduits)}
-
-<!-- Central 3D Stacked Isometric Reactor -->
-<g filter="url(#cGlow)">
-  {center_cubes}
-  <animateTransform attributeName="transform" type="translate" values="0,0; 0,-7; 0,0" dur="3.4s" repeatCount="indefinite"/>
+<!-- Central Gravity Star -->
+<g transform="translate({cx}, {cy})">
+  <circle r="44" fill="#071426" stroke="#fbbf24" stroke-width="2.2" filter="url(#sGlow)"/>
+  <circle r="52" fill="none" stroke="#22d3ee" stroke-opacity="0.4" stroke-dasharray="4 8"/>
+  <text y="-3" text-anchor="middle" fill="#ffffff" font-family="ui-monospace,SFMono-Regular,monospace" font-size="13" font-weight="900">92% TS</text>
+  <text y="14" text-anchor="middle" fill="#fbbf24" font-family="ui-monospace,SFMono-Regular,monospace" font-size="9.5" font-weight="700">CORE ENGINE</text>
 </g>
-<text x="{cx}" y="{cy + 66}" text-anchor="middle" fill="#f8fafc" font-family="ui-monospace,monospace" font-size="13" font-weight="900" letter-spacing="2">GTSS · NEXUS</text>
-<text x="{cx}" y="{cy + 82}" text-anchor="middle" fill="#39d353" font-family="ui-monospace,monospace" font-size="10" font-weight="700">6 LIVE PLATFORMS</text>
 
-<!-- 6 Flagship System Cards -->
-{"".join(cards)}
-</svg>
-'''
-    (ASSETS / "project-constellation-3d.svg").write_text(svg, encoding="utf-8")
-    print("project-constellation-3d.svg generated.")
-
-
-# ---------------------------------------------------------------------------
-# 4. ARCHITECTURE-3D.SVG: 60fps 3D Isometric Exploded Stack & Execution Loop
-# ---------------------------------------------------------------------------
-
-def generate_architecture_3d_svg() -> None:
-    def iso_plane(cx: float, cy: float, w: float, h: float, thickness: float, top_fill: str, side_fill: str, stroke: str) -> str:
-        hw, hh = w * 0.5, h * 0.5
-        top = f"M{cx},{cy - hh} L{cx + hw},{cy} L{cx},{cy + hh} L{cx - hw},{cy} Z"
-        left = f"M{cx - hw},{cy} L{cx},{cy + hh} L{cx},{cy + hh + thickness} L{cx - hw},{cy + thickness} Z"
-        right = f"M{cx},{cy + hh} L{cx + hw},{cy} L{cx + hw},{cy + thickness} L{cx},{cy + hh + thickness} Z"
-        return (
-            f'<path d="{left}" fill="{side_fill}" stroke="{stroke}" stroke-opacity="0.5"/>'
-            f'<path d="{right}" fill="{side_fill}" stroke="{stroke}" stroke-opacity="0.65"/>'
-            f'<path d="{top}" fill="{top_fill}" stroke="{stroke}" stroke-width="1.6"/>'
-        )
-
-    px = 285
-    p1 = iso_plane(px, 118, 390, 96, 14, "#0c1f38", "#071324", "#22d3ee")
-    p2 = iso_plane(px, 212, 390, 96, 14, "#0b2622", "#061715", "#39d353")
-    p3 = iso_plane(px, 306, 390, 96, 14, "#191536", "#0e0b20", "#a78bfa")
-
-    svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="390" viewBox="0 0 1200 390" role="img" aria-label="3D Exploded Isometric Architecture and Execution Pipeline">
-<defs>
-  <linearGradient id="aBg" x1="0" y1="0" x2="1" y2="1">
-    <stop offset="0%" stop-color="#050811"/>
-    <stop offset="100%" stop-color="#0a1224"/>
-  </linearGradient>
-  <filter id="aGlow" x="-25%" y="-25%" width="150%" height="150%">
-    <feGaussianBlur stdDeviation="3.5" result="b"/>
-    <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-  </filter>
-</defs>
-
-<rect width="1200" height="390" rx="20" fill="url(#aBg)" stroke="#1e293b" stroke-width="1.5"/>
-
-<!-- Header -->
-<g font-family="ui-monospace,SFMono-Regular,monospace" font-size="11.5" font-weight="800" letter-spacing="1.5">
-  <text x="36" y="34" fill="#94a3b8">3D ISOMETRIC SYSTEM ARCHITECTURE  //  FULL-STACK EXECUTION TOPOLOGY</text>
-  <text x="1164" y="34" text-anchor="end" fill="#a78bfa">ZERO-SINGLE-POINT-OF-FAILURE</text>
-</g>
-<line x1="28" y1="48" x2="1172" y2="48" stroke="#1e293b"/>
-
-<!-- LEFT: 3D Exploded Isometric 3-Layer Stack -->
-<g>
-  <!-- Vertical Laser Conduits Connecting Isometric Layers -->
-  <g stroke="#38bdf8" stroke-opacity="0.35" stroke-width="1.4" stroke-dasharray="4 6">
-    <line x1="150" y1="118" x2="150" y2="306"/>
-    <line x1="285" y1="70" x2="285" y2="354"/>
-    <line x1="420" y1="118" x2="420" y2="306"/>
-  </g>
-
-  <!-- Plane 3 (Bottom): Data & FinTech Core -->
+<!-- Orbiting Tech Satellites (Smooth 60fps Motion Along Elliptical Orbits) -->
+<g font-family="ui-monospace,SFMono-Regular,JetBrains Mono,monospace" font-size="10.5" font-weight="800" text-anchor="middle">
+  <!-- Inner Orbit Satellites -->
   <g>
-    {p3}
-    <text x="{px}" y="302" text-anchor="middle" fill="#ddd6fe" font-family="ui-monospace,monospace" font-size="12" font-weight="900">LAYER 03 // DATA &amp; FINTECH CORE</text>
-    <text x="{px}" y="321" text-anchor="middle" fill="#a78bfa" font-family="ui-monospace,monospace" font-size="10" font-weight="700">PostgreSQL · 57-Model Prisma · M-Pesa STK · R2</text>
+    <circle r="5.5" fill="#fbbf24" filter="url(#sGlow)"/>
+    <text x="0" y="-12" fill="#fef08a">NEXT.JS 16 · REACT 19</text>
+    <animateMotion dur="14s" repeatCount="indefinite"><mpath href="#orbitInner"/></animateMotion>
   </g>
-
-  <!-- Plane 2 (Middle): Real-Time & Intelligence Mesh -->
   <g>
-    {p2}
-    <text x="{px}" y="208" text-anchor="middle" fill="#d1fae5" font-family="ui-monospace,monospace" font-size="12" font-weight="900">LAYER 02 // REAL-TIME &amp; AI MESH</text>
-    <text x="{px}" y="227" text-anchor="middle" fill="#39d353" font-family="ui-monospace,monospace" font-size="10" font-weight="700">Socket.IO · Offline LAN Sync · Groq AI · RBAC</text>
+    <circle r="5.5" fill="#fbbf24" filter="url(#sGlow)"/>
+    <text x="0" y="-12" fill="#fef08a">PRISMA · POSTGRESQL</text>
+    <animateMotion dur="14s" begin="-7s" repeatCount="indefinite"><mpath href="#orbitInner"/></animateMotion>
   </g>
 
-  <!-- Plane 1 (Top): Edge & Client Surfaces -->
+  <!-- Mid Orbit Satellites -->
   <g>
-    {p1}
-    <text x="{px}" y="114" text-anchor="middle" fill="#cffafe" font-family="ui-monospace,monospace" font-size="12" font-weight="900">LAYER 01 // CLIENT &amp; 3D EDGE</text>
-    <text x="{px}" y="133" text-anchor="middle" fill="#22d3ee" font-family="ui-monospace,monospace" font-size="10" font-weight="700">Next.js 16 · React 19 · Expo · Electron · WebGL</text>
+    <circle r="5.5" fill="#22d3ee" filter="url(#sGlow)"/>
+    <text x="0" y="-12" fill="#bae6fd">SOCKET.IO · OFFLINE LAN</text>
+    <animateMotion dur="20s" repeatCount="indefinite"><mpath href="#orbitMid"/></animateMotion>
+  </g>
+  <g>
+    <circle r="5.5" fill="#22d3ee" filter="url(#sGlow)"/>
+    <text x="0" y="-12" fill="#bae6fd">M-PESA DARAJA · FINTECH</text>
+    <animateMotion dur="20s" begin="-10s" repeatCount="indefinite"><mpath href="#orbitMid"/></animateMotion>
   </g>
 
-  <!-- Animated Vertical Data Pulses Between 3D Layers -->
-  <circle cx="150" r="4" fill="#22d3ee" filter="url(#aGlow)">
-    <animate attributeName="cy" values="118;306;118" dur="3.2s" repeatCount="indefinite"/>
-  </circle>
-  <circle cx="285" r="4.5" fill="#39d353" filter="url(#aGlow)">
-    <animate attributeName="cy" values="354;70;354" dur="2.8s" repeatCount="indefinite"/>
-  </circle>
-  <circle cx="420" r="4" fill="#a78bfa" filter="url(#aGlow)">
-    <animate attributeName="cy" values="118;306;118" dur="3.6s" begin="-1.4s" repeatCount="indefinite"/>
-  </circle>
-</g>
-
-<!-- RIGHT: 4-Stage Engineering & Production Loop (x=540..1168) -->
-<g transform="translate(540, 68)">
-  <!-- Stage 01 -->
-  <g transform="translate(0, 0)">
-    <rect width="300" height="138" rx="14" fill="#091121" stroke="#39d353" stroke-opacity="0.45"/>
-    <text x="20" y="30" fill="#39d353" font-family="ui-monospace,monospace" font-size="12" font-weight="900">01 // WORKFLOW DECONSTRUCTION</text>
-    <text x="20" y="56" fill="#f8fafc" font-family="Inter,sans-serif" font-size="14" font-weight="700">Map real operational bottlenecks</text>
-    <text x="20" y="78" fill="#94a3b8" font-family="Inter,sans-serif" font-size="11.5">Pharmacist queues, kitchen tickets, M-Pesa</text>
-    <text x="20" y="96" fill="#94a3b8" font-family="Inter,sans-serif" font-size="11.5">callbacks &amp; multi-tenant permissions.</text>
-    <text x="20" y="122" fill="#86efac" font-family="ui-monospace,monospace" font-size="10.5" font-weight="700">✓ 100% Domain-First Schema Design</text>
+  <!-- Outer Orbit Satellites -->
+  <g>
+    <circle r="5.5" fill="#34d399" filter="url(#sGlow)"/>
+    <text x="0" y="-12" fill="#a7f3d0">REACT NATIVE · EXPO · ELECTRON</text>
+    <animateMotion dur="26s" repeatCount="indefinite"><mpath href="#orbitOuter"/></animateMotion>
   </g>
-
-  <!-- Stage 02 -->
-  <g transform="translate(320, 0)">
-    <rect width="308" height="138" rx="14" fill="#091121" stroke="#22d3ee" stroke-opacity="0.45"/>
-    <text x="20" y="30" fill="#22d3ee" font-family="ui-monospace,monospace" font-size="12" font-weight="900">02 // TYPE-SAFE CORE &amp; RBAC</text>
-    <text x="20" y="56" fill="#f8fafc" font-family="Inter,sans-serif" font-size="14" font-weight="700">End-to-end strict contracts</text>
-    <text x="20" y="78" fill="#94a3b8" font-family="Inter,sans-serif" font-size="11.5">Prisma + PostgreSQL + Zod + Server Actions</text>
-    <text x="20" y="96" fill="#94a3b8" font-family="Inter,sans-serif" font-size="11.5">with strict tenant &amp; role isolation.</text>
-    <text x="20" y="122" fill="#67e8f9" font-family="ui-monospace,monospace" font-size="10.5" font-weight="700">✓ 150+ Production DB Models Shipped</text>
-  </g>
-
-  <!-- Stage 03 -->
-  <g transform="translate(0, 156)">
-    <rect width="300" height="138" rx="14" fill="#091121" stroke="#f59e0b" stroke-opacity="0.45"/>
-    <text x="20" y="30" fill="#f59e0b" font-family="ui-monospace,monospace" font-size="12" font-weight="900">03 // OFFLINE &amp; FAILURE RESILIENCE</text>
-    <text x="20" y="56" fill="#f8fafc" font-family="Inter,sans-serif" font-size="14" font-weight="700">Survives zero-internet &amp; retries</text>
-    <text x="20" y="78" fill="#94a3b8" font-family="Inter,sans-serif" font-size="11.5">Local-network Socket.IO rooms, idempotent</text>
-    <text x="20" y="96" fill="#94a3b8" font-family="Inter,sans-serif" font-size="11.5">webhook reconciliation &amp; state recovery.</text>
-    <text x="20" y="122" fill="#fcd34d" font-family="ui-monospace,monospace" font-size="10.5" font-weight="700">✓ 0ms Cloud Dependency on LAN POS</text>
-  </g>
-
-  <!-- Stage 04 -->
-  <g transform="translate(320, 156)">
-    <rect width="308" height="138" rx="14" fill="#091121" stroke="#a78bfa" stroke-opacity="0.45"/>
-    <text x="20" y="30" fill="#a78bfa" font-family="ui-monospace,monospace" font-size="12" font-weight="900">04 // AI-ACCELERATED SHIPPING</text>
-    <text x="20" y="56" fill="#f8fafc" font-family="Inter,sans-serif" font-size="14" font-weight="700">High-velocity autonomous delivery</text>
-    <text x="20" y="78" fill="#94a3b8" font-family="Inter,sans-serif" font-size="11.5">Agentic workflows + embedded AI features</text>
-    <text x="20" y="96" fill="#94a3b8" font-family="Inter,sans-serif" font-size="11.5">(Groq symptom triage, OCR/vision, CRM bots).</text>
-    <text x="20" y="122" fill="#ddd6fe" font-family="ui-monospace,monospace" font-size="10.5" font-weight="700">✓ 80+ Production Deployments Live</text>
+  <g>
+    <circle r="5.5" fill="#34d399" filter="url(#sGlow)"/>
+    <text x="0" y="-12" fill="#a7f3d0">GROQ AI · THREE.JS · LINUX VPS</text>
+    <animateMotion dur="26s" begin="-13s" repeatCount="indefinite"><mpath href="#orbitOuter"/></animateMotion>
   </g>
 </g>
 </svg>
 '''
     (ASSETS / "architecture-3d.svg").write_text(svg, encoding="utf-8")
-    print("architecture-3d.svg generated.")
+    print("architecture-3d.svg (Orbital Solar System) generated.")
 
 
 # ---------------------------------------------------------------------------
-# 5. FOOTER.SVG: 60fps 3D Perspective Synth-Grid Horizon Signature
+# 4. FOOTER.SVG: Planetary Limb Horizon Seen From Orbit
 # ---------------------------------------------------------------------------
 
 def generate_footer_svg() -> None:
-    svg = '''<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="130" viewBox="0 0 1200 130" role="img" aria-label="Engineered in Kenya. Built for real-world scale.">
+    stars = starfield_svg(1200, 140, count=45, seed=333)
+    svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="145" viewBox="0 0 1200 145" role="img" aria-label="Engineered in Kenya. Built for scale.">
 <defs>
-  <linearGradient id="fBg" x1="0" y1="0" x2="1" y2="0">
-    <stop offset="0%" stop-color="#050811"/>
-    <stop offset="50%" stop-color="#091326"/>
-    <stop offset="100%" stop-color="#050811"/>
+  <linearGradient id="fBg" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#02040a"/>
+    <stop offset="100%" stop-color="#071224"/>
   </linearGradient>
-  <linearGradient id="fLine" x1="0" y1="0" x2="1" y2="0">
-    <stop offset="0%" stop-color="#39d353" stop-opacity="0"/>
-    <stop offset="25%" stop-color="#39d353"/>
-    <stop offset="50%" stop-color="#22d3ee"/>
-    <stop offset="75%" stop-color="#a78bfa"/>
-    <stop offset="100%" stop-color="#a78bfa" stop-opacity="0"/>
+  <linearGradient id="planetRim" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0%" stop-color="#0284c7" stop-opacity="0"/>
+    <stop offset="25%" stop-color="#22d3ee" stop-opacity="0.85"/>
+    <stop offset="50%" stop-color="#fef08a" stop-opacity="1"/>
+    <stop offset="75%" stop-color="#10b981" stop-opacity="0.85"/>
+    <stop offset="100%" stop-color="#0284c7" stop-opacity="0"/>
   </linearGradient>
+  <filter id="rimGlow" x="-20%" y="-40%" width="140%" height="180%">
+    <feGaussianBlur stdDeviation="6" result="b"/>
+    <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
 </defs>
 
-<rect width="1200" height="130" rx="18" fill="url(#fBg)" stroke="#1e293b" stroke-width="1.5"/>
+<rect width="1200" height="145" rx="20" fill="url(#fBg)" stroke="#16243d" stroke-width="1.5"/>
+<g>{stars}</g>
 
-<!-- 3D Perspective Horizon Grid -->
-<g stroke="#22d3ee" stroke-opacity="0.14" stroke-width="1">
-  <line x1="0" y1="82" x2="1200" y2="82"/>
-  <line x1="0" y1="98" x2="1200" y2="98"/>
-  <line x1="0" y1="116" x2="1200" y2="116"/>
-  <line x1="600" y1="20" x2="80" y2="130"/>
-  <line x1="600" y1="20" x2="260" y2="130"/>
-  <line x1="600" y1="20" x2="430" y2="130"/>
-  <line x1="600" y1="20" x2="600" y2="130"/>
-  <line x1="600" y1="20" x2="770" y2="130"/>
-  <line x1="600" y1="20" x2="940" y2="130"/>
-  <line x1="600" y1="20" x2="1120" y2="130"/>
-</g>
+<!-- Curved Planetary Limb Horizon -->
+<path d="M -80 155 Q 600 45 1280 155 Z" fill="#030710"/>
+<path d="M -80 155 Q 600 45 1280 155" fill="none" stroke="url(#planetRim)" stroke-width="3.5" filter="url(#rimGlow)"/>
 
-<path d="M40 2 H1160" stroke="url(#fLine)" stroke-width="2"/>
-<circle r="4" cy="2" fill="#22d3ee">
-  <animate attributeName="cx" values="80;1120;80" dur="6s" repeatCount="indefinite"/>
+<!-- Orbiting Signal Beacon Crossing Horizon -->
+<circle r="4" fill="#fef08a" filter="url(#rimGlow)">
+  <animateMotion dur="8s" repeatCount="indefinite" path="M 80 132 Q 600 52 1120 132"/>
 </circle>
 
-<text x="600" y="54" text-anchor="middle" fill="#f8fafc" font-family="Inter,ui-sans-serif,system-ui,sans-serif" font-size="22" font-weight="800" letter-spacing="0.5">
-  ENGINEERED IN KENYA  ·  <tspan fill="#39d353">SHIPPED TO PRODUCTION</tspan>  ·  <tspan fill="#22d3ee">BUILT FOR SCALE</tspan>
+<text x="600" y="54" text-anchor="middle" fill="#ffffff" font-family="Inter,ui-sans-serif,system-ui,sans-serif" font-size="20" font-weight="900" letter-spacing="3">
+  ELVIN OMONDI JUMA  ·  <tspan fill="#22d3ee">GTSS</tspan>  ·  <tspan fill="#fbbf24">KENYA</tspan>
 </text>
-<text x="600" y="84" text-anchor="middle" fill="#94a3b8" font-family="ui-monospace,SFMono-Regular,monospace" font-size="11.5" font-weight="700" letter-spacing="2">
-  ELVIN OMONDI JUMA  //  FOUNDING ENGINEER @ GTSS  //  5,100+ CONTRIBUTIONS  //  124 REPOSITORIES
+<text x="600" y="78" text-anchor="middle" fill="#94a3b8" font-family="ui-monospace,SFMono-Regular,monospace" font-size="11" font-weight="700" letter-spacing="2">
+  omondielvin@gmail.com  //  elvin-juma-portfolio.vercel.app
 </text>
 </svg>
 '''
     (ASSETS / "footer.svg").write_text(svg, encoding="utf-8")
-    print("footer.svg generated.")
-
-
-# ---------------------------------------------------------------------------
-# 6. TRUE 3D SOFTWARE-RENDERED GIFS + PNG FALLBACKS (profile-hero & build-loop)
-# ---------------------------------------------------------------------------
-
-class Canvas3D:
-    def __init__(self, width: int, height: int):
-        self.width, self.height = width, height
-        self.image = Image.new("RGB", (width * SCALE, height * SCALE), BG)
-        self.draw = ImageDraw.Draw(self.image, "RGBA")
-
-    def rect(self, box, fill=None, radius=0, outline=None, width=1):
-        scaled = tuple(round(v * SCALE) for v in box)
-        if radius:
-            self.draw.rounded_rectangle(
-                scaled, radius=round(radius * SCALE), fill=fill,
-                outline=outline, width=max(1, round(width * SCALE)),
-            )
-        else:
-            self.draw.rectangle(scaled, fill=fill, outline=outline, width=max(1, round(width * SCALE)))
-
-    def polygon(self, pts, fill=None, outline=None):
-        spts = [(round(x * SCALE), round(y * SCALE)) for x, y in pts]
-        self.draw.polygon(spts, fill=fill, outline=outline)
-
-    def line(self, pts, fill=BORDER, width=1):
-        spts = [(round(x * SCALE), round(y * SCALE)) for x, y in pts]
-        self.draw.line(spts, fill=fill, width=max(1, round(width * SCALE)))
-
-    def circle(self, cx: float, cy: float, r: float, fill=None, outline=None, width=1):
-        box = (
-            round((cx - r) * SCALE), round((cy - r) * SCALE),
-            round((cx + r) * SCALE), round((cy + r) * SCALE),
-        )
-        self.draw.ellipse(box, fill=fill, outline=outline, width=max(1, round(width * SCALE)))
-
-    def text(self, pos, value: str, size: int, color=TEXT, style="regular", anchor="lt"):
-        key = (style, size)
-        if key not in FONTS:
-            FONTS[key] = ImageFont.truetype(str(FONT_PATHS[style]), round(size * SCALE))
-        f = FONTS[key]
-        self.draw.text((round(pos[0] * SCALE), round(pos[1] * SCALE)), value, fill=color, font=f, anchor=anchor)
-
-    def iso_prism(self, cx: float, cy: float, w: float, h: float, depth: float, top_c, left_c, right_c, outline=None):
-        hw, hh = w * 0.5, h * 0.5
-        top = [(cx, cy - depth - hh), (cx + hw, cy - depth), (cx, cy - depth + hh), (cx - hw, cy - depth)]
-        left = [(cx - hw, cy - depth), (cx, cy - depth + hh), (cx, cy + hh), (cx - hw, cy)]
-        right = [(cx, cy - depth + hh), (cx + hw, cy - depth), (cx + hw, cy), (cx, cy + hh)]
-        self.polygon(left, fill=left_c, outline=outline)
-        self.polygon(right, fill=right_c, outline=outline)
-        self.polygon(top, fill=top_c, outline=outline)
-
-    def finish(self) -> Image.Image:
-        return self.image.resize((self.width, self.height), Image.Resampling.LANCZOS)
-
-
-def render_3d_core(c: Canvas3D, cx: float, cy: float, phase: float, radius_scale: float = 1.0):
-    verts, edges, faces = icosahedron_geometry()
-    oct_v, oct_e = octahedron_geometry(0.55)
-    angle = phase * 2.0 * math.pi
-
-    # Outer orbital rings
-    c.circle(cx, cy, 138 * radius_scale, outline=rgba(BLUE, 50), width=1.2)
-    c.circle(cx, cy, 108 * radius_scale, outline=rgba(GREEN, 65), width=1.2)
-
-    fov = 260.0 * radius_scale
-    pverts = [
-        project_3d(*rotate_3d(vx, vy, vz, angle * 0.7 + 0.35, angle, angle * 0.4), cx, cy, fov=fov, dist=3.4)
-        for vx, vy, vz in verts
-    ]
-
-    # Depth-sorted semi-transparent 3D faces (painter's algorithm)
-    face_list = []
-    for a, b, d_idx in faces:
-        za = (pverts[a][2] + pverts[b][2] + pverts[d_idx][2]) / 3.0
-        face_list.append((za, a, b, d_idx))
-    face_list.sort(key=lambda item: item[0])
-
-    for za, a, b, d_idx in face_list:
-        shade = max(0.0, min(1.0, (za + 1.0) * 0.5))
-        col = blend("#08182e", CYAN, shade * 0.45)
-        pts = [(pverts[a][0], pverts[a][1]), (pverts[b][0], pverts[b][1]), (pverts[d_idx][0], pverts[d_idx][1])]
-        c.polygon(pts, fill=(*col, int(35 + shade * 65)))
-
-    # Depth-sorted 3D edges
-    for u, v in edges:
-        x1, y1, z1 = pverts[u]
-        x2, y2, z2 = pverts[v]
-        depth_t = max(0.0, min(1.0, ((z1 + z2) * 0.5 + 1.0) * 0.5))
-        ecol = hex_blend("#1e3a5f", CYAN, 0.35 + depth_t * 0.65)
-        c.line([(x1, y1), (x2, y2)], fill=ecol, width=1.2 + depth_t * 1.1)
-
-    # Counter-rotating inner octahedron
-    ipverts = [
-        project_3d(*rotate_3d(vx, vy, vz, -angle, -angle * 1.2, angle * 0.6), cx, cy, fov=fov, dist=3.4)
-        for vx, vy, vz in oct_v
-    ]
-    for u, v in oct_e:
-        x1, y1, _ = ipverts[u]
-        x2, y2, _ = ipverts[v]
-        c.line([(x1, y1), (x2, y2)], fill=GREEN, width=1.8)
-
-    # Glowing vertices
-    for x, y, z in pverts:
-        if z > -0.2:
-            r = 2.2 + (z + 0.2) * 2.0
-            c.circle(x, y, r, fill=CYAN if z > 0.3 else GREEN)
-
-
-def hero_raster(phase: float, mobile: bool = False) -> Image.Image:
-    if mobile:
-        c = Canvas3D(720, 720)
-        c.rect((1, 1, 718, 718), fill=BG, radius=18, outline=BORDER, width=1.5)
-        c.rect((40, 32, 430, 62), fill="#09192c", radius=15, outline=rgba(GREEN, 120))
-        c.circle(58, 47, 5, fill=GREEN)
-        c.text((72, 39), "FOUNDING ENGINEER @ GTSS · KENYA", 12, GREEN, "mono_bold")
-
-        c.text((40, 82), "ELVIN OMONDI JUMA", 36, TEXT, "black")
-        c.rect((40, 132, 520, 136), fill=CYAN, radius=2)
-        c.text((40, 150), "FULL-STACK ARCHITECT · 3D & DISTRIBUTED SYSTEMS", 13, CYAN, "mono_bold")
-
-        metrics = [
-            ("5,100+", "CONTRIBUTIONS", GREEN),
-            ("124", "REPOS (116 PUB)", CYAN),
-            ("6 LIVE", "SAAS PLATFORMS", VIOLET),
-            ("99.98%", "UPTIME / LAN POS", AMBER),
-        ]
-        for i, (val, lbl, col) in enumerate(metrics):
-            mx = 40 + (i % 2) * 324
-            my = 188 + (i // 2) * 86
-            c.rect((mx, my, mx + 308, my + 74), fill=PANEL, radius=10, outline=rgba(col, 120))
-            c.text((mx + 16, my + 12), val, 24, col, "mono_bold")
-            c.text((mx + 16, my + 46), lbl, 11, MUTED, "bold")
-
-        render_3d_core(c, 360, 525, phase, radius_scale=0.95)
-        c.text((360, 686), "57 PRISMA MODELS  ·  39 POS SCREENS  ·  M-PESA STK", 12, MUTED, "mono", anchor="mt")
-    else:
-        c = Canvas3D(1200, 430)
-        c.rect((1, 1, 1198, 428), fill=BG, radius=18, outline=BORDER, width=1.5)
-        c.rect((44, 30, 446, 58), fill="#09192c", radius=14, outline=rgba(GREEN, 120))
-        c.circle(62, 44, 5, fill=GREEN)
-        c.text((76, 36), "FOUNDING ENGINEER @ GTSS · KENYA (NBO / ELD)", 12, GREEN, "mono_bold")
-
-        c.text((44, 76), "ELVIN OMONDI JUMA", 44, TEXT, "black")
-        c.rect((44, 134, 620, 138), fill=CYAN, radius=2)
-        c.text((44, 152), "FULL-STACK PRODUCT ARCHITECT  //  3D & OFFLINE-FIRST SYSTEMS", 14, CYAN, "mono_bold")
-        c.text((44, 180), "Architecting multi-tenant SaaS, LAN POS & real-time FinTech ecosystems.", 15, MUTED, "medium")
-
-        metrics = [
-            ("5,100+", "CONTRIBUTIONS", "+310% YoY", GREEN),
-            ("124", "REPOSITORIES", "116+ Public", CYAN),
-            ("6 LIVE", "SAAS PLATFORMS", "Multi-Tenant", VIOLET),
-            ("99.98%", "UPTIME & SLA", "0ms LAN POS", AMBER),
-        ]
-        for i, (val, lbl, sub, col) in enumerate(metrics):
-            mx = 44 + i * 172
-            my = 216
-            c.rect((mx, my, mx + 160, my + 92), fill=PANEL, radius=10, outline=rgba(col, 130))
-            c.text((mx + 14, my + 12), val, 24, col, "mono_bold")
-            c.text((mx + 14, my + 46), lbl, 11, TEXT, "bold")
-            c.text((mx + 14, my + 66), sub, 10, MUTED, "mono")
-
-        # 3D Isometric Voxel Wave ribbon along bottom left
-        for row_idx in range(3):
-            for col_idx in range(18):
-                sx = 58 + col_idx * 22 + row_idx * 11
-                sy = 372 + row_idx * 7
-                w = math.sin(col_idx * 0.52 + row_idx * 0.7 - phase * 2.0 * math.pi) * 0.5 + 0.5
-                h = 5 + w * 18
-                tc = hex_blend("#0e4429", GREEN, w) if w > 0.4 else hex_blend("#0f172a", CYAN, w * 1.5)
-                lc = hex_blend("#090d16", "#006d32", w)
-                rc = hex_blend("#050811", "#0e4429", w)
-                c.iso_prism(sx, sy, 17, 8, h, tc, lc, rc)
-
-        render_3d_core(c, 965, 215, phase, radius_scale=1.02)
-        c.text((965, 382), "3D GEODESIC CORE · 60FPS", 12, CYAN, "mono_bold", anchor="mt")
-
-    return c.finish()
-
-
-STAGES = [
-    ("01 // DECONSTRUCT", "Map Workflow Friction", "100% Domain Schema", GREEN),
-    ("02 // ARCHITECT", "Type-Safe Multi-Tenant", "57+ Prisma Models", CYAN),
-    ("03 // HARDEN", "Offline LAN & Retries", "0ms Cloud Dependency", AMBER),
-    ("04 // ACCELERATE", "AI & Telemetry Loops", "80+ Cloud Deploys", VIOLET),
-]
-
-
-def build_loop_raster(phase: float, mobile: bool = False) -> Image.Image:
-    c = Canvas3D(720, 420) if mobile else Canvas3D(1200, 235)
-    c.rect((1, 1, c.width - 2, c.height - 2), fill=BG, radius=16, outline=BORDER, width=1.5)
-    c.text((32, 20), "3D EXECUTION PIPELINE  //  ARCHITECTURE TO PRODUCTION", 12, MUTED, "mono_bold")
-
-    active = int(phase * 4) % 4
-    progress = (phase * 4) % 1.0
-
-    for i, (code, title, metric, col) in enumerate(STAGES):
-        x = 32 + (i % 2) * 336 if mobile else 32 + i * 288
-        y = 62 + (i // 2) * 168 if mobile else 56
-        w = 316 if mobile else 272
-        h = 148 if mobile else 154
-
-        is_act = (i == active)
-        c.rect((x, y, x + w, y + h), fill=PANEL, radius=12, outline=col if is_act else BORDER, width=1.8 if is_act else 1.0)
-
-        # 3D Isometric Cube in top-right of each stage card
-        cube_h = 12 + (math.sin(phase * 2 * math.pi + i) * 0.5 + 0.5) * 10
-        c.iso_prism(x + w - 28, y + 36, 22, 10, cube_h, col if is_act else "#1e293b", "#0f172a", "#090d16", outline=col)
-
-        c.text((x + 16, y + 16), code, 11, col, "mono_bold")
-        c.text((x + 16, y + 46), title, 16, TEXT, "bold")
-        c.text((x + 16, y + 76), metric, 12, col if is_act else MUTED, "mono")
-
-        for j in range(10):
-            seg_col = "#1e293b"
-            if is_act and j <= int(progress * 10):
-                seg_col = col
-            elif i < active:
-                seg_col = hex_blend("#0f172a", col, 0.55)
-            c.rect((x + 16 + j * 22, y + 112, x + 16 + j * 22 + 16, y + 122), fill=seg_col, radius=3)
-
-    return c.finish()
-
-
-def save_animation(name: str, renderer, mobile: bool = False) -> None:
-    frames = [renderer(i / FRAMES, mobile) for i in range(FRAMES)]
-    frames[0].save(ASSETS / f"{name}.png", optimize=True)
-    master_palette = frames[0].quantize(colors=256, method=Image.Quantize.MEDIANCUT, dither=Image.Dither.NONE)
-    quantized = [f.quantize(palette=master_palette, dither=Image.Dither.NONE) for f in frames]
-    output = BytesIO()
-    quantized[0].save(
-        output, format="GIF", save_all=True, append_images=quantized[1:],
-        duration=DURATION_MS, loop=0, optimize=True, disposal=2,
-    )
-    target = ASSETS / f"{name}.gif"
-    temporary = ASSETS / f"{name}.gif.tmp"
-    temporary.write_bytes(output.getvalue())
-    temporary.replace(target)
-    print(f"{name}: {frames[0].size}, {FRAMES} frames, {target.stat().st_size:,} bytes")
+    print("footer.svg (Planetary Horizon) generated.")
 
 
 def main() -> None:
     ASSETS.mkdir(exist_ok=True)
-    generate_hero_3d_svg()
-    generate_telemetry_3d_svg()
-    generate_constellation_3d_svg()
-    generate_architecture_3d_svg()
+    generate_hero_blackhole_svg()
+    generate_space_cards()
+    generate_space_orbit_svg()
     generate_footer_svg()
-    save_animation("profile-hero", hero_raster, mobile=False)
-    save_animation("profile-hero-mobile", hero_raster, mobile=True)
-    save_animation("build-loop", build_loop_raster, mobile=False)
-    save_animation("build-loop-mobile", build_loop_raster, mobile=True)
 
 
 if __name__ == "__main__":

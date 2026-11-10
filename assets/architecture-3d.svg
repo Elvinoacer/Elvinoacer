@@ -1,106 +1,154 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="390" viewBox="0 0 1200 390" role="img" aria-label="3D Exploded Isometric Architecture and Execution Pipeline">
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="320" viewBox="0 0 1200 320" role="img" aria-label="3D Orbital Engineering Stack">
 <defs>
-  <linearGradient id="aBg" x1="0" y1="0" x2="1" y2="1">
-    <stop offset="0%" stop-color="#050811"/>
-    <stop offset="100%" stop-color="#0a1224"/>
-  </linearGradient>
-  <filter id="aGlow" x="-25%" y="-25%" width="150%" height="150%">
-    <feGaussianBlur stdDeviation="3.5" result="b"/>
+  <radialGradient id="sBg" cx="0.5" cy="0.52" r="0.65">
+    <stop offset="0%" stop-color="#0b192e"/>
+    <stop offset="55%" stop-color="#050a15"/>
+    <stop offset="100%" stop-color="#02040a"/>
+  </radialGradient>
+  <filter id="sGlow" x="-30%" y="-30%" width="160%" height="160%">
+    <feGaussianBlur stdDeviation="4" result="b"/>
     <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
   </filter>
 </defs>
 
-<rect width="1200" height="390" rx="20" fill="url(#aBg)" stroke="#1e293b" stroke-width="1.5"/>
+<rect width="1200" height="320" rx="20" fill="url(#sBg)" stroke="#16243d" stroke-width="1.5"/>
+<g><circle cx="254.2" cy="129.6" r="0.8" fill="#a7f3d0" opacity="0.39"><animate attributeName="opacity" values="0.39;0.12;0.39" dur="3.0s" repeatCount="indefinite"/></circle>
+  <circle cx="453.2" cy="305.8" r="1.7" fill="#67e8f9" opacity="0.54"/>
+  <circle cx="741.1" cy="249.1" r="1.7" fill="#a7f3d0" opacity="0.29"/>
+  <circle cx="878.4" cy="262.8" r="0.8" fill="#a7f3d0" opacity="0.72"/>
+  <circle cx="781.4" cy="31.9" r="0.6" fill="#fef08a" opacity="0.60"/>
+  <circle cx="753.0" cy="26.8" r="1.0" fill="#ffffff" opacity="0.68"/>
+  <circle cx="808.3" cy="52.4" r="1.0" fill="#fef08a" opacity="0.54"/>
+  <circle cx="463.9" cy="81.1" r="1.7" fill="#bae6fd" opacity="0.65"><animate attributeName="opacity" values="0.65;0.12;0.65" dur="4.5s" repeatCount="indefinite"/></circle>
+  <circle cx="855.4" cy="51.6" r="0.6" fill="#bae6fd" opacity="0.46"/>
+  <circle cx="793.8" cy="132.3" r="1.3" fill="#a7f3d0" opacity="0.26"/>
+  <circle cx="355.9" cy="15.2" r="1.0" fill="#fef08a" opacity="0.41"/>
+  <circle cx="606.4" cy="19.0" r="1.3" fill="#67e8f9" opacity="0.60"/>
+  <circle cx="399.3" cy="68.7" r="0.8" fill="#a7f3d0" opacity="0.80"/>
+  <circle cx="1041.5" cy="246.3" r="0.6" fill="#67e8f9" opacity="0.84"/>
+  <circle cx="465.0" cy="176.1" r="0.8" fill="#67e8f9" opacity="0.44"><animate attributeName="opacity" values="0.44;0.12;0.44" dur="2.8s" repeatCount="indefinite"/></circle>
+  <circle cx="1006.4" cy="147.0" r="0.8" fill="#fef08a" opacity="0.33"/>
+  <circle cx="88.0" cy="184.2" r="0.6" fill="#67e8f9" opacity="0.60"/>
+  <circle cx="292.7" cy="264.0" r="0.8" fill="#a7f3d0" opacity="0.31"/>
+  <circle cx="1018.8" cy="199.8" r="1.0" fill="#67e8f9" opacity="0.75"/>
+  <circle cx="682.4" cy="54.9" r="1.7" fill="#fef08a" opacity="0.50"/>
+  <circle cx="701.6" cy="223.6" r="0.6" fill="#a7f3d0" opacity="0.53"/>
+  <circle cx="323.4" cy="94.1" r="1.0" fill="#ffffff" opacity="0.37"><animate attributeName="opacity" values="0.37;0.12;0.37" dur="2.9s" repeatCount="indefinite"/></circle>
+  <circle cx="1044.1" cy="94.1" r="1.3" fill="#fef08a" opacity="0.45"/>
+  <circle cx="957.6" cy="33.9" r="1.0" fill="#ffffff" opacity="0.62"/>
+  <circle cx="714.4" cy="132.9" r="1.3" fill="#bae6fd" opacity="0.58"/>
+  <circle cx="995.9" cy="238.7" r="0.8" fill="#67e8f9" opacity="0.51"/>
+  <circle cx="430.1" cy="18.4" r="1.7" fill="#fef08a" opacity="0.50"/>
+  <circle cx="705.0" cy="19.8" r="0.6" fill="#a7f3d0" opacity="0.77"/>
+  <circle cx="530.0" cy="75.0" r="1.3" fill="#a7f3d0" opacity="0.27"><animate attributeName="opacity" values="0.27;0.12;0.27" dur="3.6s" repeatCount="indefinite"/></circle>
+  <circle cx="227.0" cy="298.7" r="1.3" fill="#ffffff" opacity="0.40"/>
+  <circle cx="914.3" cy="211.2" r="1.3" fill="#67e8f9" opacity="0.47"/>
+  <circle cx="309.7" cy="166.3" r="1.0" fill="#ffffff" opacity="0.45"/>
+  <circle cx="469.3" cy="257.2" r="1.0" fill="#fef08a" opacity="0.67"/>
+  <circle cx="1176.0" cy="160.7" r="0.8" fill="#67e8f9" opacity="0.78"/>
+  <circle cx="1111.2" cy="201.1" r="0.8" fill="#bae6fd" opacity="0.60"/>
+  <circle cx="638.5" cy="106.7" r="1.3" fill="#ffffff" opacity="0.61"><animate attributeName="opacity" values="0.61;0.12;0.61" dur="2.2s" repeatCount="indefinite"/></circle>
+  <circle cx="209.8" cy="62.9" r="1.0" fill="#ffffff" opacity="0.60"/>
+  <circle cx="429.4" cy="220.6" r="1.7" fill="#a7f3d0" opacity="0.44"/>
+  <circle cx="887.7" cy="195.1" r="1.7" fill="#67e8f9" opacity="0.78"/>
+  <circle cx="704.1" cy="112.7" r="1.0" fill="#a7f3d0" opacity="0.34"/>
+  <circle cx="769.0" cy="226.1" r="1.7" fill="#fef08a" opacity="0.69"/>
+  <circle cx="98.8" cy="217.9" r="0.8" fill="#67e8f9" opacity="0.41"/>
+  <circle cx="494.8" cy="124.1" r="0.8" fill="#67e8f9" opacity="0.65"><animate attributeName="opacity" values="0.65;0.12;0.65" dur="4.8s" repeatCount="indefinite"/></circle>
+  <circle cx="585.5" cy="149.9" r="0.8" fill="#fef08a" opacity="0.81"/>
+  <circle cx="714.6" cy="74.1" r="1.3" fill="#bae6fd" opacity="0.37"/>
+  <circle cx="1129.5" cy="85.9" r="1.7" fill="#a7f3d0" opacity="0.75"/>
+  <circle cx="681.8" cy="268.8" r="0.6" fill="#a7f3d0" opacity="0.28"/>
+  <circle cx="35.5" cy="66.1" r="0.6" fill="#fef08a" opacity="0.27"/>
+  <circle cx="1150.2" cy="31.0" r="0.8" fill="#67e8f9" opacity="0.77"/>
+  <circle cx="657.5" cy="25.7" r="0.8" fill="#fef08a" opacity="0.38"><animate attributeName="opacity" values="0.38;0.12;0.38" dur="4.2s" repeatCount="indefinite"/></circle>
+  <circle cx="443.0" cy="253.1" r="1.3" fill="#67e8f9" opacity="0.36"/>
+  <circle cx="801.4" cy="177.5" r="0.6" fill="#bae6fd" opacity="0.70"/>
+  <circle cx="827.7" cy="306.7" r="1.7" fill="#a7f3d0" opacity="0.57"/>
+  <circle cx="15.5" cy="94.4" r="1.0" fill="#fef08a" opacity="0.39"/>
+  <circle cx="31.7" cy="214.9" r="1.7" fill="#67e8f9" opacity="0.78"/>
+  <circle cx="1010.1" cy="209.9" r="1.0" fill="#ffffff" opacity="0.69"/>
+  <circle cx="433.5" cy="44.7" r="1.7" fill="#a7f3d0" opacity="0.69"><animate attributeName="opacity" values="0.69;0.12;0.69" dur="3.5s" repeatCount="indefinite"/></circle>
+  <circle cx="634.4" cy="51.3" r="0.6" fill="#fef08a" opacity="0.60"/>
+  <circle cx="738.8" cy="20.4" r="1.7" fill="#67e8f9" opacity="0.26"/>
+  <circle cx="819.3" cy="142.0" r="1.0" fill="#a7f3d0" opacity="0.54"/>
+  <circle cx="494.6" cy="194.4" r="0.8" fill="#ffffff" opacity="0.56"/>
+  <circle cx="1161.3" cy="82.1" r="0.6" fill="#bae6fd" opacity="0.52"/>
+  <circle cx="1178.3" cy="269.7" r="1.7" fill="#ffffff" opacity="0.76"/>
+  <circle cx="870.1" cy="255.7" r="0.8" fill="#67e8f9" opacity="0.64"><animate attributeName="opacity" values="0.64;0.12;0.64" dur="4.8s" repeatCount="indefinite"/></circle>
+  <circle cx="199.0" cy="47.6" r="0.8" fill="#ffffff" opacity="0.62"/>
+  <circle cx="456.1" cy="41.6" r="1.0" fill="#a7f3d0" opacity="0.49"/>
+  <circle cx="892.7" cy="307.9" r="0.8" fill="#fef08a" opacity="0.73"/>
+  <circle cx="618.0" cy="297.5" r="1.3" fill="#ffffff" opacity="0.62"/>
+  <circle cx="1164.6" cy="219.0" r="1.0" fill="#fef08a" opacity="0.64"/>
+  <circle cx="874.7" cy="63.2" r="1.0" fill="#ffffff" opacity="0.76"/>
+  <circle cx="158.0" cy="92.3" r="0.6" fill="#a7f3d0" opacity="0.31"><animate attributeName="opacity" values="0.31;0.12;0.31" dur="2.7s" repeatCount="indefinite"/></circle>
+  <circle cx="386.1" cy="133.4" r="0.8" fill="#fef08a" opacity="0.77"/>
+  <circle cx="994.4" cy="42.8" r="1.0" fill="#a7f3d0" opacity="0.72"/>
+  <circle cx="711.3" cy="244.3" r="1.7" fill="#bae6fd" opacity="0.64"/>
+  <circle cx="31.1" cy="12.7" r="1.7" fill="#ffffff" opacity="0.41"/>
+  <circle cx="978.1" cy="72.3" r="1.7" fill="#fef08a" opacity="0.61"/>
+  <circle cx="922.2" cy="201.1" r="0.8" fill="#67e8f9" opacity="0.25"/>
+  <circle cx="680.5" cy="162.5" r="1.3" fill="#67e8f9" opacity="0.55"><animate attributeName="opacity" values="0.55;0.12;0.55" dur="4.7s" repeatCount="indefinite"/></circle>
+  <circle cx="546.0" cy="205.6" r="1.3" fill="#bae6fd" opacity="0.51"/>
+  <circle cx="626.2" cy="285.2" r="1.3" fill="#67e8f9" opacity="0.45"/>
+  <circle cx="907.3" cy="87.6" r="1.0" fill="#fef08a" opacity="0.38"/>
+  <circle cx="514.4" cy="164.5" r="1.7" fill="#fef08a" opacity="0.37"/>
+  <circle cx="53.7" cy="207.4" r="1.7" fill="#fef08a" opacity="0.69"/>
+  <circle cx="850.0" cy="243.3" r="0.6" fill="#fef08a" opacity="0.40"/>
+  <circle cx="802.9" cy="274.9" r="1.7" fill="#ffffff" opacity="0.54"><animate attributeName="opacity" values="0.54;0.12;0.54" dur="4.7s" repeatCount="indefinite"/></circle></g>
 
-<!-- Header -->
-<g font-family="ui-monospace,SFMono-Regular,monospace" font-size="11.5" font-weight="800" letter-spacing="1.5">
-  <text x="36" y="34" fill="#94a3b8">3D ISOMETRIC SYSTEM ARCHITECTURE  //  FULL-STACK EXECUTION TOPOLOGY</text>
-  <text x="1164" y="34" text-anchor="end" fill="#a78bfa">ZERO-SINGLE-POINT-OF-FAILURE</text>
+<!-- 3 Tilted 3D Orbital Tracks -->
+<g fill="none">
+  <path id="orbitInner" d="M 410 165 A 190 48 0 1 0 790 165 A 190 48 0 1 0 410 165" stroke="#f59e0b" stroke-opacity="0.25" stroke-width="1.2" stroke-dasharray="6 8"/>
+  <path id="orbitMid" d="M 280 165 A 320 78 0 1 1 920 165 A 320 78 0 1 1 280 165" stroke="#22d3ee" stroke-opacity="0.22" stroke-width="1.2" stroke-dasharray="8 10"/>
+  <path id="orbitOuter" d="M 150 165 A 450 108 0 1 0 1050 165 A 450 108 0 1 0 150 165" stroke="#10b981" stroke-opacity="0.20" stroke-width="1.2" stroke-dasharray="10 12"/>
 </g>
-<line x1="28" y1="48" x2="1172" y2="48" stroke="#1e293b"/>
 
-<!-- LEFT: 3D Exploded Isometric 3-Layer Stack -->
-<g>
-  <!-- Vertical Laser Conduits Connecting Isometric Layers -->
-  <g stroke="#38bdf8" stroke-opacity="0.35" stroke-width="1.4" stroke-dasharray="4 6">
-    <line x1="150" y1="118" x2="150" y2="306"/>
-    <line x1="285" y1="70" x2="285" y2="354"/>
-    <line x1="420" y1="118" x2="420" y2="306"/>
-  </g>
-
-  <!-- Plane 3 (Bottom): Data & FinTech Core -->
-  <g>
-    <path d="M90.0,306 L285,354.0 L285,368.0 L90.0,320 Z" fill="#0e0b20" stroke="#a78bfa" stroke-opacity="0.5"/><path d="M285,354.0 L480.0,306 L480.0,320 L285,368.0 Z" fill="#0e0b20" stroke="#a78bfa" stroke-opacity="0.65"/><path d="M285,258.0 L480.0,306 L285,354.0 L90.0,306 Z" fill="#191536" stroke="#a78bfa" stroke-width="1.6"/>
-    <text x="285" y="302" text-anchor="middle" fill="#ddd6fe" font-family="ui-monospace,monospace" font-size="12" font-weight="900">LAYER 03 // DATA &amp; FINTECH CORE</text>
-    <text x="285" y="321" text-anchor="middle" fill="#a78bfa" font-family="ui-monospace,monospace" font-size="10" font-weight="700">PostgreSQL · 57-Model Prisma · M-Pesa STK · R2</text>
-  </g>
-
-  <!-- Plane 2 (Middle): Real-Time & Intelligence Mesh -->
-  <g>
-    <path d="M90.0,212 L285,260.0 L285,274.0 L90.0,226 Z" fill="#061715" stroke="#39d353" stroke-opacity="0.5"/><path d="M285,260.0 L480.0,212 L480.0,226 L285,274.0 Z" fill="#061715" stroke="#39d353" stroke-opacity="0.65"/><path d="M285,164.0 L480.0,212 L285,260.0 L90.0,212 Z" fill="#0b2622" stroke="#39d353" stroke-width="1.6"/>
-    <text x="285" y="208" text-anchor="middle" fill="#d1fae5" font-family="ui-monospace,monospace" font-size="12" font-weight="900">LAYER 02 // REAL-TIME &amp; AI MESH</text>
-    <text x="285" y="227" text-anchor="middle" fill="#39d353" font-family="ui-monospace,monospace" font-size="10" font-weight="700">Socket.IO · Offline LAN Sync · Groq AI · RBAC</text>
-  </g>
-
-  <!-- Plane 1 (Top): Edge & Client Surfaces -->
-  <g>
-    <path d="M90.0,118 L285,166.0 L285,180.0 L90.0,132 Z" fill="#071324" stroke="#22d3ee" stroke-opacity="0.5"/><path d="M285,166.0 L480.0,118 L480.0,132 L285,180.0 Z" fill="#071324" stroke="#22d3ee" stroke-opacity="0.65"/><path d="M285,70.0 L480.0,118 L285,166.0 L90.0,118 Z" fill="#0c1f38" stroke="#22d3ee" stroke-width="1.6"/>
-    <text x="285" y="114" text-anchor="middle" fill="#cffafe" font-family="ui-monospace,monospace" font-size="12" font-weight="900">LAYER 01 // CLIENT &amp; 3D EDGE</text>
-    <text x="285" y="133" text-anchor="middle" fill="#22d3ee" font-family="ui-monospace,monospace" font-size="10" font-weight="700">Next.js 16 · React 19 · Expo · Electron · WebGL</text>
-  </g>
-
-  <!-- Animated Vertical Data Pulses Between 3D Layers -->
-  <circle cx="150" r="4" fill="#22d3ee" filter="url(#aGlow)">
-    <animate attributeName="cy" values="118;306;118" dur="3.2s" repeatCount="indefinite"/>
-  </circle>
-  <circle cx="285" r="4.5" fill="#39d353" filter="url(#aGlow)">
-    <animate attributeName="cy" values="354;70;354" dur="2.8s" repeatCount="indefinite"/>
-  </circle>
-  <circle cx="420" r="4" fill="#a78bfa" filter="url(#aGlow)">
-    <animate attributeName="cy" values="118;306;118" dur="3.6s" begin="-1.4s" repeatCount="indefinite"/>
-  </circle>
+<!-- Central Gravity Star -->
+<g transform="translate(600, 165)">
+  <circle r="44" fill="#071426" stroke="#fbbf24" stroke-width="2.2" filter="url(#sGlow)"/>
+  <circle r="52" fill="none" stroke="#22d3ee" stroke-opacity="0.4" stroke-dasharray="4 8"/>
+  <text y="-3" text-anchor="middle" fill="#ffffff" font-family="ui-monospace,SFMono-Regular,monospace" font-size="13" font-weight="900">92% TS</text>
+  <text y="14" text-anchor="middle" fill="#fbbf24" font-family="ui-monospace,SFMono-Regular,monospace" font-size="9.5" font-weight="700">CORE ENGINE</text>
 </g>
 
-<!-- RIGHT: 4-Stage Engineering & Production Loop (x=540..1168) -->
-<g transform="translate(540, 68)">
-  <!-- Stage 01 -->
-  <g transform="translate(0, 0)">
-    <rect width="300" height="138" rx="14" fill="#091121" stroke="#39d353" stroke-opacity="0.45"/>
-    <text x="20" y="30" fill="#39d353" font-family="ui-monospace,monospace" font-size="12" font-weight="900">01 // WORKFLOW DECONSTRUCTION</text>
-    <text x="20" y="56" fill="#f8fafc" font-family="Inter,sans-serif" font-size="14" font-weight="700">Map real operational bottlenecks</text>
-    <text x="20" y="78" fill="#94a3b8" font-family="Inter,sans-serif" font-size="11.5">Pharmacist queues, kitchen tickets, M-Pesa</text>
-    <text x="20" y="96" fill="#94a3b8" font-family="Inter,sans-serif" font-size="11.5">callbacks &amp; multi-tenant permissions.</text>
-    <text x="20" y="122" fill="#86efac" font-family="ui-monospace,monospace" font-size="10.5" font-weight="700">✓ 100% Domain-First Schema Design</text>
+<!-- Orbiting Tech Satellites (Smooth 60fps Motion Along Elliptical Orbits) -->
+<g font-family="ui-monospace,SFMono-Regular,JetBrains Mono,monospace" font-size="10.5" font-weight="800" text-anchor="middle">
+  <!-- Inner Orbit Satellites -->
+  <g>
+    <circle r="5.5" fill="#fbbf24" filter="url(#sGlow)"/>
+    <text x="0" y="-12" fill="#fef08a">NEXT.JS 16 · REACT 19</text>
+    <animateMotion dur="14s" repeatCount="indefinite"><mpath href="#orbitInner"/></animateMotion>
+  </g>
+  <g>
+    <circle r="5.5" fill="#fbbf24" filter="url(#sGlow)"/>
+    <text x="0" y="-12" fill="#fef08a">PRISMA · POSTGRESQL</text>
+    <animateMotion dur="14s" begin="-7s" repeatCount="indefinite"><mpath href="#orbitInner"/></animateMotion>
   </g>
 
-  <!-- Stage 02 -->
-  <g transform="translate(320, 0)">
-    <rect width="308" height="138" rx="14" fill="#091121" stroke="#22d3ee" stroke-opacity="0.45"/>
-    <text x="20" y="30" fill="#22d3ee" font-family="ui-monospace,monospace" font-size="12" font-weight="900">02 // TYPE-SAFE CORE &amp; RBAC</text>
-    <text x="20" y="56" fill="#f8fafc" font-family="Inter,sans-serif" font-size="14" font-weight="700">End-to-end strict contracts</text>
-    <text x="20" y="78" fill="#94a3b8" font-family="Inter,sans-serif" font-size="11.5">Prisma + PostgreSQL + Zod + Server Actions</text>
-    <text x="20" y="96" fill="#94a3b8" font-family="Inter,sans-serif" font-size="11.5">with strict tenant &amp; role isolation.</text>
-    <text x="20" y="122" fill="#67e8f9" font-family="ui-monospace,monospace" font-size="10.5" font-weight="700">✓ 150+ Production DB Models Shipped</text>
+  <!-- Mid Orbit Satellites -->
+  <g>
+    <circle r="5.5" fill="#22d3ee" filter="url(#sGlow)"/>
+    <text x="0" y="-12" fill="#bae6fd">SOCKET.IO · OFFLINE LAN</text>
+    <animateMotion dur="20s" repeatCount="indefinite"><mpath href="#orbitMid"/></animateMotion>
+  </g>
+  <g>
+    <circle r="5.5" fill="#22d3ee" filter="url(#sGlow)"/>
+    <text x="0" y="-12" fill="#bae6fd">M-PESA DARAJA · FINTECH</text>
+    <animateMotion dur="20s" begin="-10s" repeatCount="indefinite"><mpath href="#orbitMid"/></animateMotion>
   </g>
 
-  <!-- Stage 03 -->
-  <g transform="translate(0, 156)">
-    <rect width="300" height="138" rx="14" fill="#091121" stroke="#f59e0b" stroke-opacity="0.45"/>
-    <text x="20" y="30" fill="#f59e0b" font-family="ui-monospace,monospace" font-size="12" font-weight="900">03 // OFFLINE &amp; FAILURE RESILIENCE</text>
-    <text x="20" y="56" fill="#f8fafc" font-family="Inter,sans-serif" font-size="14" font-weight="700">Survives zero-internet &amp; retries</text>
-    <text x="20" y="78" fill="#94a3b8" font-family="Inter,sans-serif" font-size="11.5">Local-network Socket.IO rooms, idempotent</text>
-    <text x="20" y="96" fill="#94a3b8" font-family="Inter,sans-serif" font-size="11.5">webhook reconciliation &amp; state recovery.</text>
-    <text x="20" y="122" fill="#fcd34d" font-family="ui-monospace,monospace" font-size="10.5" font-weight="700">✓ 0ms Cloud Dependency on LAN POS</text>
+  <!-- Outer Orbit Satellites -->
+  <g>
+    <circle r="5.5" fill="#34d399" filter="url(#sGlow)"/>
+    <text x="0" y="-12" fill="#a7f3d0">REACT NATIVE · EXPO · ELECTRON</text>
+    <animateMotion dur="26s" repeatCount="indefinite"><mpath href="#orbitOuter"/></animateMotion>
   </g>
-
-  <!-- Stage 04 -->
-  <g transform="translate(320, 156)">
-    <rect width="308" height="138" rx="14" fill="#091121" stroke="#a78bfa" stroke-opacity="0.45"/>
-    <text x="20" y="30" fill="#a78bfa" font-family="ui-monospace,monospace" font-size="12" font-weight="900">04 // AI-ACCELERATED SHIPPING</text>
-    <text x="20" y="56" fill="#f8fafc" font-family="Inter,sans-serif" font-size="14" font-weight="700">High-velocity autonomous delivery</text>
-    <text x="20" y="78" fill="#94a3b8" font-family="Inter,sans-serif" font-size="11.5">Agentic workflows + embedded AI features</text>
-    <text x="20" y="96" fill="#94a3b8" font-family="Inter,sans-serif" font-size="11.5">(Groq symptom triage, OCR/vision, CRM bots).</text>
-    <text x="20" y="122" fill="#ddd6fe" font-family="ui-monospace,monospace" font-size="10.5" font-weight="700">✓ 80+ Production Deployments Live</text>
+  <g>
+    <circle r="5.5" fill="#34d399" filter="url(#sGlow)"/>
+    <text x="0" y="-12" fill="#a7f3d0">GROQ AI · THREE.JS · LINUX VPS</text>
+    <animateMotion dur="26s" begin="-13s" repeatCount="indefinite"><mpath href="#orbitOuter"/></animateMotion>
   </g>
 </g>
 </svg>

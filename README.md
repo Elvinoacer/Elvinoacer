@@ -1,178 +1,81 @@
 <div align="center">
 
-<img src="./assets/hero-3d.svg" width="100%" alt="Elvin Omondi Juma — Founding Engineer @ GTSS · Full-Stack Product Architect · 3D &amp; Distributed Systems" />
+<img src="./assets/hero-3d.svg" width="100%" alt="Elvin Omondi Juma — Pulling Complexity Into Reliable Systems" />
 
 <br />
 
 <p align="center">
-  <a href="https://elvin-juma-portfolio.vercel.app"><img src="https://img.shields.io/badge/3D_PORTFOLIO-ELVIN_JUMA-060911?style=for-the-badge&logo=three.js&logoColor=22d3ee&labelColor=0f172a" alt="3D Portfolio" /></a>
-  <a href="https://gtss.software"><img src="https://img.shields.io/badge/COMPANY-GTSS.SOFTWARE-060911?style=for-the-badge&logo=vercel&logoColor=39d353&labelColor=0f172a" alt="GTSS" /></a>
-  <a href="https://afyvia.gtss.software"><img src="https://img.shields.io/badge/FLAGSHIP-AFYVIA_OS-060911?style=for-the-badge&logo=heart-pulse&logoColor=39d353&labelColor=0f172a" alt="Afyvia" /></a>
-  <a href="https://justintime.gtss.software"><img src="https://img.shields.io/badge/MARKETPLACE-JUSTINTIME-060911?style=for-the-badge&logo=lightning&logoColor=a78bfa&labelColor=0f172a" alt="JustInTime" /></a>
-  <a href="mailto:omondielvin@gmail.com"><img src="https://img.shields.io/badge/CONTACT-OMONDIELVIN%40GMAIL.COM-060911?style=for-the-badge&logo=gmail&logoColor=f43f5e&labelColor=0f172a" alt="Email" /></a>
+  <a href="https://elvin-juma-portfolio.vercel.app"><img src="https://img.shields.io/badge/3D_PORTFOLIO-ELVIN_JUMA-02040a?style=for-the-badge&logo=three.js&logoColor=fbbf24&labelColor=081121" alt="3D Portfolio" /></a>
+  <a href="https://gtss.software"><img src="https://img.shields.io/badge/VENTURE-GTSS.SOFTWARE-02040a?style=for-the-badge&logo=vercel&logoColor=22d3ee&labelColor=081121" alt="GTSS" /></a>
+  <a href="https://github.com/Elvinoacer?tab=repositories"><img src="https://img.shields.io/badge/REPOSITORIES-117_PUBLIC-02040a?style=for-the-badge&logo=github&logoColor=34d399&labelColor=081121" alt="117 Public Repositories" /></a>
+  <a href="mailto:omondielvin@gmail.com"><img src="https://img.shields.io/badge/SIGNAL-OMONDIELVIN%40GMAIL.COM-02040a?style=for-the-badge&logo=gmail&logoColor=38bdf8&labelColor=081121" alt="Email" /></a>
 </p>
 
-</div>
+<br />
 
----
+<p align="center">
+  <a href="https://afyvia.gtss.software"><img src="./assets/card-01.svg" width="49%" alt="01 // Afyvia PharmaCare OS — 57 Prisma Models, 308 App Routes, 4 Portals" /></a>
+  <a href="https://justintime.gtss.software"><img src="./assets/card-02.svg" width="49%" alt="02 // JustInTime Marketplace — 22MB Codebase, 4 RBAC Roles, Live Socket.IO" /></a>
+</p>
+<p align="center">
+  <sub>
+    <b>01 AFYVIA:</b> <a href="https://afyvia.gtss.software">Live</a> · <a href="https://github.com/Elvinoacer/pharmacy_template_tier2">Repo</a> · <a href="https://github.com/Elvinoacer/sphere_pharmacy">Sphere</a>
+    &nbsp;&nbsp;&nbsp;✦&nbsp;&nbsp;&nbsp;
+    <b>02 JUSTINTIME:</b> <a href="https://justintime.gtss.software">Live</a> · <a href="https://github.com/Elvinoacer/JustinTime">Repo</a> · <a href="https://github.com/Elvinoacer/jit-socket">Socket</a>
+  </sub>
+</p>
 
-## ⚡ Live Engineering Telemetry
+<p align="center">
+  <a href="https://github.com/Elvinoacer/hotel-intranet"><img src="./assets/card-03.svg" width="49%" alt="03 // Restaurant Manager POS — 39 POS Screens, 5 Staff Roles, 0ms Cloud Dependency" /></a>
+  <a href="https://moimashinani.gtss.software"><img src="./assets/card-04.svg" width="49%" alt="04 // Kampus &amp; Mashinani — 18MB+ Ecosystem, iOS/Android Expo, P2P Commerce" /></a>
+</p>
+<p align="center">
+  <sub>
+    <b>03 LAN POS:</b> <a href="https://github.com/Elvinoacer/hotel-intranet">Intranet Repo</a> · <a href="https://github.com/Elvinoacer/hospitality">Hospitality</a>
+    &nbsp;&nbsp;&nbsp;✦&nbsp;&nbsp;&nbsp;
+    <b>04 KAMPUS:</b> <a href="https://moimashinani.gtss.software">Live</a> · <a href="https://github.com/Elvinoacer/Kampus">Kampus Repo</a> · <a href="https://github.com/Elvinoacer/moi_mashinani">Mashinani Repo</a>
+  </sub>
+</p>
 
-<div align="center">
-  <img src="./assets/telemetry-3d.svg" width="100%" alt="3D Engineering Telemetry — 5,107+ Contributions, 124 Repositories, 57 Prisma Models, 99.98% Uptime" />
-</div>
+<p align="center">
+  <a href="https://www.conceptbuilders.co.ke"><img src="./assets/card-05.svg" width="49%" alt="05 // Concept Builders — 35MB Platform, Live Presence, CAD Pipeline" /></a>
+  <a href="https://www.germanvirtualschool.com"><img src="./assets/card-06.svg" width="49%" alt="06 // German Virtual School — A1-C2 6 CEFR Tiers, Live Class Sync, 3 Portals" /></a>
+</p>
+<p align="center">
+  <sub>
+    <b>05 CONCEPT BUILDERS:</b> <a href="https://www.conceptbuilders.co.ke">Live</a> · <a href="https://github.com/Elvinoacer/concept-builders">Repo</a> · <a href="https://github.com/Elvinoacer/concept-builders-sockets">Socket</a>
+    &nbsp;&nbsp;&nbsp;✦&nbsp;&nbsp;&nbsp;
+    <b>06 GERMAN VIRTUAL SCHOOL:</b> <a href="https://www.germanvirtualschool.com">Live</a> · <a href="https://github.com/Elvinoacer/German-Virtual-School">Repo</a> · <a href="https://github.com/Elvinoacer/gvs-socket-server">Socket</a>
+  </sub>
+</p>
 
-| Metric | Verified Output | Scope & Benchmark |
+<details>
+<summary><b>✦ MORE ORBITING SYSTEMS (12 PUBLIC REPOS &amp; LIVE DEPLOYMENTS)</b></summary>
+<br />
+
+| System | Metric | Links |
 | :--- | :--- | :--- |
-| **Commit Velocity** | **`5,107+` Contributions** | `4,316` in the last 12 months (`+310% YoY` acceleration) across full-stack production systems |
-| **Repository Footprint** | **`124` Total · `117` Public** | `92% TypeScript` · Multi-tenant SaaS, offline-first POS, real-time Socket.IO & mobile apps |
-| **Database & Domain Depth** | **`150+` Prisma Models** | Up to **`57 models` & `34 enums`** in a single multi-portal healthcare operating system |
-| **Operational Reliability** | **`99.98%` Cloud · `0ms` LAN** | Zero-internet local-network hospitality POS + idempotent M-Pesa Daraja webhook state machines |
-
----
-
-## 🛰️ 3D Production Constellation
-
-<div align="center">
-  <img src="./assets/project-constellation-3d.svg" width="100%" alt="3D Production Ecosystem Constellation — 6 Flagship Systems Powered by GTSS Core" />
-</div>
-
-<br />
-
-<table>
-<tr>
-<td width="50%" valign="top">
-
-### `01` // Afyvia · PharmaCare OS
-**Multi-Tenant Healthcare, Pharmacy & Patient Care Operating System**
-
-- **Scale:** `57 Prisma Models` · `34 Enums` · `308 App Routes` · `188 TSX Views`
-- **Surfaces:** Public OTC Store · Patient Portal · Caregiver Portal · Pharmacist/Admin Console
-- **Engine:** FEFO batch/lot expiry control, Groq AI symptom triage, vision search & M-Pesa STK
-
-`Next.js` `TypeScript` `Prisma` `PostgreSQL` `Groq AI` `M-Pesa`
-
-[**🚀 Live Platform →**](https://afyvia.gtss.software) &nbsp;·&nbsp; [**📦 Public Repo →**](https://github.com/Elvinoacer/pharmacy_template_tier2) &nbsp;·&nbsp; [**🌐 Sphere Pharmacy →**](https://github.com/Elvinoacer/sphere_pharmacy)
-
-</td>
-<td width="50%" valign="top">
-
-### `02` // JustInTime Marketplace
-**Hyperlocal Services & Gig Marketplace with Real-Time Dispatch**
-
-- **Scale:** `22MB Codebase` · Multi-Role RBAC (Client, Provider, Agency, Admin)
-- **Surfaces:** Geolocation discovery, live bidding/proposals, instant chat & job tracking
-- **Engine:** Dual-mode (online + on-ground) state machine with M-Pesa Daraja escrow reconciliation
-
-`Next.js` `TypeScript` `Prisma` `Socket.IO` `M-Pesa Daraja`
-
-[**🚀 Live Platform →**](https://justintime.gtss.software) &nbsp;·&nbsp; [**📦 Public Repo →**](https://github.com/Elvinoacer/JustinTime) &nbsp;·&nbsp; [**⚡ Socket Engine →**](https://github.com/Elvinoacer/jit-socket)
-
-</td>
-</tr>
-<tr>
-<td width="50%" valign="top">
-
-### `03` // Restaurant Manager · LAN POS
-**Offline-First Local-Network Hospitality POS & Kitchen Display System**
-
-- **Scale:** `53MB Codebase` · `39 Operational Screens` · `5 Distinct Role Surfaces`
-- **Surfaces:** Guest WiFi QR Ordering · Waiter Handheld · Kitchen Display (KDS) · Retail · Admin
-- **Engine:** `0ms` internet dependency — runs 100% on local WiFi/intranet with real-time table room sockets
-
-`Electron` `Node.js` `Socket.IO` `IndexedDB` `LAN Intranet`
-
-[**📦 Public Repo (hotel-intranet) →**](https://github.com/Elvinoacer/hotel-intranet) &nbsp;·&nbsp; [**📦 Hospitality Suite →**](https://github.com/Elvinoacer/hospitality)
-
-</td>
-<td width="50%" valign="top">
-
-### `04` // Kampus & Moi Mashinani
-**University Social Network, Business Directory & Student Marketplace**
-
-- **Scale:** `18MB+ Combined Codebase` · Cross-platform Mobile (`iOS`/`Android`) + Web
-- **Surfaces:** Hyperlocal campus feeds, P2P student marketplace, business profiles & events
-- **Engine:** Optimistic UI updates, media pipelines, campus verification & real-time messaging
-
-`React Native` `Expo` `Next.js` `TypeScript` `PostgreSQL`
-
-[**🚀 Live Mashinani →**](https://moimashinani.gtss.software) &nbsp;·&nbsp; [**📦 Kampus Repo →**](https://github.com/Elvinoacer/Kampus) &nbsp;·&nbsp; [**📦 Mashinani Repo →**](https://github.com/Elvinoacer/moi_mashinani) &nbsp;·&nbsp; [**📦 Uni-Link →**](https://github.com/Elvinoacer/uni-link)
-
-</td>
-</tr>
-<tr>
-<td width="50%" valign="top">
-
-### `05` // Concept Builders
-**Architectural House Plans, 3D/CAD Discovery & Client Consultation Suite**
-
-- **Scale:** `35MB Combined Codebase` · Full architectural catalog + custom quote workflows
-- **Surfaces:** Interactive plan filtering, BOQ/CAD deliverables & live client-architect chat
-- **Engine:** Dedicated WebSocket presence & messaging cluster (`concept-builders-sockets`)
-
-`Next.js` `TypeScript` `Prisma` `Socket.IO` `Cloudinary`
-
-[**🚀 Live Website →**](https://www.conceptbuilders.co.ke) &nbsp;·&nbsp; [**📦 Public Repo →**](https://github.com/Elvinoacer/concept-builders) &nbsp;·&nbsp; [**⚡ Socket Cluster →**](https://github.com/Elvinoacer/concept-builders-sockets)
-
-</td>
-<td width="50%" valign="top">
-
-### `06` // German Virtual School
-**Live CEFR (A1–C2) Virtual Language Academy & School Administration OS**
-
-- **Scale:** `6 Proficiency Tiers (A1–C2)` · Multi-role Student, Teacher & Admin portals
-- **Surfaces:** Live virtual classrooms, cohort scheduling, grading & curriculum management
-- **Engine:** Dedicated real-time classroom synchronization server (`gvs-socket-server`)
-
-`Next.js` `TypeScript` `Prisma` `Socket.IO` `WebRTC`
-
-[**🚀 Live Academy →**](https://www.germanvirtualschool.com) &nbsp;·&nbsp; [**📦 Public Repo →**](https://github.com/Elvinoacer/German-Virtual-School) &nbsp;·&nbsp; [**⚡ Socket Server →**](https://github.com/Elvinoacer/gvs-socket-server)
-
-</td>
-</tr>
-</table>
-
-<details open>
-<summary><b>📂 Extended Public Production Vault (14+ Additional Open-Source Systems & Deployments)</b></summary>
-
-<br />
-
-| System | Domain & Architecture | Metrics / Highlights | Live & Public Source |
-| :--- | :--- | :--- | :--- |
-| **GTSS Control Plane** | Parent SaaS Ecosystem & CRM | Multi-product catalog, telemetry, leads, deployments & billing | [gtss.software](https://gtss.software) · [Repo](https://github.com/Elvinoacer/gtss) |
-| **Neural Precision 3D** | 3D WebGL & Motion Showcase | `31MB` interactive 3D shaders, physics & conversion architecture | [Live](https://neural-precision-portfolio.vercel.app) · [Repo](https://github.com/Elvinoacer/neural-precision-portfolio) |
-| **Elvin Juma Portfolio** | 3D Engineering Portfolio | `18MB` flagship interactive engineering & case-study experience | [Live](https://elvin-juma-portfolio.vercel.app) · [Repo](https://github.com/Elvinoacer/elvinJuma-portfolio) |
-| **Church Management OS** | Congregation & Tithe ERP | `36MB` member CRM, M-Pesa/Bank tithe ledger & event engine | [Live](https://church-web-v2.vercel.app) · [Repo](https://github.com/Elvinoacer/church-web-v2) |
-| **Zion Hill Digital** | Ministry & Live Stream Platform | `41MB` sermon archive, media hub & congregation portal | [Live](https://zion-hill.vercel.app) · [Repo](https://github.com/Elvinoacer/ZION-HILL) |
-| **ELC IEC Electoral OS** | Real-Time Voting & Tallying | Campus electoral commission portal + live WebSocket tallying | [Live](https://elciec.gtss.software) · [Repo](https://github.com/Elvinoacer/ELC_IEC_mu) · [Socket](https://github.com/Elvinoacer/iec_socket) |
-| **Commersely** | Multi-Vendor E-Commerce | Next.js storefront, real-time stock control & M-Pesa checkout | [Live](https://commerseley.vercel.app) · [Repo](https://github.com/Elvinoacer/commerseley) |
-| **GTSS Growth Engine** | Outreach & CRM Automation | Automated lead pipelines, campaign dispatch & growth analytics | [Repo](https://github.com/Elvinoacer/gtss_growth_automation) · [WA Campaigns](https://github.com/Elvinoacer/whatsapp_campaigns) |
-| **Kenya Airways 254** | Real-Time Flight Telemetry | Live flight status tracking, booking engine & socket server | [Live](https://kenya-airways-254.vercel.app) · [Repo](https://github.com/Elvinoacer/kenya_airways_254) · [Socket](https://github.com/Elvinoacer/kenya_airways_socket_server) |
-| **International KYC Hub** | Identity & Compliance Portal | `9.3MB` document verification & onboarding workflow engine | [Live](https://internationalkychub.vercel.app) · [Repo](https://github.com/Elvinoacer/internationalkychub) |
-| **20Timeline** | Interactive Temporal Engine | `40MB` rich media milestone & timeline visualization platform | [Live](https://20timeline.vercel.app) · [Repo](https://github.com/Elvinoacer/20timeline) |
-| **MultiPay Gateway** | FinTech Payment Orchestrator | Unified PayPal order capture + IntaSend / M-Pesa STK Push | [Live](https://multipay-demo.vercel.app) · [Repo](https://github.com/Elvinoacer/multipay-demo) |
+| **GTSS Control Plane** | Multi-Product SaaS Nexus | [gtss.software](https://gtss.software) · [Repo](https://github.com/Elvinoacer/gtss) |
+| **Neural Precision 3D** | `31MB` WebGL Showcase | [Live](https://neural-precision-portfolio.vercel.app) · [Repo](https://github.com/Elvinoacer/neural-precision-portfolio) |
+| **Elvin 3D Portfolio** | `18MB` Interactive Portfolio | [Live](https://elvin-juma-portfolio.vercel.app) · [Repo](https://github.com/Elvinoacer/elvinJuma-portfolio) |
+| **Church Management OS** | `36MB` Tithe & Member ERP | [Live](https://church-web-v2.vercel.app) · [Repo](https://github.com/Elvinoacer/church-web-v2) |
+| **Zion Hill Digital** | `41MB` Ministry Platform | [Live](https://zion-hill.vercel.app) · [Repo](https://github.com/Elvinoacer/ZION-HILL) |
+| **20Timeline** | `40MB` Temporal Engine | [Live](https://20timeline.vercel.app) · [Repo](https://github.com/Elvinoacer/20timeline) |
+| **ELC IEC Electoral OS** | Real-Time Ballot Tallying | [Live](https://elciec.gtss.software) · [Repo](https://github.com/Elvinoacer/ELC_IEC_mu) |
+| **Commersely** | Multi-Vendor Storefront | [Live](https://commerseley.vercel.app) · [Repo](https://github.com/Elvinoacer/commerseley) |
+| **GTSS Growth Engine** | CRM & Outreach Automation | [Repo](https://github.com/Elvinoacer/gtss_growth_automation) · [WA Engine](https://github.com/Elvinoacer/whatsapp_campaigns) |
+| **Kenya Airways 254** | Live Flight Socket Telemetry | [Live](https://kenya-airways-254.vercel.app) · [Repo](https://github.com/Elvinoacer/kenya_airways_254) |
+| **International KYC Hub** | `9.3MB` Compliance Portal | [Live](https://internationalkychub.vercel.app) · [Repo](https://github.com/Elvinoacer/internationalkychub) |
+| **MultiPay Gateway** | PayPal + M-Pesa STK Push | [Live](https://multipay-demo.vercel.app) · [Repo](https://github.com/Elvinoacer/multipay-demo) |
 
 </details>
 
----
-
-## 🧬 3D System Architecture & Execution Loop
-
-<div align="center">
-  <img src="./assets/architecture-3d.svg" width="100%" alt="3D Exploded Isometric System Architecture &amp; 4-Stage Execution Topology" />
-</div>
-
 <br />
 
-<picture>
-  <source media="(prefers-reduced-motion: reduce) and (max-width: 600px)" srcset="./assets/build-loop-mobile.png" />
-  <source media="(prefers-reduced-motion: reduce)" srcset="./assets/build-loop.png" />
-  <source media="(max-width: 600px)" srcset="./assets/build-loop-mobile.gif" />
-  <img src="./assets/build-loop.gif" width="100%" alt="3D Execution Pipeline: Deconstruct, Architect, Harden, Accelerate" />
-</picture>
+<img src="./assets/architecture-3d.svg" width="100%" alt="3D Orbital Engineering Stack — 92% TypeScript Core Engine" />
 
-<br />
+<br /><br />
 
-<div align="center">
-  <img src="./assets/footer.svg" width="100%" alt="Engineered in Kenya · Shipped to Production · Built for Scale" />
+<img src="./assets/footer.svg" width="100%" alt="Elvin Omondi Juma · GTSS · Kenya" />
+
 </div>
