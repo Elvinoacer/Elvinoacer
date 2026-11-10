@@ -1,0 +1,106 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="390" viewBox="0 0 1200 390" role="img" aria-label="3D Exploded Isometric Architecture and Execution Pipeline">
+<defs>
+  <linearGradient id="aBg" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0%" stop-color="#050811"/>
+    <stop offset="100%" stop-color="#0a1224"/>
+  </linearGradient>
+  <filter id="aGlow" x="-25%" y="-25%" width="150%" height="150%">
+    <feGaussianBlur stdDeviation="3.5" result="b"/>
+    <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+</defs>
+
+<rect width="1200" height="390" rx="20" fill="url(#aBg)" stroke="#1e293b" stroke-width="1.5"/>
+
+<!-- Header -->
+<g font-family="ui-monospace,SFMono-Regular,monospace" font-size="11.5" font-weight="800" letter-spacing="1.5">
+  <text x="36" y="34" fill="#94a3b8">3D ISOMETRIC SYSTEM ARCHITECTURE  //  FULL-STACK EXECUTION TOPOLOGY</text>
+  <text x="1164" y="34" text-anchor="end" fill="#a78bfa">ZERO-SINGLE-POINT-OF-FAILURE</text>
+</g>
+<line x1="28" y1="48" x2="1172" y2="48" stroke="#1e293b"/>
+
+<!-- LEFT: 3D Exploded Isometric 3-Layer Stack -->
+<g>
+  <!-- Vertical Laser Conduits Connecting Isometric Layers -->
+  <g stroke="#38bdf8" stroke-opacity="0.35" stroke-width="1.4" stroke-dasharray="4 6">
+    <line x1="150" y1="118" x2="150" y2="306"/>
+    <line x1="285" y1="70" x2="285" y2="354"/>
+    <line x1="420" y1="118" x2="420" y2="306"/>
+  </g>
+
+  <!-- Plane 3 (Bottom): Data & FinTech Core -->
+  <g>
+    <path d="M90.0,306 L285,354.0 L285,368.0 L90.0,320 Z" fill="#0e0b20" stroke="#a78bfa" stroke-opacity="0.5"/><path d="M285,354.0 L480.0,306 L480.0,320 L285,368.0 Z" fill="#0e0b20" stroke="#a78bfa" stroke-opacity="0.65"/><path d="M285,258.0 L480.0,306 L285,354.0 L90.0,306 Z" fill="#191536" stroke="#a78bfa" stroke-width="1.6"/>
+    <text x="285" y="302" text-anchor="middle" fill="#ddd6fe" font-family="ui-monospace,monospace" font-size="12" font-weight="900">LAYER 03 // DATA &amp; FINTECH CORE</text>
+    <text x="285" y="321" text-anchor="middle" fill="#a78bfa" font-family="ui-monospace,monospace" font-size="10" font-weight="700">PostgreSQL · 57-Model Prisma · M-Pesa STK · R2</text>
+  </g>
+
+  <!-- Plane 2 (Middle): Real-Time & Intelligence Mesh -->
+  <g>
+    <path d="M90.0,212 L285,260.0 L285,274.0 L90.0,226 Z" fill="#061715" stroke="#39d353" stroke-opacity="0.5"/><path d="M285,260.0 L480.0,212 L480.0,226 L285,274.0 Z" fill="#061715" stroke="#39d353" stroke-opacity="0.65"/><path d="M285,164.0 L480.0,212 L285,260.0 L90.0,212 Z" fill="#0b2622" stroke="#39d353" stroke-width="1.6"/>
+    <text x="285" y="208" text-anchor="middle" fill="#d1fae5" font-family="ui-monospace,monospace" font-size="12" font-weight="900">LAYER 02 // REAL-TIME &amp; AI MESH</text>
+    <text x="285" y="227" text-anchor="middle" fill="#39d353" font-family="ui-monospace,monospace" font-size="10" font-weight="700">Socket.IO · Offline LAN Sync · Groq AI · RBAC</text>
+  </g>
+
+  <!-- Plane 1 (Top): Edge & Client Surfaces -->
+  <g>
+    <path d="M90.0,118 L285,166.0 L285,180.0 L90.0,132 Z" fill="#071324" stroke="#22d3ee" stroke-opacity="0.5"/><path d="M285,166.0 L480.0,118 L480.0,132 L285,180.0 Z" fill="#071324" stroke="#22d3ee" stroke-opacity="0.65"/><path d="M285,70.0 L480.0,118 L285,166.0 L90.0,118 Z" fill="#0c1f38" stroke="#22d3ee" stroke-width="1.6"/>
+    <text x="285" y="114" text-anchor="middle" fill="#cffafe" font-family="ui-monospace,monospace" font-size="12" font-weight="900">LAYER 01 // CLIENT &amp; 3D EDGE</text>
+    <text x="285" y="133" text-anchor="middle" fill="#22d3ee" font-family="ui-monospace,monospace" font-size="10" font-weight="700">Next.js 16 · React 19 · Expo · Electron · WebGL</text>
+  </g>
+
+  <!-- Animated Vertical Data Pulses Between 3D Layers -->
+  <circle cx="150" r="4" fill="#22d3ee" filter="url(#aGlow)">
+    <animate attributeName="cy" values="118;306;118" dur="3.2s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="285" r="4.5" fill="#39d353" filter="url(#aGlow)">
+    <animate attributeName="cy" values="354;70;354" dur="2.8s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="420" r="4" fill="#a78bfa" filter="url(#aGlow)">
+    <animate attributeName="cy" values="118;306;118" dur="3.6s" begin="-1.4s" repeatCount="indefinite"/>
+  </circle>
+</g>
+
+<!-- RIGHT: 4-Stage Engineering & Production Loop (x=540..1168) -->
+<g transform="translate(540, 68)">
+  <!-- Stage 01 -->
+  <g transform="translate(0, 0)">
+    <rect width="300" height="138" rx="14" fill="#091121" stroke="#39d353" stroke-opacity="0.45"/>
+    <text x="20" y="30" fill="#39d353" font-family="ui-monospace,monospace" font-size="12" font-weight="900">01 // WORKFLOW DECONSTRUCTION</text>
+    <text x="20" y="56" fill="#f8fafc" font-family="Inter,sans-serif" font-size="14" font-weight="700">Map real operational bottlenecks</text>
+    <text x="20" y="78" fill="#94a3b8" font-family="Inter,sans-serif" font-size="11.5">Pharmacist queues, kitchen tickets, M-Pesa</text>
+    <text x="20" y="96" fill="#94a3b8" font-family="Inter,sans-serif" font-size="11.5">callbacks &amp; multi-tenant permissions.</text>
+    <text x="20" y="122" fill="#86efac" font-family="ui-monospace,monospace" font-size="10.5" font-weight="700">✓ 100% Domain-First Schema Design</text>
+  </g>
+
+  <!-- Stage 02 -->
+  <g transform="translate(320, 0)">
+    <rect width="308" height="138" rx="14" fill="#091121" stroke="#22d3ee" stroke-opacity="0.45"/>
+    <text x="20" y="30" fill="#22d3ee" font-family="ui-monospace,monospace" font-size="12" font-weight="900">02 // TYPE-SAFE CORE &amp; RBAC</text>
+    <text x="20" y="56" fill="#f8fafc" font-family="Inter,sans-serif" font-size="14" font-weight="700">End-to-end strict contracts</text>
+    <text x="20" y="78" fill="#94a3b8" font-family="Inter,sans-serif" font-size="11.5">Prisma + PostgreSQL + Zod + Server Actions</text>
+    <text x="20" y="96" fill="#94a3b8" font-family="Inter,sans-serif" font-size="11.5">with strict tenant &amp; role isolation.</text>
+    <text x="20" y="122" fill="#67e8f9" font-family="ui-monospace,monospace" font-size="10.5" font-weight="700">✓ 150+ Production DB Models Shipped</text>
+  </g>
+
+  <!-- Stage 03 -->
+  <g transform="translate(0, 156)">
+    <rect width="300" height="138" rx="14" fill="#091121" stroke="#f59e0b" stroke-opacity="0.45"/>
+    <text x="20" y="30" fill="#f59e0b" font-family="ui-monospace,monospace" font-size="12" font-weight="900">03 // OFFLINE &amp; FAILURE RESILIENCE</text>
+    <text x="20" y="56" fill="#f8fafc" font-family="Inter,sans-serif" font-size="14" font-weight="700">Survives zero-internet &amp; retries</text>
+    <text x="20" y="78" fill="#94a3b8" font-family="Inter,sans-serif" font-size="11.5">Local-network Socket.IO rooms, idempotent</text>
+    <text x="20" y="96" fill="#94a3b8" font-family="Inter,sans-serif" font-size="11.5">webhook reconciliation &amp; state recovery.</text>
+    <text x="20" y="122" fill="#fcd34d" font-family="ui-monospace,monospace" font-size="10.5" font-weight="700">✓ 0ms Cloud Dependency on LAN POS</text>
+  </g>
+
+  <!-- Stage 04 -->
+  <g transform="translate(320, 156)">
+    <rect width="308" height="138" rx="14" fill="#091121" stroke="#a78bfa" stroke-opacity="0.45"/>
+    <text x="20" y="30" fill="#a78bfa" font-family="ui-monospace,monospace" font-size="12" font-weight="900">04 // AI-ACCELERATED SHIPPING</text>
+    <text x="20" y="56" fill="#f8fafc" font-family="Inter,sans-serif" font-size="14" font-weight="700">High-velocity autonomous delivery</text>
+    <text x="20" y="78" fill="#94a3b8" font-family="Inter,sans-serif" font-size="11.5">Agentic workflows + embedded AI features</text>
+    <text x="20" y="96" fill="#94a3b8" font-family="Inter,sans-serif" font-size="11.5">(Groq symptom triage, OCR/vision, CRM bots).</text>
+    <text x="20" y="122" fill="#ddd6fe" font-family="ui-monospace,monospace" font-size="10.5" font-weight="700">✓ 80+ Production Deployments Live</text>
+  </g>
+</g>
+</svg>

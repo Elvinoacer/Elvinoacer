@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="465" viewBox="0 0 1200 465" role="img" aria-label="3D Production Ecosystem Constellation">
+<defs>
+  <radialGradient id="cBg" cx="0.5" cy="0.54" r="0.65">
+    <stop offset="0%" stop-color="#0d1f38"/>
+    <stop offset="55%" stop-color="#081020"/>
+    <stop offset="100%" stop-color="#050811"/>
+  </radialGradient>
+  <filter id="cGlow" x="-30%" y="-30%" width="160%" height="160%">
+    <feGaussianBlur stdDeviation="4" result="b"/>
+    <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+</defs>
+
+<rect width="1200" height="465" rx="20" fill="url(#cBg)" stroke="#1e293b" stroke-width="1.5"/>
+
+<!-- Header -->
+<g font-family="ui-monospace,SFMono-Regular,monospace" font-size="11.5" font-weight="800" letter-spacing="1.5">
+  <text x="36" y="34" fill="#94a3b8">3D PRODUCTION CONSTELLATION  //  FLAGSHIP MULTI-TENANT &amp; OFFLINE-FIRST ECOSYSTEMS</text>
+  <text x="1164" y="34" text-anchor="end" fill="#22d3ee">GTSS CORE ENGINE</text>
+</g>
+<line x1="28" y1="48" x2="1172" y2="48" stroke="#1e293b"/>
+
+<!-- Central Orbital Radar Rings -->
+<g transform="translate(600, 250)" fill="none">
+  <ellipse rx="210" ry="115" stroke="#38bdf8" stroke-opacity="0.14" stroke-width="1.2" stroke-dasharray="8 8"/>
+  <ellipse rx="150" ry="82" stroke="#39d353" stroke-opacity="0.20" stroke-width="1.2" stroke-dasharray="14 6"/>
+  <circle r="118" stroke="#22d3ee" stroke-opacity="0.18" stroke-dasharray="6 12">
+    <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="20s" repeatCount="indefinite"/>
+  </circle>
+  <circle r="86" stroke="#a78bfa" stroke-opacity="0.25" stroke-dasharray="18 10">
+    <animateTransform attributeName="transform" type="rotate" from="360" to="0" dur="12s" repeatCount="indefinite"/>
+  </circle>
+</g>
+
+<!-- Animated 3D Conduits & Data Packets -->
+<path id="conduit0" d="M600,250 Q405.0,217.0 210,118" fill="none" stroke="#39d353" stroke-width="1.8" stroke-opacity="0.32" stroke-dasharray="6 8"/><circle r="4" fill="#39d353" filter="url(#cGlow)"><animateMotion dur="2.60s" repeatCount="indefinite"><mpath href="#conduit0"/></animateMotion></circle><circle r="3" fill="#ffffff"><animateMotion dur="2.60s" begin="-1.3s" repeatCount="indefinite"><mpath href="#conduit0"/></animateMotion></circle><path id="conduit1" d="M600,250 Q795.0,217.0 990,118" fill="none" stroke="#22d3ee" stroke-width="1.8" stroke-opacity="0.32" stroke-dasharray="6 8"/><circle r="4" fill="#22d3ee" filter="url(#cGlow)"><animateMotion dur="2.95s" repeatCount="indefinite"><mpath href="#conduit1"/></animateMotion></circle><circle r="3" fill="#ffffff"><animateMotion dur="2.95s" begin="-1.3s" repeatCount="indefinite"><mpath href="#conduit1"/></animateMotion></circle><path id="conduit2" d="M600,250 Q385.0,252.5 170,260" fill="none" stroke="#f59e0b" stroke-width="1.8" stroke-opacity="0.32" stroke-dasharray="6 8"/><circle r="4" fill="#f59e0b" filter="url(#cGlow)"><animateMotion dur="3.30s" repeatCount="indefinite"><mpath href="#conduit2"/></animateMotion></circle><circle r="3" fill="#ffffff"><animateMotion dur="3.30s" begin="-1.3s" repeatCount="indefinite"><mpath href="#conduit2"/></animateMotion></circle><path id="conduit3" d="M600,250 Q815.0,252.5 1030,260" fill="none" stroke="#a78bfa" stroke-width="1.8" stroke-opacity="0.32" stroke-dasharray="6 8"/><circle r="4" fill="#a78bfa" filter="url(#cGlow)"><animateMotion dur="3.65s" repeatCount="indefinite"><mpath href="#conduit3"/></animateMotion></circle><circle r="3" fill="#ffffff"><animateMotion dur="3.65s" begin="-1.3s" repeatCount="indefinite"><mpath href="#conduit3"/></animateMotion></circle><path id="conduit4" d="M600,250 Q415.0,285.5 230,392" fill="none" stroke="#38bdf8" stroke-width="1.8" stroke-opacity="0.32" stroke-dasharray="6 8"/><circle r="4" fill="#38bdf8" filter="url(#cGlow)"><animateMotion dur="4.00s" repeatCount="indefinite"><mpath href="#conduit4"/></animateMotion></circle><circle r="3" fill="#ffffff"><animateMotion dur="4.00s" begin="-1.3s" repeatCount="indefinite"><mpath href="#conduit4"/></animateMotion></circle><path id="conduit5" d="M600,250 Q785.0,285.5 970,392" fill="none" stroke="#f43f5e" stroke-width="1.8" stroke-opacity="0.32" stroke-dasharray="6 8"/><circle r="4" fill="#f43f5e" filter="url(#cGlow)"><animateMotion dur="4.35s" repeatCount="indefinite"><mpath href="#conduit5"/></animateMotion></circle><circle r="3" fill="#ffffff"><animateMotion dur="4.35s" begin="-1.3s" repeatCount="indefinite"><mpath href="#conduit5"/></animateMotion></circle>
+
+<!-- Central 3D Stacked Isometric Reactor -->
+<g filter="url(#cGlow)">
+  <path d="M535.0,270.0 L600.0,301.0 L600.0,317.0 L535.0,286.0 Z" fill="#090d16" stroke="#38bdf8" stroke-opacity="0.5" stroke-width="0.8"/><path d="M600.0,301.0 L665.0,270.0 L665.0,286.0 L600.0,317.0 Z" fill="#050811" stroke="#38bdf8" stroke-opacity="0.5" stroke-width="0.8"/><path d="M600.0,239.0 L665.0,270.0 L600.0,301.0 L535.0,270.0 Z" fill="#0f172a" stroke="#38bdf8" stroke-opacity="0.75" stroke-width="1"/><path d="M548.0,246.0 L600.0,271.0 L600.0,287.0 L548.0,262.0 Z" fill="#006d32" stroke="#39d353" stroke-opacity="0.7" stroke-width="0.8"/><path d="M600.0,271.0 L652.0,246.0 L652.0,262.0 L600.0,287.0 Z" fill="#092e1c" stroke="#39d353" stroke-opacity="0.7" stroke-width="0.8"/><path d="M600.0,221.0 L652.0,246.0 L600.0,271.0 L548.0,246.0 Z" fill="#0e4429" stroke="#39d353" stroke-opacity="0.95" stroke-width="1"/><path d="M561.0,220.0 L600.0,239.0 L600.0,257.0 L561.0,238.0 Z" fill="#0284c7" stroke="#67e8f9" stroke-opacity="0.9" stroke-width="0.8"/><path d="M600.0,239.0 L639.0,220.0 L639.0,238.0 L600.0,257.0 Z" fill="#0369a1" stroke="#67e8f9" stroke-opacity="0.9" stroke-width="0.8"/><path d="M600.0,201.0 L639.0,220.0 L600.0,239.0 L561.0,220.0 Z" fill="#22d3ee" stroke="#67e8f9" stroke-opacity="1.0" stroke-width="1"/>
+  <animateTransform attributeName="transform" type="translate" values="0,0; 0,-7; 0,0" dur="3.4s" repeatCount="indefinite"/>
+</g>
+<text x="600" y="316" text-anchor="middle" fill="#f8fafc" font-family="ui-monospace,monospace" font-size="13" font-weight="900" letter-spacing="2">GTSS · NEXUS</text>
+<text x="600" y="332" text-anchor="middle" fill="#39d353" font-family="ui-monospace,monospace" font-size="10" font-weight="700">6 LIVE PLATFORMS</text>
+
+<!-- 6 Flagship System Cards -->
+
+        <g>
+          <rect x="46" y="75" width="328" height="86" rx="12" fill="#091121" fill-opacity="0.94" stroke="#39d353" stroke-opacity="0.55" stroke-width="1.4"/>
+          <path d="M61.0,111.0 L74.0,117.0 L74.0,135.0 L61.0,129.0 Z" fill="#0f172a" stroke="#39d353" stroke-opacity="0.8" stroke-width="0.8"/><path d="M74.0,117.0 L87.0,111.0 L87.0,129.0 L74.0,135.0 Z" fill="#1e293b" stroke="#39d353" stroke-opacity="0.8" stroke-width="0.8"/><path d="M74.0,105.0 L87.0,111.0 L74.0,117.0 L61.0,111.0 Z" fill="#39d353" stroke="#39d353" stroke-opacity="1.0" stroke-width="1"/>
+          <text x="100" y="103" fill="#39d353" font-family="ui-monospace,SFMono-Regular,monospace" font-size="11.5" font-weight="800" letter-spacing="0.8">01 // AFYVIA · PHARMACARE OS</text>
+          <text x="100" y="124" fill="#f1f5f9" font-family="Inter,ui-sans-serif,sans-serif" font-size="11.5" font-weight="600">57 Prisma Models · 4 Portals · FEFO + AI Triage</text>
+          <text x="100" y="144" fill="#64748b" font-family="ui-monospace,SFMono-Regular,monospace" font-size="10.5">↗ afyvia.gtss.software</text>
+        </g>
+        <g>
+          <rect x="826" y="75" width="328" height="86" rx="12" fill="#091121" fill-opacity="0.94" stroke="#22d3ee" stroke-opacity="0.55" stroke-width="1.4"/>
+          <path d="M841.0,111.0 L854.0,117.0 L854.0,135.0 L841.0,129.0 Z" fill="#0f172a" stroke="#22d3ee" stroke-opacity="0.8" stroke-width="0.8"/><path d="M854.0,117.0 L867.0,111.0 L867.0,129.0 L854.0,135.0 Z" fill="#1e293b" stroke="#22d3ee" stroke-opacity="0.8" stroke-width="0.8"/><path d="M854.0,105.0 L867.0,111.0 L854.0,117.0 L841.0,111.0 Z" fill="#22d3ee" stroke="#22d3ee" stroke-opacity="1.0" stroke-width="1"/>
+          <text x="880" y="103" fill="#22d3ee" font-family="ui-monospace,SFMono-Regular,monospace" font-size="11.5" font-weight="800" letter-spacing="0.8">02 // JUSTINTIME MARKETPLACE</text>
+          <text x="880" y="124" fill="#f1f5f9" font-family="Inter,ui-sans-serif,sans-serif" font-size="11.5" font-weight="600">Geo-Match · Socket.IO Proposals · M-Pesa Escrow</text>
+          <text x="880" y="144" fill="#64748b" font-family="ui-monospace,SFMono-Regular,monospace" font-size="10.5">↗ justintime.gtss.software</text>
+        </g>
+        <g>
+          <rect x="6" y="217" width="328" height="86" rx="12" fill="#091121" fill-opacity="0.94" stroke="#f59e0b" stroke-opacity="0.55" stroke-width="1.4"/>
+          <path d="M21.0,253.0 L34.0,259.0 L34.0,277.0 L21.0,271.0 Z" fill="#0f172a" stroke="#f59e0b" stroke-opacity="0.8" stroke-width="0.8"/><path d="M34.0,259.0 L47.0,253.0 L47.0,271.0 L34.0,277.0 Z" fill="#1e293b" stroke="#f59e0b" stroke-opacity="0.8" stroke-width="0.8"/><path d="M34.0,247.0 L47.0,253.0 L34.0,259.0 L21.0,253.0 Z" fill="#f59e0b" stroke="#f59e0b" stroke-opacity="1.0" stroke-width="1"/>
+          <text x="60" y="245" fill="#f59e0b" font-family="ui-monospace,SFMono-Regular,monospace" font-size="11.5" font-weight="800" letter-spacing="0.8">03 // RESTAURANT MANAGER POS</text>
+          <text x="60" y="266" fill="#f1f5f9" font-family="Inter,ui-sans-serif,sans-serif" font-size="11.5" font-weight="600">39 Screens · 5 Roles · 0ms LAN Offline-First KDS</text>
+          <text x="60" y="286" fill="#64748b" font-family="ui-monospace,SFMono-Regular,monospace" font-size="10.5">↗ hotel-intranet (LAN + Cloud)</text>
+        </g>
+        <g>
+          <rect x="866" y="217" width="328" height="86" rx="12" fill="#091121" fill-opacity="0.94" stroke="#a78bfa" stroke-opacity="0.55" stroke-width="1.4"/>
+          <path d="M881.0,253.0 L894.0,259.0 L894.0,277.0 L881.0,271.0 Z" fill="#0f172a" stroke="#a78bfa" stroke-opacity="0.8" stroke-width="0.8"/><path d="M894.0,259.0 L907.0,253.0 L907.0,271.0 L894.0,277.0 Z" fill="#1e293b" stroke="#a78bfa" stroke-opacity="0.8" stroke-width="0.8"/><path d="M894.0,247.0 L907.0,253.0 L894.0,259.0 L881.0,253.0 Z" fill="#a78bfa" stroke="#a78bfa" stroke-opacity="1.0" stroke-width="1"/>
+          <text x="920" y="245" fill="#a78bfa" font-family="ui-monospace,SFMono-Regular,monospace" font-size="11.5" font-weight="800" letter-spacing="0.8">04 // KAMPUS &amp; MOI MASHINANI</text>
+          <text x="920" y="266" fill="#f1f5f9" font-family="Inter,ui-sans-serif,sans-serif" font-size="11.5" font-weight="600">React Native · Expo · Campus P2P Marketplace</text>
+          <text x="920" y="286" fill="#64748b" font-family="ui-monospace,SFMono-Regular,monospace" font-size="10.5">↗ moimashinani.gtss.software</text>
+        </g>
+        <g>
+          <rect x="66" y="349" width="328" height="86" rx="12" fill="#091121" fill-opacity="0.94" stroke="#38bdf8" stroke-opacity="0.55" stroke-width="1.4"/>
+          <path d="M81.0,385.0 L94.0,391.0 L94.0,409.0 L81.0,403.0 Z" fill="#0f172a" stroke="#38bdf8" stroke-opacity="0.8" stroke-width="0.8"/><path d="M94.0,391.0 L107.0,385.0 L107.0,403.0 L94.0,409.0 Z" fill="#1e293b" stroke="#38bdf8" stroke-opacity="0.8" stroke-width="0.8"/><path d="M94.0,379.0 L107.0,385.0 L94.0,391.0 L81.0,385.0 Z" fill="#38bdf8" stroke="#38bdf8" stroke-opacity="1.0" stroke-width="1"/>
+          <text x="120" y="377" fill="#38bdf8" font-family="ui-monospace,SFMono-Regular,monospace" font-size="11.5" font-weight="800" letter-spacing="0.8">05 // CONCEPT BUILDERS</text>
+          <text x="120" y="398" fill="#f1f5f9" font-family="Inter,ui-sans-serif,sans-serif" font-size="11.5" font-weight="600">33MB CAD/3D Plan Store · Live Client Sockets</text>
+          <text x="120" y="418" fill="#64748b" font-family="ui-monospace,SFMono-Regular,monospace" font-size="10.5">↗ conceptbuilders.co.ke</text>
+        </g>
+        <g>
+          <rect x="806" y="349" width="328" height="86" rx="12" fill="#091121" fill-opacity="0.94" stroke="#f43f5e" stroke-opacity="0.55" stroke-width="1.4"/>
+          <path d="M821.0,385.0 L834.0,391.0 L834.0,409.0 L821.0,403.0 Z" fill="#0f172a" stroke="#f43f5e" stroke-opacity="0.8" stroke-width="0.8"/><path d="M834.0,391.0 L847.0,385.0 L847.0,403.0 L834.0,409.0 Z" fill="#1e293b" stroke="#f43f5e" stroke-opacity="0.8" stroke-width="0.8"/><path d="M834.0,379.0 L847.0,385.0 L834.0,391.0 L821.0,385.0 Z" fill="#f43f5e" stroke="#f43f5e" stroke-opacity="1.0" stroke-width="1"/>
+          <text x="860" y="377" fill="#f43f5e" font-family="ui-monospace,SFMono-Regular,monospace" font-size="11.5" font-weight="800" letter-spacing="0.8">06 // GERMAN VIRTUAL SCHOOL</text>
+          <text x="860" y="398" fill="#f1f5f9" font-family="Inter,ui-sans-serif,sans-serif" font-size="11.5" font-weight="600">CEFR A1–C2 Live Cohorts · Real-Time Class Sync</text>
+          <text x="860" y="418" fill="#64748b" font-family="ui-monospace,SFMono-Regular,monospace" font-size="10.5">↗ germanvirtualschool.com</text>
+        </g>
+</svg>

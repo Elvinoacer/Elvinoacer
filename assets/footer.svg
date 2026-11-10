@@ -1,8 +1,44 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="108" viewBox="0 0 1200 108" role="img" aria-labelledby="title desc">
-<title id="title">Built in Kenya. Built to be used.</title>
-<desc id="desc">A quiet green signature for Elvin Omondi Juma.</desc>
-<rect width="1200" height="108" rx="12" fill="#0d1117"/>
-<path d="M32 1H1168" stroke="#30363d"/>
-<text x="32" y="63" fill="#f0f6fc" font-family="DejaVu Sans,Segoe UI,sans-serif" font-size="24" font-weight="600">Built in Kenya. <tspan fill="#39d353">Built to be used.</tspan></text>
-<rect x="968" y="48" width="15" height="15" rx="3" fill="#0e4429"/><rect x="992" y="48" width="15" height="15" rx="3" fill="#006d32"/><rect x="1016" y="48" width="15" height="15" rx="3" fill="#26a641"/><rect x="1040" y="48" width="15" height="15" rx="3" fill="#39d353"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="130" viewBox="0 0 1200 130" role="img" aria-label="Engineered in Kenya. Built for real-world scale.">
+<defs>
+  <linearGradient id="fBg" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0%" stop-color="#050811"/>
+    <stop offset="50%" stop-color="#091326"/>
+    <stop offset="100%" stop-color="#050811"/>
+  </linearGradient>
+  <linearGradient id="fLine" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0%" stop-color="#39d353" stop-opacity="0"/>
+    <stop offset="25%" stop-color="#39d353"/>
+    <stop offset="50%" stop-color="#22d3ee"/>
+    <stop offset="75%" stop-color="#a78bfa"/>
+    <stop offset="100%" stop-color="#a78bfa" stop-opacity="0"/>
+  </linearGradient>
+</defs>
+
+<rect width="1200" height="130" rx="18" fill="url(#fBg)" stroke="#1e293b" stroke-width="1.5"/>
+
+<!-- 3D Perspective Horizon Grid -->
+<g stroke="#22d3ee" stroke-opacity="0.14" stroke-width="1">
+  <line x1="0" y1="82" x2="1200" y2="82"/>
+  <line x1="0" y1="98" x2="1200" y2="98"/>
+  <line x1="0" y1="116" x2="1200" y2="116"/>
+  <line x1="600" y1="20" x2="80" y2="130"/>
+  <line x1="600" y1="20" x2="260" y2="130"/>
+  <line x1="600" y1="20" x2="430" y2="130"/>
+  <line x1="600" y1="20" x2="600" y2="130"/>
+  <line x1="600" y1="20" x2="770" y2="130"/>
+  <line x1="600" y1="20" x2="940" y2="130"/>
+  <line x1="600" y1="20" x2="1120" y2="130"/>
+</g>
+
+<path d="M40 2 H1160" stroke="url(#fLine)" stroke-width="2"/>
+<circle r="4" cy="2" fill="#22d3ee">
+  <animate attributeName="cx" values="80;1120;80" dur="6s" repeatCount="indefinite"/>
+</circle>
+
+<text x="600" y="54" text-anchor="middle" fill="#f8fafc" font-family="Inter,ui-sans-serif,system-ui,sans-serif" font-size="22" font-weight="800" letter-spacing="0.5">
+  ENGINEERED IN KENYA  ·  <tspan fill="#39d353">SHIPPED TO PRODUCTION</tspan>  ·  <tspan fill="#22d3ee">BUILT FOR SCALE</tspan>
+</text>
+<text x="600" y="84" text-anchor="middle" fill="#94a3b8" font-family="ui-monospace,SFMono-Regular,monospace" font-size="11.5" font-weight="700" letter-spacing="2">
+  ELVIN OMONDI JUMA  //  FOUNDING ENGINEER @ GTSS  //  5,100+ CONTRIBUTIONS  //  124 REPOSITORIES
+</text>
 </svg>

@@ -1,27 +1,22 @@
-# Profile artwork
+# 3D Profile Artwork & Telemetry Engine
 
-The profile uses GitHub's familiar dark background and contribution greens:
+All visual assets in this repository are **100% self-contained and procedurally generated** via [`scripts/render_assets.py`](../scripts/render_assets.py) using 3D rotation matrices, perspective projection ($f / (d - z)$), depth-sorted painter's algorithm, and isometric 3D extrusion.
 
-| Use | Color |
-| --- | --- |
-| Background | `#0d1117` |
-| Panel | `#161b22` |
-| Border | `#30363d` |
-| Main text | `#f0f6fc` |
-| Secondary text | `#8b949e` |
-| Contribution greens | `#0e4429`, `#006d32`, `#26a641`, `#39d353` |
+## Generated Assets
 
-The animated grid spells **EOJ**. It is decorative artwork inspired by contribution cells, not a chart of activity or a claim about commit counts. The second animation follows the four stages described in the README.
-
-All profile images are served from this repository. Desktop and mobile layouts each have a GIF and a static PNG. The README's `<picture>` elements select static artwork when the browser reports `prefers-reduced-motion: reduce`.
+| Asset | Format | Description |
+| :--- | :--- | :--- |
+| `hero-3d.svg` | 60fps Vector 3D SVG | True 3D perspective-projected rotating geodesic icosahedron & counter-rotating octahedron core, 3D orbital rings, isometric voxel contribution wave, and live metric cards |
+| `telemetry-3d.svg` | 60fps Vector 3D SVG | 3D isometric contribution velocity bars (`5,107+` total), flagship complexity benchmarks (`57` Prisma models, `39` POS screens), and holographic stack distribution |
+| `project-constellation-3d.svg` | 60fps Vector 3D SVG | 3D isometric multi-node production constellation linking the central GTSS Nexus reactor to 6 flagship systems with animated bezier data packets |
+| `architecture-3d.svg` | 60fps Vector 3D SVG | 3D exploded isometric 3-tier system topology with vertical laser conduits and 4-stage execution loop |
+| `profile-hero.gif` / `.png` | 3D Raster GIF + PNG | Supersampled 3D software-rendered command deck (desktop & mobile variants) with `<picture>` reduced-motion support |
+| `build-loop.gif` / `.png` | 3D Raster GIF + PNG | 3D isometric 4-stage execution pipeline (desktop & mobile variants) |
+| `footer.svg` | 60fps Vector 3D SVG | 3D perspective receding horizon grid and animated laser pulse |
 
 ## Regenerate
 
-Use Python 3.10 or newer, Pillow, and DejaVu Sans / DejaVu Sans Mono fonts:
-
 ```bash
-python -m pip install -r scripts/requirements.txt
-python scripts/render_assets.py
+python3 -m pip install -r scripts/requirements.txt
+python3 scripts/render_assets.py
 ```
-
-The renderer looks for DejaVu fonts in standard Linux and macOS font directories. Set `PROFILE_FONT_DIR` to a directory containing `DejaVuSans.ttf`, `DejaVuSans-Bold.ttf`, and `DejaVuSansMono.ttf` if they are elsewhere. Committed image files make font installation unnecessary for viewing the profile.
