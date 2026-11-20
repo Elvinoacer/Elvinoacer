@@ -1,24 +1,29 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="920" height="212" viewBox="0 0 920 212" role="img" aria-label="Elvin Omondi Juma — Founding Engineer at Great Thumbs Software Solutions">
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="196" viewBox="0 0 920 196" role="img" aria-label="Elvin Omondi Juma — Founding Engineer at Great Thumbs Software Solutions">
 <defs>
-  <clipPath id="heroClip"><rect width="920" height="212" rx="16"/></clipPath>
+  <clipPath id="heroClip"><rect width="920" height="196" rx="16"/></clipPath>
   <linearGradient id="heroBg" x1="0" y1="0" x2="1" y2="1">
     <stop offset="0%" stop-color="#FFFFFF"/>
-    <stop offset="65%" stop-color="#F7FAF8"/>
-    <stop offset="100%" stop-color="#EEF4F1"/>
+    <stop offset="62%" stop-color="#F7FAF8"/>
+    <stop offset="100%" stop-color="#ECF3EF"/>
   </linearGradient>
   <radialGradient id="heroGlow" cx="0.85" cy="0.28" r="0.34">
-    <stop offset="0%" stop-color="#E8CE96" stop-opacity="0.28"/>
+    <stop offset="0%" stop-color="#E5C98B" stop-opacity="0.30"/>
     <stop offset="55%" stop-color="#2C6E5B" stop-opacity="0.06"/>
     <stop offset="100%" stop-color="#F7FAF8" stop-opacity="0"/>
   </radialGradient>
   <radialGradient id="heroOrbGrad" cx="0.5" cy="0.5" r="0.5">
-    <stop offset="0%" stop-color="#F2DFB6" stop-opacity="0.62"/>
-    <stop offset="72%" stop-color="#F2DFB6" stop-opacity="0.30"/>
+    <stop offset="0%" stop-color="#F2DFB6" stop-opacity="0.72"/>
+    <stop offset="70%" stop-color="#F2DFB6" stop-opacity="0.32"/>
     <stop offset="100%" stop-color="#F2DFB6" stop-opacity="0"/>
   </radialGradient>
+  <linearGradient id="mistBand" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0%" stop-color="#2C6E5B" stop-opacity="0"/>
+    <stop offset="50%" stop-color="#477A96" stop-opacity="0.14"/>
+    <stop offset="100%" stop-color="#2C6E5B" stop-opacity="0"/>
+  </linearGradient>
   <linearGradient id="hillFar" x1="0" y1="0" x2="0" y2="1">
-    <stop offset="0%" stop-color="#7DA3B5" stop-opacity="0.26"/>
-    <stop offset="100%" stop-color="#7DA3B5" stop-opacity="0.04"/>
+    <stop offset="0%" stop-color="#8EB4C4" stop-opacity="0.28"/>
+    <stop offset="100%" stop-color="#8EB4C4" stop-opacity="0.03"/>
   </linearGradient>
   <linearGradient id="hillNear" x1="0" y1="0" x2="0" y2="1">
     <stop offset="0%" stop-color="#2C6E5B" stop-opacity="0.22"/>
@@ -27,36 +32,48 @@
 </defs>
 
 <g clip-path="url(#heroClip)">
-  <rect width="920" height="212" fill="url(#heroBg)"/>
-  <rect width="920" height="212" fill="url(#heroGlow)"/>
+  <rect width="920" height="196" fill="url(#heroBg)"/>
+  <rect width="920" height="196" fill="url(#heroGlow)"/>
 
-  <!-- Subtle distant highland mist silhouettes on the right -->
-  <circle cx="792" cy="58" r="24" fill="url(#heroOrbGrad)"/>
-  <path d="M 470 212 C 545 148, 610 132, 682 154 C 742 172, 804 102, 872 126 C 894 134, 910 144, 926 150 L 926 212 Z" fill="url(#hillFar)"/>
-  <path d="M 555 212 C 625 162, 695 168, 764 146 C 824 128, 876 156, 926 142 L 926 212 Z" fill="url(#hillNear)"/>
-  <path d="M 555 212 C 625 162, 695 168, 764 146 C 824 128, 876 156, 926 142" fill="none" stroke="#2C6E5B" stroke-opacity="0.22" stroke-width="1"/>
+  <!-- Gently breathing dawn/dusk orb -->
+  <circle cx="792" cy="56" r="34" fill="url(#heroOrbGrad)">
+    <animate attributeName="r" values="30;37;30" dur="9s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.72;1;0.72" dur="9s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- Soft drifting mist ribbon -->
+  <ellipse cx="720" cy="126" rx="220" ry="20" fill="url(#mistBand)">
+    <animateTransform attributeName="transform" type="translate" values="-28 0; 28 0; -28 0" dur="28s" repeatCount="indefinite"/>
+  </ellipse>
+
+  <!-- Layered highland curves -->
+  <path d="M 476 196 C 548 136, 616 122, 686 144 C 746 162, 806 96, 874 120 C 896 128, 912 136, 926 142 L 926 196 Z" fill="url(#hillFar)"/>
+  <path d="M 556 196 C 626 150, 696 156, 766 134 C 826 118, 878 144, 926 132 L 926 196 Z" fill="url(#hillNear)"/>
+  <path d="M 556 196 C 626 150, 696 156, 766 134 C 826 118, 878 144, 926 132" fill="none" stroke="#2C6E5B" stroke-opacity="0.24" stroke-width="1"/>
+
+  <!-- Subtle drifting light motes -->
+  <g><circle cx="648" cy="128" r="2.0" fill="#C9A15A" opacity="0"><animate attributeName="opacity" values="0;0.55;0.2;0" dur="14s" begin="0s" repeatCount="indefinite"/><animateTransform attributeName="transform" type="translate" values="0 8; 6 -16; -4 -34" dur="14s" begin="0s" repeatCount="indefinite"/></circle><circle cx="712" cy="108" r="1.6" fill="#C9A15A" opacity="0"><animate attributeName="opacity" values="0;0.55;0.2;0" dur="18s" begin="-4s" repeatCount="indefinite"/><animateTransform attributeName="transform" type="translate" values="0 8; 6 -16; -4 -34" dur="18s" begin="-4s" repeatCount="indefinite"/></circle><circle cx="766" cy="134" r="2.2" fill="#C9A15A" opacity="0"><animate attributeName="opacity" values="0;0.55;0.2;0" dur="16s" begin="-8s" repeatCount="indefinite"/><animateTransform attributeName="transform" type="translate" values="0 8; 6 -16; -4 -34" dur="16s" begin="-8s" repeatCount="indefinite"/></circle><circle cx="838" cy="112" r="1.8" fill="#C9A15A" opacity="0"><animate attributeName="opacity" values="0;0.55;0.2;0" dur="20s" begin="-3s" repeatCount="indefinite"/><animateTransform attributeName="transform" type="translate" values="0 8; 6 -16; -4 -34" dur="20s" begin="-3s" repeatCount="indefinite"/></circle><circle cx="874" cy="140" r="1.5" fill="#C9A15A" opacity="0"><animate attributeName="opacity" values="0;0.55;0.2;0" dur="15s" begin="-9s" repeatCount="indefinite"/><animateTransform attributeName="transform" type="translate" values="0 8; 6 -16; -4 -34" dur="15s" begin="-9s" repeatCount="indefinite"/></circle></g>
 
   <!-- Live status pill -->
-  <g transform="translate(42, 30)">
-    <rect width="407" height="26" rx="13" fill="#EFF5F2" stroke="#DCE6E1" stroke-width="1"/>
+  <g transform="translate(42, 26)">
+    <rect width="374" height="26" rx="13" fill="#F0F6F3" stroke="#DCE6E1" stroke-width="1"/>
     <circle cx="15" cy="13" r="3.6" fill="#2C6E5B">
-      <animate attributeName="opacity" values="0.95;0.38;0.95" dur="5.5s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.95;0.35;0.95" dur="5s" repeatCount="indefinite"/>
     </circle>
-    <text x="27" y="17" fill="#4C625B" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="500">Eldoret, Kenya  ·  7-day streak  ·  5,112 contributions this year</text>
+    <text x="27" y="17" fill="#4B615A" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.4" font-weight="500">Eldoret, Kenya  ·  7-day streak  ·  5,112 contributions / 1y</text>
   </g>
 
-  <!-- Identity -->
-  <text x="42" y="102" fill="#182924" font-family="Georgia, 'Iowan Old Style', 'Palatino Linotype', Palatino, serif" font-size="33" font-weight="400" letter-spacing="-0.4">Elvin Omondi Juma</text>
-  <text x="42" y="129" fill="#4C625B" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="500">Founding Engineer at Great Thumbs Software Solutions</text>
-  <text x="42" y="155" fill="#7A9089" font-family="Georgia, 'Iowan Old Style', 'Palatino Linotype', Palatino, serif" font-style="italic" font-size="13">Building calm, dependable software for healthcare, local commerce, and everyday operations.</text>
+  <!-- Concise identity -->
+  <text x="42" y="98" fill="#182924" font-family="Georgia, 'Iowan Old Style', 'Palatino Linotype', Palatino, serif" font-size="33" font-weight="400" letter-spacing="-0.4">Elvin Omondi Juma</text>
+  <text x="42" y="125" fill="#4B615A" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.8" font-weight="500">Founding Engineer @ GTSS  ·  Full-Stack Product Architect</text>
+  <text x="42" y="152" fill="#7A9089" font-family="Georgia, 'Iowan Old Style', 'Palatino Linotype', Palatino, serif" font-style="italic" font-size="12.8">Quiet, dependable software for healthcare, commerce, and real-world operations.</text>
 
-  <!-- Subtle bottom bar -->
-  <line x1="42" y1="176" x2="540" y2="176" stroke="#E5EDE9" stroke-width="1"/>
-  <text x="42" y="195" fill="#7A9089" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.2">
-    <tspan fill="#4C625B" font-weight="600">@Elvinoacer</tspan>
-    <tspan>  ·  107 public repositories  ·  6,482 lifetime contributions</tspan>
+  <!-- Subtle footer telemetry line -->
+  <text x="42" y="178" fill="#7A9089" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11">
+    <tspan fill="#4B615A" font-weight="600">@Elvinoacer</tspan>
+    <tspan>  ·  107 public repos  ·  6,482 lifetime contributions</tspan>
   </text>
 </g>
 
-<rect x="0.5" y="0.5" width="919" height="211" rx="15.5" fill="none" stroke="#DCE6E1" stroke-width="1"/>
+<rect x="0.5" y="0.5" width="919" height="195" rx="15.5" fill="none" stroke="#DCE6E1" stroke-width="1"/>
 </svg>

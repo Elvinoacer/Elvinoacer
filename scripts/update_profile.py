@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Fetch live GitHub telemetry for Elvinoacer and render the calm, light/dark adaptive
-SVG visual suite plus dynamic README sections.
+Fetch live GitHub telemetry for Elvinoacer and render the calm, gently animated,
+light/dark adaptive SVG visual suite plus dynamic README metadata.
 
 Zero external dependencies (Python 3 standard library only) so GitHub Actions stays
 fast, reliable, and maintenance-free.
@@ -15,7 +15,6 @@ import math
 import os
 import re
 import subprocess
-import urllib.error
 import urllib.request
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -32,30 +31,28 @@ EAT_TZ = timezone(timedelta(hours=3))
 THEMES: dict[str, dict[str, Any]] = {
     "light": {
         "canvas": "#F7FAF8",
-        "canvas_alt": "#EEF4F1",
+        "canvas_alt": "#ECF3EF",
         "surface": "#FFFFFF",
-        "subtle": "#EFF5F2",
+        "subtle": "#F0F6F3",
         "border": "#DCE6E1",
         "divider": "#E5EDE9",
+        "track": "#E4ECE8",
         "ink": "#182924",
-        "ink_sec": "#4C625B",
+        "ink_sec": "#4B615A",
         "ink_muted": "#7A9089",
         "pine": "#2C6E5B",
         "lake": "#477A96",
         "moss": "#6C9A7F",
         "ochre": "#A8844E",
-        "sky_top": "#F4F8F6",
-        "sky_mid": "#E7F0EC",
-        "sky_bot": "#DCE9E3",
+        "sky_top": "#F5F9F7",
+        "sky_mid": "#EAF2EE",
+        "sky_bot": "#DCEAE4",
         "orb": "#F2DFB6",
-        "orb_glow": "#E8CE96",
-        "ridge_far": "#7DA3B5",
-        "ridge_far_stroke": "#58869C",
-        "ridge_near": "#2E6D5B",
-        "ridge_near_stroke": "#1E5243",
-        "water_top": "#D4E3DD",
-        "water_bot": "#EFF5F2",
-        "ripple": "#FFFFFF",
+        "orb_glow": "#E5C98B",
+        "wave_1": "#8EB4C4",
+        "wave_2": "#699C8A",
+        "wave_3": "#3B7A67",
+        "firefly": "#C9A15A",
         "ramp": ["#E8F0EC", "#C2DDD1", "#86BFA7", "#4D967B", "#276954"],
         "lang_colors": {
             "TypeScript": "#46769E",
@@ -73,30 +70,28 @@ THEMES: dict[str, dict[str, Any]] = {
     },
     "dark": {
         "canvas": "#0D1117",
-        "canvas_alt": "#11181E",
+        "canvas_alt": "#111920",
         "surface": "#121920",
         "subtle": "#172129",
         "border": "#22303A",
         "divider": "#1D2A33",
+        "track": "#1C2830",
         "ink": "#E6EFEA",
         "ink_sec": "#95AAA3",
-        "ink_muted": "#667D76",
+        "ink_muted": "#687F78",
         "pine": "#63B59B",
         "lake": "#72A6C4",
         "moss": "#88BFA0",
         "ochre": "#D1B077",
         "sky_top": "#0E141A",
-        "sky_mid": "#121D24",
-        "sky_bot": "#17272E",
+        "sky_mid": "#111C23",
+        "sky_bot": "#16262E",
         "orb": "#E9D9B5",
-        "orb_glow": "#A5C4B6",
-        "ridge_far": "#3F677D",
-        "ridge_far_stroke": "#72A6C4",
-        "ridge_near": "#2B6655",
-        "ridge_near_stroke": "#63B59B",
-        "water_top": "#122127",
-        "water_bot": "#0D1419",
-        "ripple": "#8EC2B0",
+        "orb_glow": "#9FC4B5",
+        "wave_1": "#365E73",
+        "wave_2": "#2A6154",
+        "wave_3": "#1E4B40",
+        "firefly": "#E5C989",
         "ramp": ["#172227", "#1F443A", "#2D6A59", "#47967E", "#6EC4A8"],
         "lang_colors": {
             "TypeScript": "#6498C4",
@@ -170,85 +165,47 @@ def fmt_bytes(b: int) -> str:
     return f"{b} B"
 
 
-def fmt_relative(iso_ts: str, now_utc: datetime) -> str:
-    dt = datetime.fromisoformat(iso_ts.replace("Z", "+00:00"))
-    diff = max(timedelta(0), now_utc - dt)
-    hours = diff.total_seconds() / 3600.0
-    if hours < 1:
-        return "just now"
-    if hours < 24:
-        h = int(hours)
-        return f"{h}h ago"
-    days = int(hours // 24)
-    if days == 1:
-        return "yesterday"
-    if days < 14:
-        return f"{days}d ago"
-    if days < 60:
-        return f"{days // 7}w ago"
-    return dt.strftime("%b %Y")
-
-
-def truncate(text: str, max_len: int) -> str:
-    clean = re.sub(r"\s+", " ", (text or "").strip())
-    if len(clean) <= max_len:
-        return clean
-    cut = clean[: max_len - 1]
-    if " " in cut:
-        cut = cut.rsplit(" ", 1)[0]
-    return cut.rstrip(" ,;:-—–") + "…"
-
-
-def clean_repo_description(repo_name: str, desc: str) -> str:
-    text = re.sub(r"\s+", " ", (desc or "").strip())
-    if not text:
-        return ""
-    # Strip redundant leading "Repo Name — " prefix when repo name is already in column 1
-    normalized_repo = re.sub(r"[_\-\s]+", " ", repo_name).strip().lower()
-    for sep in (" — ", " – ", " - ", ": "):
-        if sep in text:
-            head, rest = text.split(sep, 1)
-            norm_head = re.sub(r"[_\-\s]+", " ", head).strip().lower()
-            if norm_head == normalized_repo or normalized_repo in norm_head:
-                text = rest.strip()
-                if text:
-                    text = text[0].upper() + text[1:]
-                break
-    return text
+def compute_rank(all_time: int, rolling_365: int, merged_prs: int, stars: int, repos: int, followers: int) -> tuple[str, float]:
+    """Compute a transparent, calm GitHub developer activity rank & percentile (0..1)."""
+    score = (
+        min(1.0, rolling_365 / 2500.0) * 0.40
+        + min(1.0, all_time / 4000.0) * 0.22
+        + min(1.0, merged_prs / 80.0) * 0.16
+        + min(1.0, repos / 60.0) * 0.10
+        + min(1.0, stars / 40.0) * 0.07
+        + min(1.0, followers / 30.0) * 0.05
+    )
+    pct = max(0.25, min(0.98, score))
+    if pct >= 0.90:
+        grade = "S"
+    elif pct >= 0.80:
+        grade = "A+"
+    elif pct >= 0.68:
+        grade = "A"
+    elif pct >= 0.55:
+        grade = "B+"
+    else:
+        grade = "B"
+    return grade, pct
 
 
 def fetch_all_github_data(token: str) -> dict[str, Any]:
     now_utc = datetime.now(timezone.utc)
     now_eat = now_utc.astimezone(EAT_TZ)
 
-    # 1. Core profile + rolling 365-day calendar + pinned items
+    # 1. Core profile + rolling 365-day calendar + merged PRs / starred repos
     core_query = """
     query($login: String!) {
       user(login: $login) {
         id
         name
         login
-        bio
-        company
         location
-        websiteUrl
-        twitterUsername
         createdAt
         followers { totalCount }
         following { totalCount }
-        pinnedItems(first: 6, types: REPOSITORY) {
-          nodes {
-            ... on Repository {
-              name
-              description
-              url
-              homepageUrl
-              stargazerCount
-              forkCount
-              primaryLanguage { name }
-            }
-          }
-        }
+        mergedPRs: pullRequests(states: MERGED) { totalCount }
+        starredRepositories { totalCount }
         contributionsCollection {
           totalCommitContributions
           totalPullRequestContributions
@@ -273,9 +230,11 @@ def fetch_all_github_data(token: str) -> dict[str, Any]:
     user = graphql(token, core_query, {"login": USERNAME})["user"]
     user_id = user["id"]
     start_year = int(user["createdAt"][:4])
+    created_dt = datetime.fromisoformat(user["createdAt"].replace("Z", "+00:00"))
+    created_label = created_dt.strftime("%b %Y")
     current_year = now_utc.year
 
-    # 2. Fetch EVERY year since account creation for all-time totals & all-time longest streak
+    # 2. Fetch EVERY year since account creation for true all-time totals & longest streak
     year_blocks = []
     for y in range(start_year, current_year + 1):
         year_blocks.append(
@@ -310,6 +269,7 @@ def fetch_all_github_data(token: str) -> dict[str, Any]:
     all_time_reviews = 0
     all_time_restricted = 0
     all_days_map: dict[str, int] = {}
+    today_str = now_utc.strftime("%Y-%m-%d")
 
     for y in range(start_year, current_year + 1):
         yc = years_data[f"y{y}"]
@@ -323,11 +283,10 @@ def fetch_all_github_data(token: str) -> dict[str, Any]:
         all_time_restricted += yc["restrictedContributionsCount"]
         for w in yc["contributionCalendar"]["weeks"]:
             for d in w["contributionDays"]:
-                # Ignore future days in current year
-                if d["date"] <= now_utc.strftime("%Y-%m-%d"):
+                if d["date"] <= today_str:
                     all_days_map[d["date"]] = max(all_days_map.get(d["date"], 0), d["contributionCount"])
 
-    # Sort all-time days chronologically for true all-time longest streak & current streak
+    # True all-time longest streak
     all_days_sorted = sorted(all_days_map.items(), key=lambda kv: kv[0])
     longest_streak = 0
     longest_range = ("", "")
@@ -344,14 +303,7 @@ def fetch_all_github_data(token: str) -> dict[str, Any]:
         else:
             cur = 0
 
-    # Rolling 365-day calendar
-    rolling_cal = user["contributionsCollection"]["contributionCalendar"]
-    rolling_weeks = rolling_cal["weeks"]
-    rolling_days = [d for w in rolling_weeks for d in w["contributionDays"]]
-    today_str = now_utc.strftime("%Y-%m-%d")
-    rolling_days_past = [d for d in rolling_days if d["date"] <= today_str]
-
-    # Current streak (allow today == 0 if yesterday > 0 so streak stays intact early in the day)
+    # Current streak (allow today == 0 if yesterday > 0)
     rev_all = list(reversed(all_days_sorted))
     idx = 0
     if rev_all and rev_all[0][1] == 0:
@@ -366,34 +318,49 @@ def fetch_all_github_data(token: str) -> dict[str, Any]:
         else:
             break
 
+    # Rolling 365-day calendar
+    rolling_cal = user["contributionsCollection"]["contributionCalendar"]
+    rolling_weeks = rolling_cal["weeks"]
+    rolling_days = [d for w in rolling_weeks for d in w["contributionDays"]]
+    rolling_days_past = [d for d in rolling_days if d["date"] <= today_str]
+
     rolling_365 = rolling_cal["totalContributions"]
     active_days = sum(1 for d in rolling_days_past if d["contributionCount"] > 0)
     total_cal_days = max(1, len(rolling_days_past))
     active_pct = (active_days / total_cal_days) * 100.0
     active_avg = rolling_365 / max(1, active_days)
+    weekly_avg = rolling_365 / 52.0
 
-    best_day = max(rolling_days_past, key=lambda d: d["contributionCount"]) if rolling_days_past else {"date": today_str, "contributionCount": 0}
-    last_30 = rolling_days_past[-30:]
-    rolling_30 = sum(d["contributionCount"] for d in last_30)
+    best_day = (
+        max(rolling_days_past, key=lambda d: d["contributionCount"])
+        if rolling_days_past
+        else {"date": today_str, "contributionCount": 0}
+    )
+    rolling_30 = sum(d["contributionCount"] for d in rolling_days_past[-30:])
     rolling_7 = sum(d["contributionCount"] for d in rolling_days_past[-7:])
 
     # Weekday cadence (Mon=0 .. Sun=6)
-    # GraphQL weekday: 0=Sun, 1=Mon, ..., 6=Sat -> remap to Mon..Sun
     dow_mon_sun = [0] * 7
     for d in rolling_days_past:
         mon_idx = (d["weekday"] - 1) % 7
         dow_mon_sun[mon_idx] += d["contributionCount"]
 
-    # Weekly sums for the 52-week horizon mountain ridge
-    weekly_series: list[dict[str, Any]] = []
-    for w in rolling_weeks[-52:]:
-        w_sum = sum(d["contributionCount"] for d in w["contributionDays"])
-        weekly_series.append({"firstDay": w["firstDay"], "total": w_sum})
+    # Last 12 complete/active calendar months for the Calm Currents stream
+    monthly_map: dict[tuple[int, int], int] = {}
+    for d in rolling_days_past:
+        yr = int(d["date"][:4])
+        mo = int(d["date"][5:7])
+        monthly_map[(yr, mo)] = monthly_map.get((yr, mo), 0) + d["contributionCount"]
+    monthly_sorted = sorted(monthly_map.items(), key=lambda kv: kv[0])[-12:]
+    monthly_series = [
+        {"year": yr, "month": mo, "label": datetime(yr, mo, 1).strftime("%b"), "total": val}
+        for (yr, mo), val in monthly_sorted
+    ]
 
-    # Last 26 weeks for the calm top-right mosaic
-    mosaic_weeks = rolling_weeks[-26:]
+    # Full 52-week grid for the sleek bottom ribbon
+    ribbon_weeks = rolling_weeks[-52:]
 
-    # 3. Paginate ALL public non-fork owned repositories for exact stars, forks, languages & recent repos
+    # 3. Paginate ALL public non-fork owned repositories
     repos_query = """
     query($login: String!, $cursor: String) {
       user(login: $login) {
@@ -409,14 +376,8 @@ def fetch_all_github_data(token: str) -> dict[str, Any]:
           pageInfo { hasNextPage endCursor }
           nodes {
             name
-            description
-            url
-            homepageUrl
             stargazerCount
             forkCount
-            pushedAt
-            isArchived
-            primaryLanguage { name color }
             languages(first: 10, orderBy: {field: SIZE, direction: DESC}) {
               edges {
                 size
@@ -452,9 +413,9 @@ def fetch_all_github_data(token: str) -> dict[str, Any]:
 
     total_code_bytes = sum(lang_bytes.values()) or 1
     sorted_langs = sorted(lang_bytes.items(), key=lambda kv: -kv[1])
+    total_langs_count = len(sorted_langs)
     top_langs: list[dict[str, Any]] = []
     other_bytes = 0
-    other_repos = 0
     for idx_l, (lname, sz) in enumerate(sorted_langs):
         if idx_l < 5:
             top_langs.append(
@@ -467,18 +428,17 @@ def fetch_all_github_data(token: str) -> dict[str, Any]:
             )
         else:
             other_bytes += sz
-            other_repos += lang_repo_counts[lname]
     if other_bytes > 0:
         top_langs.append(
             {
                 "name": "Other",
                 "bytes": other_bytes,
                 "pct": (other_bytes / total_code_bytes) * 100.0,
-                "repos": len(sorted_langs) - 5,
+                "repos": max(1, total_langs_count - 5),
             }
         )
 
-    # 4. Recent authored commit timestamps (for EAT time-of-day rhythm + latest commit messages on recently tended repos)
+    # 4. Authored commit timestamps for EAT (UTC+3) coding rhythm
     recent_commits_query = """
     query($login: String!, $authorId: ID!) {
       user(login: $login) {
@@ -490,21 +450,11 @@ def fetch_all_github_data(token: str) -> dict[str, Any]:
           orderBy: {field: PUSHED_AT, direction: DESC}
         ) {
           nodes {
-            name
-            description
-            url
-            homepageUrl
-            pushedAt
-            stargazerCount
-            primaryLanguage { name }
             defaultBranchRef {
               target {
                 ... on Commit {
                   history(first: 15, author: {id: $authorId}) {
-                    nodes {
-                      committedDate
-                      messageHeadline
-                    }
+                    nodes { committedDate }
                   }
                 }
               }
@@ -515,9 +465,7 @@ def fetch_all_github_data(token: str) -> dict[str, Any]:
     }
     """
     recent_nodes = graphql(token, recent_commits_query, {"login": USERNAME, "authorId": user_id})["user"]["repositories"]["nodes"]
-
     eat_buckets = {"Morning": 0, "Afternoon": 0, "Evening": 0, "Night": 0}
-    recently_tended: list[dict[str, Any]] = []
     for r in recent_nodes:
         history = []
         if r.get("defaultBranchRef") and r["defaultBranchRef"].get("target"):
@@ -534,42 +482,40 @@ def fetch_all_github_data(token: str) -> dict[str, Any]:
             else:
                 eat_buckets["Night"] += 1
 
-        if r["name"].lower() != USERNAME.lower() and len(recently_tended) < 5:
-            latest_msg = history[0]["messageHeadline"] if history else ""
-            # Clean noisy merge or generic commit prefixes lightly
-            latest_msg = re.sub(r"^(feat|fix|chore|refactor|docs|style|perf)(\([^)]+\))?:\s*", "", latest_msg, flags=re.I)
-            recently_tended.append(
-                {
-                    "name": r["name"],
-                    "url": r["url"],
-                    "homepage": r.get("homepageUrl") or "",
-                    "description": r.get("description") or "",
-                    "language": (r.get("primaryLanguage") or {}).get("name", "TypeScript"),
-                    "pushedAt": r["pushedAt"],
-                    "relative": fmt_relative(r["pushedAt"], now_utc),
-                    "latest_commit": truncate(latest_msg, 64),
-                }
-            )
+    merged_prs = max(all_time_prs, user["mergedPRs"]["totalCount"])
+    followers = user["followers"]["totalCount"]
+    rank_grade, rank_pct = compute_rank(
+        all_time_contributions, rolling_365, merged_prs, total_stars, public_repo_count, followers
+    )
+
+    # YoY growth vs previous year
+    yoy_label = ""
+    if len(yearly_totals) >= 2 and yearly_totals[-2][1] > 0:
+        prev_y, curr_y = yearly_totals[-2][1], yearly_totals[-1][1]
+        pct_change = ((curr_y - prev_y) / prev_y) * 100.0
+        if pct_change >= 0:
+            yoy_label = f"+{pct_change:.0f}% vs {yearly_totals[-2][0]}"
+        else:
+            yoy_label = f"{pct_change:.0f}% vs {yearly_totals[-2][0]}"
 
     repo_lookup = {r["name"]: r for r in all_public_repos}
 
     return {
-        "now_utc": now_utc,
         "now_eat": now_eat,
         "name": user["name"] or "Elvin Omondi Juma",
         "login": user["login"],
-        "location": user["location"] or "Eldoret, Kenya",
-        "company": user["company"] or "Great Thumbs Software Solutions",
-        "created_year": start_year,
-        "followers": user["followers"]["totalCount"],
+        "created_label": created_label,
+        "followers": followers,
         "following": user["following"]["totalCount"],
+        "starred_count": user["starredRepositories"]["totalCount"],
         "public_repos": public_repo_count,
         "total_stars": total_stars,
         "total_forks": total_forks,
         "total_code_bytes": total_code_bytes,
+        "total_langs_count": total_langs_count,
         "all_time_contributions": all_time_contributions,
         "all_time_commits": all_time_commits,
-        "all_time_prs": all_time_prs,
+        "merged_prs": merged_prs,
         "all_time_issues_reviews": all_time_issues + all_time_reviews,
         "all_time_restricted": all_time_restricted,
         "rolling_365": rolling_365,
@@ -579,82 +525,110 @@ def fetch_all_github_data(token: str) -> dict[str, Any]:
         "total_cal_days": total_cal_days,
         "active_pct": active_pct,
         "active_avg": active_avg,
+        "weekly_avg": weekly_avg,
         "best_day_count": best_day["contributionCount"],
         "best_day_date": fmt_short_date(best_day["date"]),
         "current_streak": current_streak,
-        "current_range": f"{fmt_short_date(current_start)} – {fmt_short_date(current_end)}" if current_streak else "Resting today",
+        "current_range": f"{fmt_short_date(current_start)} – {fmt_short_date(current_end)}" if current_streak else "Quiet today",
         "longest_streak": longest_streak,
         "longest_range": f"{fmt_short_date(longest_range[0])} – {fmt_short_date(longest_range[1])}" if longest_streak else "—",
         "yearly_totals": yearly_totals,
+        "yoy_label": yoy_label,
+        "rank_grade": rank_grade,
+        "rank_pct": rank_pct,
         "dow_mon_sun": dow_mon_sun,
         "top_langs": top_langs,
         "eat_buckets": eat_buckets,
-        "weekly_series": weekly_series,
-        "last_30_days": last_30,
-        "mosaic_weeks": mosaic_weeks,
-        "recently_tended": recently_tended,
+        "monthly_series": monthly_series,
+        "ribbon_weeks": ribbon_weeks,
         "repo_lookup": repo_lookup,
     }
 
 
-def smooth_ridge_path(points: list[tuple[float, float]], baseline_y: float) -> tuple[str, str]:
-    """Build a smooth cubic Bezier stroke path and closed filled area path."""
+def smooth_curve(points: list[tuple[float, float]]) -> str:
     if not points:
-        return "", ""
+        return ""
     if len(points) == 1:
-        x, y = points[0]
-        return f"M {x:.1f} {y:.1f}", f"M {x:.1f} {baseline_y:.1f} L {x:.1f} {y:.1f} L {x:.1f} {baseline_y:.1f} Z"
-
-    stroke_parts = [f"M {points[0][0]:.1f} {points[0][1]:.1f}"]
+        return f"M {points[0][0]:.1f} {points[0][1]:.1f}"
+    parts = [f"M {points[0][0]:.1f} {points[0][1]:.1f}"]
     for i in range(len(points) - 1):
         p0 = points[max(0, i - 1)]
         p1 = points[i]
         p2 = points[i + 1]
         p3 = points[min(len(points) - 1, i + 2)]
-        # Catmull-Rom to cubic Bezier with gentle tension for calm organic slopes
-        t = 0.18
-        cp1x = p1[0] + (p2[0] - p0[0]) * t
-        cp1y = p1[1] + (p2[1] - p0[1]) * t
-        cp2x = p2[0] - (p3[0] - p1[0]) * t
-        cp2y = p2[1] - (p3[1] - p1[1]) * t
-        # Clamp control points so valleys never dip below shoreline
-        cp1y = min(baseline_y - 1.5, cp1y)
-        cp2y = min(baseline_y - 1.5, cp2y)
-        stroke_parts.append(f"C {cp1x:.1f} {cp1y:.1f}, {cp2x:.1f} {cp2y:.1f}, {p2[0]:.1f} {p2[1]:.1f}")
+        t = 0.2
+        c1x = p1[0] + (p2[0] - p0[0]) * t
+        c1y = p1[1] + (p2[1] - p0[1]) * t
+        c2x = p2[0] - (p3[0] - p1[0]) * t
+        c2y = p2[1] - (p3[1] - p1[1]) * t
+        parts.append(f"C {c1x:.1f} {c1y:.1f}, {c2x:.1f} {c2y:.1f}, {p2[0]:.1f} {p2[1]:.1f}")
+    return " ".join(parts)
 
-    stroke_d = " ".join(stroke_parts)
-    area_d = f"{stroke_d} L {points[-1][0]:.1f} {baseline_y:.1f} L {points[0][0]:.1f} {baseline_y:.1f} Z"
-    return stroke_d, area_d
+
+def make_periodic_wave_path(width: int, base_y: float, amp: float, cycles: int, phase: float, bottom_y: float) -> str:
+    """Create a 2x-wide seamless periodic wave path for butter-smooth horizontal looping."""
+    total_w = width * 2
+    steps = 72
+    pts = []
+    for i in range(steps + 1):
+        x = (i / steps) * total_w
+        theta = (x / width) * 2.0 * math.pi * cycles + phase
+        y = base_y + math.sin(theta) * amp + math.cos(theta * 2.0 - phase) * (amp * 0.22)
+        pts.append((x, y))
+    d = f"M {pts[0][0]:.1f} {pts[0][1]:.1f} " + " ".join(f"L {x:.1f} {y:.1f}" for x, y in pts[1:])
+    return f"{d} L {total_w} {bottom_y} L 0 {bottom_y} Z"
 
 
 def render_hero_svg(stats: dict[str, Any], theme_name: str) -> str:
     t = THEMES[theme_name]
-    w, h = 920, 212
+    w, h = 920, 196
     streak_txt = f"{stats['current_streak']}-day streak" if stats["current_streak"] > 0 else "Quiet day"
-    pill_text = f"Eldoret, Kenya  ·  {streak_txt}  ·  {fmt_num(stats['rolling_365'])} contributions this year"
-    pill_w = min(460, max(280, int(len(pill_text) * 5.65) + 40))
+    pill_text = f"Eldoret, Kenya  ·  {streak_txt}  ·  {fmt_num(stats['rolling_365'])} contributions / 1y"
+    pill_w = min(440, max(280, int(len(pill_text) * 5.6) + 38))
+
+    # Gentle floating light motes on the right
+    motes = [
+        (648, 128, 2.0, "14s", "0s"),
+        (712, 108, 1.6, "18s", "-4s"),
+        (766, 134, 2.2, "16s", "-8s"),
+        (838, 112, 1.8, "20s", "-3s"),
+        (874, 140, 1.5, "15s", "-9s"),
+    ]
+    motes_svg = []
+    for mx, my, mr, dur, beg in motes:
+        motes_svg.append(
+            f'<circle cx="{mx}" cy="{my}" r="{mr}" fill="{t["firefly"]}" opacity="0">'
+            f'<animate attributeName="opacity" values="0;0.55;0.2;0" dur="{dur}" begin="{beg}" repeatCount="indefinite"/>'
+            f'<animateTransform attributeName="transform" type="translate" values="0 8; 6 -16; -4 -34" dur="{dur}" begin="{beg}" repeatCount="indefinite"/>'
+            f'</circle>'
+        )
 
     return f'''<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}" viewBox="0 0 {w} {h}" role="img" aria-label="Elvin Omondi Juma — Founding Engineer at Great Thumbs Software Solutions">
 <defs>
   <clipPath id="heroClip"><rect width="{w}" height="{h}" rx="16"/></clipPath>
   <linearGradient id="heroBg" x1="0" y1="0" x2="1" y2="1">
     <stop offset="0%" stop-color="{t['surface']}"/>
-    <stop offset="65%" stop-color="{t['canvas']}"/>
+    <stop offset="62%" stop-color="{t['canvas']}"/>
     <stop offset="100%" stop-color="{t['canvas_alt']}"/>
   </linearGradient>
   <radialGradient id="heroGlow" cx="0.85" cy="0.28" r="0.34">
-    <stop offset="0%" stop-color="{t['orb_glow']}" stop-opacity="0.28"/>
+    <stop offset="0%" stop-color="{t['orb_glow']}" stop-opacity="0.30"/>
     <stop offset="55%" stop-color="{t['pine']}" stop-opacity="0.06"/>
     <stop offset="100%" stop-color="{t['canvas']}" stop-opacity="0"/>
   </radialGradient>
   <radialGradient id="heroOrbGrad" cx="0.5" cy="0.5" r="0.5">
-    <stop offset="0%" stop-color="{t['orb']}" stop-opacity="0.62"/>
-    <stop offset="72%" stop-color="{t['orb']}" stop-opacity="0.30"/>
+    <stop offset="0%" stop-color="{t['orb']}" stop-opacity="0.72"/>
+    <stop offset="70%" stop-color="{t['orb']}" stop-opacity="0.32"/>
     <stop offset="100%" stop-color="{t['orb']}" stop-opacity="0"/>
   </radialGradient>
+  <linearGradient id="mistBand" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0%" stop-color="{t['pine']}" stop-opacity="0"/>
+    <stop offset="50%" stop-color="{t['lake']}" stop-opacity="0.14"/>
+    <stop offset="100%" stop-color="{t['pine']}" stop-opacity="0"/>
+  </linearGradient>
   <linearGradient id="hillFar" x1="0" y1="0" x2="0" y2="1">
-    <stop offset="0%" stop-color="{t['ridge_far']}" stop-opacity="0.26"/>
-    <stop offset="100%" stop-color="{t['ridge_far']}" stop-opacity="0.04"/>
+    <stop offset="0%" stop-color="{t['wave_1']}" stop-opacity="0.28"/>
+    <stop offset="100%" stop-color="{t['wave_1']}" stop-opacity="0.03"/>
   </linearGradient>
   <linearGradient id="hillNear" x1="0" y1="0" x2="0" y2="1">
     <stop offset="0%" stop-color="{t['pine']}" stop-opacity="0.22"/>
@@ -666,31 +640,43 @@ def render_hero_svg(stats: dict[str, Any], theme_name: str) -> str:
   <rect width="{w}" height="{h}" fill="url(#heroBg)"/>
   <rect width="{w}" height="{h}" fill="url(#heroGlow)"/>
 
-  <!-- Subtle distant highland mist silhouettes on the right -->
-  <circle cx="792" cy="58" r="24" fill="url(#heroOrbGrad)"/>
-  <path d="M 470 212 C 545 148, 610 132, 682 154 C 742 172, 804 102, 872 126 C 894 134, 910 144, 926 150 L 926 212 Z" fill="url(#hillFar)"/>
-  <path d="M 555 212 C 625 162, 695 168, 764 146 C 824 128, 876 156, 926 142 L 926 212 Z" fill="url(#hillNear)"/>
-  <path d="M 555 212 C 625 162, 695 168, 764 146 C 824 128, 876 156, 926 142" fill="none" stroke="{t['pine']}" stroke-opacity="0.22" stroke-width="1"/>
+  <!-- Gently breathing dawn/dusk orb -->
+  <circle cx="792" cy="56" r="34" fill="url(#heroOrbGrad)">
+    <animate attributeName="r" values="30;37;30" dur="9s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.72;1;0.72" dur="9s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- Soft drifting mist ribbon -->
+  <ellipse cx="720" cy="126" rx="220" ry="20" fill="url(#mistBand)">
+    <animateTransform attributeName="transform" type="translate" values="-28 0; 28 0; -28 0" dur="28s" repeatCount="indefinite"/>
+  </ellipse>
+
+  <!-- Layered highland curves -->
+  <path d="M 476 196 C 548 136, 616 122, 686 144 C 746 162, 806 96, 874 120 C 896 128, 912 136, 926 142 L 926 196 Z" fill="url(#hillFar)"/>
+  <path d="M 556 196 C 626 150, 696 156, 766 134 C 826 118, 878 144, 926 132 L 926 196 Z" fill="url(#hillNear)"/>
+  <path d="M 556 196 C 626 150, 696 156, 766 134 C 826 118, 878 144, 926 132" fill="none" stroke="{t['pine']}" stroke-opacity="0.24" stroke-width="1"/>
+
+  <!-- Subtle drifting light motes -->
+  <g>{"".join(motes_svg)}</g>
 
   <!-- Live status pill -->
-  <g transform="translate(42, 30)">
+  <g transform="translate(42, 26)">
     <rect width="{pill_w}" height="26" rx="13" fill="{t['subtle']}" stroke="{t['border']}" stroke-width="1"/>
     <circle cx="15" cy="13" r="3.6" fill="{t['pine']}">
-      <animate attributeName="opacity" values="0.95;0.38;0.95" dur="5.5s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.95;0.35;0.95" dur="5s" repeatCount="indefinite"/>
     </circle>
-    <text x="27" y="17" fill="{t['ink_sec']}" font-family="{SANS}" font-size="11.5" font-weight="500">{esc(pill_text)}</text>
+    <text x="27" y="17" fill="{t['ink_sec']}" font-family="{SANS}" font-size="11.4" font-weight="500">{esc(pill_text)}</text>
   </g>
 
-  <!-- Identity -->
-  <text x="42" y="102" fill="{t['ink']}" font-family="{SERIF}" font-size="33" font-weight="400" letter-spacing="-0.4">{esc(stats['name'])}</text>
-  <text x="42" y="129" fill="{t['ink_sec']}" font-family="{SANS}" font-size="14" font-weight="500">Founding Engineer at Great Thumbs Software Solutions</text>
-  <text x="42" y="155" fill="{t['ink_muted']}" font-family="{SERIF}" font-style="italic" font-size="13">Building calm, dependable software for healthcare, local commerce, and everyday operations.</text>
+  <!-- Concise identity -->
+  <text x="42" y="98" fill="{t['ink']}" font-family="{SERIF}" font-size="33" font-weight="400" letter-spacing="-0.4">{esc(stats['name'])}</text>
+  <text x="42" y="125" fill="{t['ink_sec']}" font-family="{SANS}" font-size="13.8" font-weight="500">Founding Engineer @ GTSS  ·  Full-Stack Product Architect</text>
+  <text x="42" y="152" fill="{t['ink_muted']}" font-family="{SERIF}" font-style="italic" font-size="12.8">Quiet, dependable software for healthcare, commerce, and real-world operations.</text>
 
-  <!-- Subtle bottom bar -->
-  <line x1="42" y1="176" x2="540" y2="176" stroke="{t['divider']}" stroke-width="1"/>
-  <text x="42" y="195" fill="{t['ink_muted']}" font-family="{SANS}" font-size="11.2">
+  <!-- Subtle footer telemetry line -->
+  <text x="42" y="178" fill="{t['ink_muted']}" font-family="{SANS}" font-size="11">
     <tspan fill="{t['ink_sec']}" font-weight="600">@{esc(stats['login'])}</tspan>
-    <tspan>  ·  {fmt_num(stats['public_repos'])} public repositories  ·  {fmt_num(stats['all_time_contributions'])} lifetime contributions</tspan>
+    <tspan>  ·  {fmt_num(stats['public_repos'])} public repos  ·  {fmt_num(stats['all_time_contributions'])} lifetime contributions</tspan>
   </text>
 </g>
 
@@ -701,151 +687,189 @@ def render_hero_svg(stats: dict[str, Any], theme_name: str) -> str:
 
 def render_stats_overview_svg(stats: dict[str, Any], theme_name: str) -> str:
     t = THEMES[theme_name]
-    w, h = 920, 344
+    w, h = 920, 356
 
-    # Compute YoY growth or 30-day subtitle
-    y_totals = stats["yearly_totals"]
-    sub_all_time = f"Across {y_totals[0][0]} – {y_totals[-1][0]}" if len(y_totals) > 1 else f"Since {stats['created_year']}"
-    sub_365 = f"{fmt_num(stats['rolling_30'])} in the last 30 days"
+    # Circular ring helper (r=33 -> circumference = 207.35)
+    r = 33.0
+    circ = 2.0 * math.pi * r
+    rank_dash = circ * stats["rank_pct"]
+    cons_dash = circ * min(1.0, stats["active_pct"] / 100.0)
+    streak_ratio = min(1.0, max(0.16, stats["current_streak"] / max(1, stats["longest_streak"])))
+    streak_dash = circ * streak_ratio
 
-    # Left metric ledger rows (2 columns x 4 rows)
-    left_rows = [
-        ("Commits (all-time)", fmt_num(stats["all_time_commits"]), "Pull requests", fmt_num(stats["all_time_prs"])),
-        ("Private activity", fmt_num(stats["all_time_restricted"]), "Issues &amp; reviews", fmt_num(stats["all_time_issues_reviews"])),
-        ("Public repositories", fmt_num(stats["public_repos"]), "Stars · Forks", f"{fmt_num(stats['total_stars'])} · {fmt_num(stats['total_forks'])}"),
-        ("Followers · Following", f"{fmt_num(stats['followers'])} · {fmt_num(stats['following'])}", "Code indexed", fmt_bytes(stats["total_code_bytes"])),
+    # 6 compact vector-icon metric tiles (x=36..884 -> 6 * 134 + 5 * 8.8 = 848)
+    rev_cnt = stats["all_time_issues_reviews"]
+    rev_lbl = f"{rev_cnt} review" if rev_cnt == 1 else f"{rev_cnt} reviews"
+    tiles = [
+        ("Commits", fmt_num(stats["all_time_commits"]), "all-time", t["pine"],
+         '<circle cx="7" cy="7" r="2.6" fill="none" stroke="COL" stroke-width="1.4"/><line x1="1" y1="7" x2="4.4" y2="7" stroke="COL" stroke-width="1.4"/><line x1="9.6" y1="7" x2="13" y2="7" stroke="COL" stroke-width="1.4"/>'),
+        ("Merged PRs", fmt_num(stats["merged_prs"]), rev_lbl, t["lake"],
+         '<circle cx="3.5" cy="3.5" r="1.8" fill="none" stroke="COL" stroke-width="1.3"/><circle cx="3.5" cy="10.5" r="1.8" fill="none" stroke="COL" stroke-width="1.3"/><circle cx="10.5" cy="10.5" r="1.8" fill="none" stroke="COL" stroke-width="1.3"/><line x1="3.5" y1="5.3" x2="3.5" y2="8.7" stroke="COL" stroke-width="1.3"/><path d="M 3.5 5.3 C 3.5 8, 10.5 7, 10.5 8.7" fill="none" stroke="COL" stroke-width="1.3"/>'),
+        ("Private", fmt_num(stats["all_time_restricted"]), "contributions", t["moss"],
+         '<rect x="2.5" y="6.2" width="9" height="6.2" rx="1.5" fill="none" stroke="COL" stroke-width="1.3"/><path d="M 4.5 6.2 V 4.4 A 2.5 2.5 0 0 1 9.5 4.4 V 6.2" fill="none" stroke="COL" stroke-width="1.3"/>'),
+        ("Public Repos", fmt_num(stats["public_repos"]), fmt_bytes(stats["total_code_bytes"]), t["lake"],
+         '<rect x="2" y="2.5" width="10" height="9" rx="1.6" fill="none" stroke="COL" stroke-width="1.3"/><line x1="2" y1="5.8" x2="12" y2="5.8" stroke="COL" stroke-width="1.2"/>'),
+        ("Stars · Forks", f"{fmt_num(stats['total_stars'])} · {fmt_num(stats['total_forks'])}", f"{stats['starred_count']} starred", t["ochre"],
+         '<polygon points="7,1.5 8.7,5 12.5,5.5 9.7,8.2 10.4,12 7,10.2 3.6,12 4.3,8.2 1.5,5.5 5.3,5" fill="none" stroke="COL" stroke-width="1.25" stroke-linejoin="round"/>'),
+        ("Followers", fmt_num(stats["followers"]), f"{stats['following']} following", t["pine"],
+         '<circle cx="7" cy="4.8" r="2.3" fill="none" stroke="COL" stroke-width="1.3"/><path d="M 2.4 11.8 C 2.8 9.2, 11.2 9.2, 11.6 11.8" fill="none" stroke="COL" stroke-width="1.3" stroke-linecap="round"/>'),
     ]
 
-    ledger_svg = []
-    for i, (l_k, l_v, r_k, r_v) in enumerate(left_rows):
-        ry = 182 + i * 36
-        if i > 0:
-            ledger_svg.append(f'<line x1="36" y1="{ry - 22}" x2="444" y2="{ry - 22}" stroke="{t["divider"]}" stroke-width="1"/>')
-        ledger_svg.append(
-            f'<text x="36" y="{ry}" fill="{t["ink_sec"]}" font-family="{SANS}" font-size="11.8">{l_k}</text>'
-            f'<text x="228" y="{ry}" text-anchor="end" fill="{t["ink"]}" font-family="{SANS}" font-size="12.8" font-weight="600">{l_v}</text>'
-            f'<text x="252" y="{ry}" fill="{t["ink_sec"]}" font-family="{SANS}" font-size="11.8">{r_k}</text>'
-            f'<text x="444" y="{ry}" text-anchor="end" fill="{t["ink"]}" font-family="{SANS}" font-size="12.8" font-weight="600">{r_v}</text>'
+    tiles_svg = []
+    tile_w = 133.5
+    tile_gap = 9.4
+    for i, (lbl, val, sub, col, icon_raw) in enumerate(tiles):
+        tx = 36.0 + i * (tile_w + tile_gap)
+        icon = icon_raw.replace("COL", col)
+        tiles_svg.append(
+            f'<g transform="translate({tx:.1f}, 186)">'
+            f'<rect width="{tile_w:.1f}" height="68" rx="10" fill="{t["subtle"]}" stroke="{t["border"]}" stroke-width="0.8"/>'
+            f'<g transform="translate(12, 11)">{icon}</g>'
+            f'<text x="31" y="21.5" fill="{t["ink_sec"]}" font-family="{SANS}" font-size="10.6" font-weight="500">{lbl}</text>'
+            f'<text x="12" y="45" fill="{t["ink"]}" font-family="{SANS}" font-size="16" font-weight="700">{val}</text>'
+            f'<text x="12" y="59" fill="{t["ink_muted"]}" font-family="{SANS}" font-size="9.6">{sub}</text>'
+            f'</g>'
         )
 
-    # Yearly trajectory horizontal bars (show up to last 4 years cleanly)
-    recent_years = y_totals[-4:]
-    max_y_val = max((v for _, v in recent_years), default=1) or 1
-    bar_max_w = 286.0
-    years_svg = []
-    start_y_bar = 250
-    step_y = 24 if len(recent_years) <= 3 else 20
-    for idx_y, (yr, val) in enumerate(recent_years):
-        by = start_y_bar + idx_y * step_y
-        bw = max(6.0, (val / max_y_val) * bar_max_w)
-        is_latest = idx_y == len(recent_years) - 1
+    # Bottom 3-column Yearly Growth Cards (cleanly aligned with the 3 circular gauges above!)
+    recent_years = stats["yearly_totals"][-3:]
+    max_y = max((v for _, v in recent_years), default=1) or 1
+    n_yr = max(1, len(recent_years))
+    yr_gap = 14.0
+    yr_w = (848.0 - yr_gap * (n_yr - 1)) / n_yr
+    yr_svg = []
+    for i, (yr, val) in enumerate(recent_years):
+        yx = 36.0 + i * (yr_w + yr_gap)
+        is_latest = i == len(recent_years) - 1
+        bar_w = max(8.0, (val / max_y) * (yr_w - 28.0))
         bar_col = t["pine"] if is_latest else t["moss"]
         bar_op = "0.95" if is_latest else "0.62"
-        years_svg.append(
-            f'<text x="494" y="{by + 9}" fill="{t["ink_sec"]}" font-family="{MONO}" font-size="11">{yr}</text>'
-            f'<rect x="536" y="{by}" width="{bar_max_w:.0f}" height="10" rx="5" fill="{t["subtle"]}"/>'
-            f'<rect x="536" y="{by}" width="{bw:.1f}" height="10" rx="5" fill="{bar_col}" fill-opacity="{bar_op}"/>'
-            f'<text x="884" y="{by + 9}" text-anchor="end" fill="{t["ink"] if is_latest else t["ink_sec"]}" font-family="{SANS}" font-size="11.8" font-weight="{600 if is_latest else 500}">{fmt_num(val)}</text>'
+        yr_svg.append(
+            f'<g transform="translate({yx:.1f}, 292)">'
+            f'<rect width="{yr_w:.1f}" height="46" rx="9" fill="{t["subtle"]}" stroke="{t["border"]}" stroke-width="0.8"/>'
+            f'<text x="14" y="19" fill="{t["ink_sec"]}" font-family="{MONO}" font-size="11">{yr}</text>'
+            f'<text x="{yr_w - 14:.1f}" y="20" text-anchor="end" fill="{t["ink"] if is_latest else t["ink_sec"]}" font-family="{SANS}" font-size="13" font-weight="{700 if is_latest else 600}">{fmt_num(val)}</text>'
+            f'<rect x="14" y="29" width="{yr_w - 28:.1f}" height="6" rx="3" fill="{t["track"]}"/>'
+            f'<rect x="14" y="29" width="{bar_w:.1f}" height="6" rx="3" fill="{bar_col}" fill-opacity="{bar_op}"/>'
+            f'</g>'
         )
 
-    return f'''<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}" viewBox="0 0 {w} {h}" role="img" aria-label="GitHub Overview Statistics — Automatically Updated">
+    yoy_pill = f"  ·  {stats['yoy_label']}" if stats["yoy_label"] else ""
+
+    return f'''<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}" viewBox="0 0 {w} {h}" role="img" aria-label="GitHub Telemetry — Automatically Tracked">
 <rect width="{w}" height="{h}" rx="16" fill="{t['surface']}" stroke="{t['border']}" stroke-width="1"/>
 
 <!-- Header -->
-<text x="36" y="37" fill="{t['ink']}" font-family="{SERIF}" font-size="17" font-weight="400">GitHub Overview</text>
-<text x="884" y="36" text-anchor="end" fill="{t['ink_muted']}" font-family="{SANS}" font-size="11">All-time &amp; rolling 365 days  ·  tracked automatically</text>
-<line x1="36" y1="52" x2="884" y2="52" stroke="{t['divider']}" stroke-width="1"/>
+<text x="36" y="36" fill="{t['ink']}" font-family="{SERIF}" font-size="17" font-weight="400">GitHub Telemetry</text>
+<g transform="translate(692, 26)">
+  <circle cx="0" cy="6" r="3.2" fill="{t['pine']}">
+    <animate attributeName="opacity" values="0.95;0.32;0.95" dur="4.5s" repeatCount="indefinite"/>
+  </circle>
+  <text x="10" y="10" fill="{t['ink_muted']}" font-family="{SANS}" font-size="10.8">Synced automatically by GitHub</text>
+</g>
+<line x1="36" y1="50" x2="884" y2="50" stroke="{t['divider']}" stroke-width="1"/>
 
-<!-- Center divider -->
-<line x1="468" y1="68" x2="468" y2="322" stroke="{t['divider']}" stroke-width="1"/>
-
-<!-- LEFT: Spotlight totals -->
-<g>
-  <rect x="36" y="68" width="196" height="78" rx="10" fill="{t['subtle']}" stroke="{t['border']}" stroke-width="0.8"/>
-  <text x="52" y="90" fill="{t['ink_sec']}" font-family="{SANS}" font-size="11.2">All-time contributions</text>
-  <text x="52" y="121" fill="{t['pine']}" font-family="{SANS}" font-size="25" font-weight="700" letter-spacing="-0.5">{fmt_num(stats['all_time_contributions'])}</text>
-  <text x="52" y="137" fill="{t['ink_muted']}" font-family="{SANS}" font-size="10.5">{esc(sub_all_time)}</text>
-
-  <rect x="248" y="68" width="196" height="78" rx="10" fill="{t['subtle']}" stroke="{t['border']}" stroke-width="0.8"/>
-  <text x="264" y="90" fill="{t['ink_sec']}" font-family="{SANS}" font-size="11.2">Past 365 days</text>
-  <text x="264" y="121" fill="{t['lake']}" font-family="{SANS}" font-size="25" font-weight="700" letter-spacing="-0.5">{fmt_num(stats['rolling_365'])}</text>
-  <text x="264" y="137" fill="{t['ink_muted']}" font-family="{SANS}" font-size="10.5">{esc(sub_365)}</text>
+<!-- ROW 1: 3 Circular Gauge Cards -->
+<!-- Gauge 1: Rank & Lifetime Contributions -->
+<g transform="translate(36, 64)">
+  <rect width="273" height="108" rx="12" fill="{t['subtle']}" stroke="{t['border']}" stroke-width="0.8"/>
+  <circle cx="54" cy="54" r="{r:.0f}" fill="none" stroke="{t['track']}" stroke-width="6"/>
+  <circle cx="54" cy="54" r="{r:.0f}" fill="none" stroke="{t['pine']}" stroke-width="6" stroke-linecap="round"
+          stroke-dasharray="{rank_dash:.1f} {circ:.1f}" transform="rotate(-90 54 54)">
+    <animate attributeName="stroke-opacity" values="0.96;0.74;0.96" dur="6s" repeatCount="indefinite"/>
+  </circle>
+  <text x="54" y="59" text-anchor="middle" fill="{t['pine']}" font-family="{SERIF}" font-size="22" font-weight="700">{esc(stats['rank_grade'])}</text>
+  <text x="104" y="34" fill="{t['ink_sec']}" font-family="{SANS}" font-size="11">Lifetime contributions</text>
+  <text x="104" y="62" fill="{t['ink']}" font-family="{SANS}" font-size="24" font-weight="700" letter-spacing="-0.4">{fmt_num(stats['all_time_contributions'])}</text>
+  <text x="104" y="81" fill="{t['ink_muted']}" font-family="{SANS}" font-size="10.5">{fmt_num(stats['rolling_365'])} past year · {fmt_num(stats['rolling_30'])} / 30d</text>
 </g>
 
-<!-- LEFT: Detailed Ledger -->
-<g>
-  {"".join(ledger_svg)}
+<!-- Gauge 2: Consistency Ring -->
+<g transform="translate(323.5, 64)">
+  <rect width="273" height="108" rx="12" fill="{t['subtle']}" stroke="{t['border']}" stroke-width="0.8"/>
+  <circle cx="54" cy="54" r="{r:.0f}" fill="none" stroke="{t['track']}" stroke-width="6"/>
+  <circle cx="54" cy="54" r="{r:.0f}" fill="none" stroke="{t['lake']}" stroke-width="6" stroke-linecap="round"
+          stroke-dasharray="{cons_dash:.1f} {circ:.1f}" transform="rotate(-90 54 54)"/>
+  <text x="54" y="59" text-anchor="middle" fill="{t['lake']}" font-family="{SANS}" font-size="15.5" font-weight="700">{stats['active_pct']:.0f}%</text>
+  <text x="104" y="34" fill="{t['ink_sec']}" font-family="{SANS}" font-size="11">Active days (past year)</text>
+  <text x="104" y="62" fill="{t['ink']}" font-family="{SANS}" font-size="24" font-weight="700" letter-spacing="-0.4">{stats['active_days']} days</text>
+  <text x="104" y="81" fill="{t['ink_muted']}" font-family="{SANS}" font-size="10.5">{stats['active_avg']:.1f} / active day · {stats['weekly_avg']:.0f} / wk</text>
 </g>
 
-<!-- RIGHT: Streaks -->
-<g>
-  <rect x="494" y="68" width="188" height="78" rx="10" fill="{t['subtle']}" stroke="{t['border']}" stroke-width="0.8"/>
-  <text x="510" y="90" fill="{t['ink_sec']}" font-family="{SANS}" font-size="11.2">Current streak</text>
-  <text x="510" y="121" fill="{t['ochre']}" font-family="{SANS}" font-size="24" font-weight="700" letter-spacing="-0.4">{stats['current_streak']} days</text>
-  <text x="510" y="137" fill="{t['ink_muted']}" font-family="{SANS}" font-size="10.5">{esc(stats['current_range'])}</text>
-
-  <rect x="696" y="68" width="188" height="78" rx="10" fill="{t['subtle']}" stroke="{t['border']}" stroke-width="0.8"/>
-  <text x="712" y="90" fill="{t['ink_sec']}" font-family="{SANS}" font-size="11.2">Longest streak</text>
-  <text x="712" y="121" fill="{t['pine']}" font-family="{SANS}" font-size="24" font-weight="700" letter-spacing="-0.4">{stats['longest_streak']} days</text>
-  <text x="712" y="137" fill="{t['ink_muted']}" font-family="{SANS}" font-size="10.5">{esc(stats['longest_range'])}</text>
+<!-- Gauge 3: Streak Ring -->
+<g transform="translate(611, 64)">
+  <rect width="273" height="108" rx="12" fill="{t['subtle']}" stroke="{t['border']}" stroke-width="0.8"/>
+  <circle cx="54" cy="54" r="{r:.0f}" fill="none" stroke="{t['track']}" stroke-width="6"/>
+  <circle cx="54" cy="54" r="{r:.0f}" fill="none" stroke="{t['ochre']}" stroke-width="6" stroke-linecap="round"
+          stroke-dasharray="{streak_dash:.1f} {circ:.1f}" transform="rotate(-90 54 54)">
+    <animate attributeName="stroke-opacity" values="1;0.68;1" dur="5.2s" repeatCount="indefinite"/>
+  </circle>
+  <text x="54" y="59" text-anchor="middle" fill="{t['ochre']}" font-family="{SANS}" font-size="16" font-weight="700">{stats['current_streak']}d</text>
+  <text x="104" y="34" fill="{t['ink_sec']}" font-family="{SANS}" font-size="11">Current &amp; best streak</text>
+  <text x="104" y="62" fill="{t['ink']}" font-family="{SANS}" font-size="24" font-weight="700" letter-spacing="-0.4">{stats['longest_streak']}d best</text>
+  <text x="104" y="81" fill="{t['ink_muted']}" font-family="{SANS}" font-size="10.5">Peak day: {fmt_num(stats['best_day_count'])} · {esc(stats['best_day_date'])}</text>
 </g>
 
-<!-- RIGHT: Consistency micro-summary -->
-<g>
-  <text x="494" y="174" fill="{t['ink_muted']}" font-family="{SANS}" font-size="10.8">Active days (1y)</text>
-  <text x="494" y="194" fill="{t['ink']}" font-family="{SANS}" font-size="14" font-weight="600">{stats['active_days']} <tspan fill="{t['ink_muted']}" font-size="11.5" font-weight="400">({stats['active_pct']:.0f}%)</tspan></text>
+<!-- ROW 2: 6 Crisp Icon Stat Tiles -->
+<g>{"".join(tiles_svg)}</g>
 
-  <text x="636" y="174" fill="{t['ink_muted']}" font-family="{SANS}" font-size="10.8">Best single day</text>
-  <text x="636" y="194" fill="{t['ink']}" font-family="{SANS}" font-size="14" font-weight="600">{fmt_num(stats['best_day_count'])} <tspan fill="{t['ink_muted']}" font-size="11.5" font-weight="400">· {esc(stats['best_day_date'])}</tspan></text>
-
-  <text x="784" y="174" fill="{t['ink_muted']}" font-family="{SANS}" font-size="10.8">Active-day avg</text>
-  <text x="784" y="194" fill="{t['ink']}" font-family="{SANS}" font-size="14" font-weight="600">{stats['active_avg']:.1f} <tspan fill="{t['ink_muted']}" font-size="11.5" font-weight="400">/ day</tspan></text>
-</g>
-
-<line x1="494" y1="212" x2="884" y2="212" stroke="{t['divider']}" stroke-width="1"/>
-
-<!-- RIGHT: Yearly trajectory -->
-<text x="494" y="234" fill="{t['ink_sec']}" font-family="{SANS}" font-size="11.8" font-weight="600">Yearly contribution growth</text>
-<g>
-  {"".join(years_svg)}
-</g>
+<!-- ROW 3: Yearly Momentum Strip -->
+<text x="36" y="280" fill="{t['ink_sec']}" font-family="{SANS}" font-size="11.5" font-weight="600">Yearly momentum<tspan fill="{t['pine']}" font-weight="600">{esc(yoy_pill)}</tspan></text>
+<text x="884" y="280" text-anchor="end" fill="{t['ink_muted']}" font-family="{SANS}" font-size="10.6">Active since {esc(stats['created_label'])} · {stats['total_langs_count']} languages · {fmt_bytes(stats['total_code_bytes'])}</text>
+<g>{"".join(yr_svg)}</g>
 </svg>
 '''
 
 
 def render_stats_rhythm_svg(stats: dict[str, Any], theme_name: str) -> str:
     t = THEMES[theme_name]
-    w, h = 920, 304
+    w, h = 920, 290
 
-    # LEFT: Language segmented bar & 2-col breakdown
+    # LEFT: Language Donut Chart + Clean Compact Legend
     langs = stats["top_langs"]
-    bar_x, bar_y, bar_w, bar_h = 36, 68, 396, 10
-    segs = []
-    cur_x = float(bar_x)
-    for idx_l, l in enumerate(langs):
+    cx_d, cy_d, r_d = 104.0, 148.0, 50.0
+    circ_d = 2.0 * math.pi * r_d
+    donut_segs = []
+    offset_acc = 0.0
+    for l in langs:
         col = t["lang_colors"].get(l["name"], t["lang_colors"]["Other"])
-        sw = max(3.0, (l["pct"] / 100.0) * bar_w)
-        if idx_l == len(langs) - 1:
-            sw = max(2.0, (bar_x + bar_w) - cur_x)
-        segs.append(f'<rect x="{cur_x:.1f}" y="{bar_y}" width="{sw:.1f}" height="{bar_h}" fill="{col}"/>')
-        cur_x += sw
+        seg_len = max(2.0, (l["pct"] / 100.0) * circ_d)
+        # Small 1.5px visual gap between slices
+        vis_len = max(1.5, seg_len - 1.5)
+        donut_segs.append(
+            f'<circle cx="{cx_d:.0f}" cy="{cy_d:.0f}" r="{r_d:.0f}" fill="none" stroke="{col}" stroke-width="14" '
+            f'stroke-dasharray="{vis_len:.2f} {circ_d:.2f}" stroke-dashoffset="{-offset_acc:.2f}" '
+            f'transform="rotate(-90 {cx_d:.0f} {cy_d:.0f})"/>'
+        )
+        offset_acc += seg_len
 
-    lang_items = []
-    for idx_l, l in enumerate(langs[:6]):
+    lang_rows = []
+    for i, l in enumerate(langs[:6]):
         col = t["lang_colors"].get(l["name"], t["lang_colors"]["Other"])
-        c_idx = idx_l % 2
-        r_idx = idx_l // 2
-        lx = 36 + c_idx * 204
-        ly = 112 + r_idx * 52
-        sub_txt = f"{l['repos']} langs · {fmt_bytes(l['bytes'])}" if l["name"] == "Other" else f"{l['repos']} repos · {fmt_bytes(l['bytes'])}"
-        lang_items.append(
-            f'<circle cx="{lx + 5}" cy="{ly - 4}" r="4.5" fill="{col}"/>'
-            f'<text x="{lx + 17}" y="{ly}" fill="{t["ink"]}" font-family="{SANS}" font-size="12.5" font-weight="600">{esc(l["name"])}</text>'
-            f'<text x="{lx + 188}" y="{ly}" text-anchor="end" fill="{t["ink"]}" font-family="{SANS}" font-size="12.2" font-weight="600">{l["pct"]:.1f}%</text>'
-            f'<text x="{lx + 17}" y="{ly + 16}" fill="{t["ink_muted"]}" font-family="{SANS}" font-size="10.5">{esc(sub_txt)}</text>'
+        ly = 88 + i * 26
+        sub_label = f"{l['repos']} langs" if l["name"] == "Other" else f"{l['repos']} repos"
+        lang_rows.append(
+            f'<circle cx="192" cy="{ly - 4}" r="4.2" fill="{col}"/>'
+            f'<text x="204" y="{ly}" fill="{t["ink"]}" font-family="{SANS}" font-size="12" font-weight="600">{esc(l["name"])}</text>'
+            f'<text x="352" y="{ly}" text-anchor="end" fill="{t["ink_muted"]}" font-family="{SANS}" font-size="10.4">{esc(sub_label)}</text>'
+            f'<text x="424" y="{ly}" text-anchor="end" fill="{t["ink"]}" font-family="{SANS}" font-size="12" font-weight="600">{l["pct"]:.1f}%</text>'
         )
 
-    # RIGHT: Weekly Cadence (Mon..Sun)
+    # Core stack calm visual pill bar along bottom-left (flush to x=424)
+    stack_items = ["TypeScript", "Next.js", "React", "Prisma", "PostgreSQL", "Socket.IO"]
+    stack_svg = []
+    sx = 36
+    for s_name in stack_items:
+        sw = int(len(s_name) * 5.6) + 14
+        if sx + sw > 428:
+            break
+        stack_svg.append(
+            f'<rect x="{sx}" y="246" width="{sw}" height="22" rx="6" fill="{t["subtle"]}" stroke="{t["border"]}" stroke-width="0.7"/>'
+            f'<text x="{sx + sw / 2:.1f}" y="260.5" text-anchor="middle" fill="{t["ink_sec"]}" font-family="{SANS}" font-size="9.6" font-weight="500">{s_name}</text>'
+        )
+        sx += sw + 5
+
+    # RIGHT: Weekly Cadence (Mon..Sun) with gentle breathing highlight on peak day
     day_names = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
     full_names = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
     dow = stats["dow_mon_sun"]
@@ -853,23 +877,24 @@ def render_stats_rhythm_svg(stats: dict[str, Any], theme_name: str) -> str:
     peak_i = dow.index(max(dow))
 
     dow_bars = []
-    chart_base_y = 166
-    max_bar_h = 74.0
+    chart_base_y = 160
+    max_bar_h = 72.0
     for i, (d_lbl, val) in enumerate(zip(day_names, dow)):
-        bx = 498 + i * 56
+        bx = 496 + i * 56
         bh = max(8.0, (val / max_dow) * max_bar_h)
         by = chart_base_y - bh
         is_peak = i == peak_i
         fill_col = t["pine"] if is_peak else t["lake"]
-        fill_op = "0.95" if is_peak else f"{0.35 + 0.45 * (val / max_dow):.2f}"
+        fill_op = "0.95" if is_peak else f"{0.35 + 0.44 * (val / max_dow):.2f}"
+        anim = '<animate attributeName="fill-opacity" values="0.96;0.70;0.96" dur="5.2s" repeatCount="indefinite"/>' if is_peak else ""
         dow_bars.append(
-            f'<rect x="{bx}" y="{by:.1f}" width="32" height="{bh:.1f}" rx="6" fill="{fill_col}" fill-opacity="{fill_op}"/>'
-            f'<text x="{bx + 16}" y="{by - 7:.1f}" text-anchor="middle" fill="{t["ink"] if is_peak else t["ink_muted"]}" font-family="{SANS}" font-size="10.2" font-weight="{600 if is_peak else 500}">{val}</text>'
-            f'<text x="{bx + 16}" y="{chart_base_y + 18}" text-anchor="middle" fill="{t["ink"] if is_peak else t["ink_sec"]}" font-family="{SANS}" font-size="11" font-weight="{600 if is_peak else 400}">{d_lbl}</text>'
+            f'<rect x="{bx}" y="{by:.1f}" width="32" height="{bh:.1f}" rx="6" fill="{fill_col}" fill-opacity="{fill_op}">{anim}</rect>'
+            f'<text x="{bx + 16}" y="{by - 6:.1f}" text-anchor="middle" fill="{t["ink"] if is_peak else t["ink_muted"]}" font-family="{SANS}" font-size="10" font-weight="{600 if is_peak else 500}">{val}</text>'
+            f'<text x="{bx + 16}" y="{chart_base_y + 17}" text-anchor="middle" fill="{t["ink"] if is_peak else t["ink_sec"]}" font-family="{SANS}" font-size="11" font-weight="{600 if is_peak else 400}">{d_lbl}</text>'
         )
-    dow_bars.append(f'<line x1="492" y1="{chart_base_y + 0.5:.1f}" x2="884" y2="{chart_base_y + 0.5:.1f}" stroke="{t["divider"]}" stroke-width="1"/>')
+    dow_bars.append(f'<line x1="490" y1="{chart_base_y + 0.5:.1f}" x2="884" y2="{chart_base_y + 0.5:.1f}" stroke="{t["divider"]}" stroke-width="1"/>')
 
-    # RIGHT BOTTOM: Time-of-day coding rhythm (EAT UTC+3)
+    # RIGHT BOTTOM: Sleek segmented Time-of-Day Rhythm Bar (EAT · UTC+3)
     buckets = stats["eat_buckets"]
     b_tot = sum(buckets.values()) or 1
     ordered_b = [
@@ -879,312 +904,250 @@ def render_stats_rhythm_svg(stats: dict[str, Any], theme_name: str) -> str:
         ("Night", "00–06", buckets["Night"], t["moss"]),
     ]
     top_bucket = max(ordered_b, key=lambda x: x[2])[0]
-    tod_svg = []
+    tod_bar_x, tod_bar_w = 490.0, 394.0
+    tod_segs = []
+    tod_labels = []
+    cur_tx = tod_bar_x
     for i, (b_name, b_hrs, b_cnt, b_col) in enumerate(ordered_b):
-        px = 492 + i * 100
         pct = (b_cnt / b_tot) * 100.0
-        fill_w = max(4.0, (pct / 100.0) * 72.0)
-        tod_svg.append(
-            f'<rect x="{px}" y="230" width="92" height="52" rx="8" fill="{t["subtle"]}" stroke="{t["border"]}" stroke-width="0.7"/>'
-            f'<text x="{px + 10}" y="247" fill="{t["ink_sec"]}" font-family="{SANS}" font-size="10.5">{b_name}</text>'
-            f'<text x="{px + 10}" y="266" fill="{b_col}" font-family="{SANS}" font-size="13.8" font-weight="700">{pct:.0f}%</text>'
-            f'<text x="{px + 82}" y="265" text-anchor="end" fill="{t["ink_muted"]}" font-family="{MONO}" font-size="9">{b_hrs}</text>'
-            f'<rect x="{px + 10}" y="273" width="72" height="3" rx="1.5" fill="{t["divider"]}"/>'
-            f'<rect x="{px + 10}" y="273" width="{fill_w:.1f}" height="3" rx="1.5" fill="{b_col}" fill-opacity="0.85"/>'
+        sw = max(8.0, (pct / 100.0) * tod_bar_w)
+        if i == len(ordered_b) - 1:
+            sw = max(4.0, (tod_bar_x + tod_bar_w) - cur_tx)
+        tod_segs.append(f'<rect x="{cur_tx:.1f}" y="224" width="{sw:.1f}" height="10" fill="{b_col}" fill-opacity="0.88"/>')
+        cur_tx += sw
+
+        lx = 490 + i * 100
+        tod_labels.append(
+            f'<circle cx="{lx + 4}" cy="252" r="3.5" fill="{b_col}"/>'
+            f'<text x="{lx + 13}" y="256" fill="{t["ink_sec"]}" font-family="{SANS}" font-size="10.4">{b_name}</text>'
+            f'<text x="{lx + 13}" y="271" fill="{t["ink"]}" font-family="{SANS}" font-size="11.5" font-weight="700">{pct:.0f}% <tspan fill="{t["ink_muted"]}" font-family="{MONO}" font-size="9" font-weight="400">{b_hrs}</tspan></text>'
         )
 
-    return f'''<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}" viewBox="0 0 {w} {h}" role="img" aria-label="Languages and Coding Rhythm">
+    return f'''<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}" viewBox="0 0 {w} {h}" role="img" aria-label="Languages, Stack, Weekly Cadence, and Coding Rhythm">
 <defs>
-  <clipPath id="langBarClip"><rect x="{bar_x}" y="{bar_y}" width="{bar_w}" height="{bar_h}" rx="5"/></clipPath>
+  <clipPath id="todClip"><rect x="{tod_bar_x:.0f}" y="224" width="{tod_bar_w:.0f}" height="10" rx="5"/></clipPath>
 </defs>
 
 <rect width="{w}" height="{h}" rx="16" fill="{t['surface']}" stroke="{t['border']}" stroke-width="1"/>
-<line x1="460" y1="24" x2="460" y2="280" stroke="{t['divider']}" stroke-width="1"/>
+<line x1="458" y1="22" x2="458" y2="268" stroke="{t['divider']}" stroke-width="1"/>
 
-<!-- LEFT PANEL: Languages -->
-<text x="36" y="38" fill="{t['ink']}" font-family="{SERIF}" font-size="16.5" font-weight="400">Languages</text>
-<text x="432" y="37" text-anchor="end" fill="{t['ink_muted']}" font-family="{SANS}" font-size="10.8">{fmt_num(stats['public_repos'])} public repos · {fmt_bytes(stats['total_code_bytes'])}</text>
-<line x1="36" y1="50" x2="432" y2="50" stroke="{t['divider']}" stroke-width="1"/>
+<!-- LEFT: Languages Donut + Stack -->
+<text x="36" y="36" fill="{t['ink']}" font-family="{SERIF}" font-size="16.5" font-weight="400">Languages &amp; Stack</text>
+<text x="424" y="35" text-anchor="end" fill="{t['ink_muted']}" font-family="{SANS}" font-size="10.6">{fmt_num(stats['public_repos'])} public repos</text>
+<line x1="36" y1="48" x2="424" y2="48" stroke="{t['divider']}" stroke-width="1"/>
 
-<rect x="{bar_x}" y="{bar_y}" width="{bar_w}" height="{bar_h}" rx="5" fill="{t['subtle']}"/>
-<g clip-path="url(#langBarClip)">
-  {"".join(segs)}
-</g>
+<circle cx="{cx_d:.0f}" cy="{cy_d:.0f}" r="{r_d:.0f}" fill="none" stroke="{t['track']}" stroke-width="14"/>
+<g>{"".join(donut_segs)}</g>
+<text x="{cx_d:.0f}" y="{cy_d - 2:.0f}" text-anchor="middle" fill="{t['ink']}" font-family="{SANS}" font-size="14.5" font-weight="700">{fmt_bytes(stats['total_code_bytes'])}</text>
+<text x="{cx_d:.0f}" y="{cy_d + 14:.0f}" text-anchor="middle" fill="{t['ink_muted']}" font-family="{SANS}" font-size="9.6">{stats['total_langs_count']} languages</text>
 
-<g>
-  {"".join(lang_items)}
-</g>
+<g>{"".join(lang_rows)}</g>
+<g>{"".join(stack_svg)}</g>
 
-<text x="36" y="278" fill="{t['ink_muted']}" font-family="{SANS}" font-size="10.2">Weighted by bytes across all owned non-fork public repositories.</text>
+<!-- RIGHT: Weekly Cadence & EAT Time-of-Day -->
+<text x="490" y="36" fill="{t['ink']}" font-family="{SERIF}" font-size="16.5" font-weight="400">Coding Rhythm</text>
+<text x="884" y="35" text-anchor="end" fill="{t['ink_muted']}" font-family="{SANS}" font-size="10.6">Peak: {full_names[peak_i]} · {top_bucket} (EAT)</text>
+<line x1="490" y1="48" x2="884" y2="48" stroke="{t['divider']}" stroke-width="1"/>
 
-<!-- RIGHT PANEL: Weekly Cadence & EAT Rhythm -->
-<text x="492" y="38" fill="{t['ink']}" font-family="{SERIF}" font-size="16.5" font-weight="400">Weekly Cadence</text>
-<text x="884" y="37" text-anchor="end" fill="{t['ink_muted']}" font-family="{SANS}" font-size="10.8">Peak: {full_names[peak_i]} ({fmt_num(dow[peak_i])})</text>
-<line x1="492" y1="50" x2="884" y2="50" stroke="{t['divider']}" stroke-width="1"/>
+<g>{"".join(dow_bars)}</g>
 
-<g>
-  {"".join(dow_bars)}
-</g>
-
-<line x1="492" y1="198" x2="884" y2="198" stroke="{t['divider']}" stroke-width="1"/>
-<text x="492" y="220" fill="{t['ink_sec']}" font-family="{SANS}" font-size="11.5" font-weight="600">Time-of-day rhythm (EAT · UTC+3)</text>
-<text x="884" y="220" text-anchor="end" fill="{t['ink_muted']}" font-family="{SANS}" font-size="10.5">Most active: {top_bucket}</text>
-
-<g>
-  {"".join(tod_svg)}
-</g>
+<line x1="490" y1="194" x2="884" y2="194" stroke="{t['divider']}" stroke-width="1"/>
+<text x="490" y="214" fill="{t['ink_sec']}" font-family="{SANS}" font-size="11.2" font-weight="600">Daily window (EAT · UTC+3)</text>
+<rect x="{tod_bar_x:.0f}" y="224" width="{tod_bar_w:.0f}" height="10" rx="5" fill="{t['track']}"/>
+<g clip-path="url(#todClip)">{"".join(tod_segs)}</g>
+<g>{"".join(tod_labels)}</g>
 </svg>
 '''
 
 
-def render_activity_horizon_svg(stats: dict[str, Any], theme_name: str) -> str:
+def render_activity_flow_svg(stats: dict[str, Any], theme_name: str) -> str:
     """
-    Signature bottom piece: "The Quiet Horizon"
-    Transforms Elvin's real 52-week contribution curve + 30-day daily shipping pulse
-    + 26-week calm heatmap mosaic into a serene highland mountain & still-lake reflection.
+    Brand-new bottom centerpiece: "Calm Currents"
+    - 3 softly gliding seamless silk-water waves (infinite smooth animation)
+    - 12 luminous monthly contribution lanterns/orbs floating along a smooth flow curve
+    - Expanding concentric zen ripples on Peak Month & Latest Month
+    - Gentle drifting firefly motes
+    - Full-width sleek 52-week contribution ribbon bridging cleanly into GitHub's native section
     """
     t = THEMES[theme_name]
-    w, h = 920, 358
-    shore_y = 228.0
-    left_x, right_x = -2.0, 922.0
+    w, h = 920, 294
 
-    # 1. Far mountain ridge: 52-week contribution volume (edge-to-edge)
-    weekly = stats["weekly_series"]
-    w_vals = [x["total"] for x in weekly]
-    max_w = max(w_vals) if w_vals and max(w_vals) > 0 else 1
-    peak_w_idx = w_vals.index(max(w_vals)) if w_vals else 0
-    peak_w_val = w_vals[peak_w_idx] if w_vals else 0
+    # 3 seamless periodic silk waves gliding gently horizontally
+    wave_back = make_periodic_wave_path(w, 154.0, 12.0, 2, 0.4, 212.0)
+    wave_mid = make_periodic_wave_path(w, 168.0, 9.5, 3, 1.8, 212.0)
+    wave_front = make_periodic_wave_path(w, 182.0, 6.5, 2, 3.1, 212.0)
 
-    far_pts: list[tuple[float, float]] = []
-    n_w = max(2, len(weekly))
-    for i, item in enumerate(weekly):
-        px = left_x + (i / (n_w - 1)) * (right_x - left_x)
-        # Gentle sqrt scaling so peaks look architectural & quiet valleys remain legible
-        norm = math.sqrt(item["total"] / max_w)
-        py = shore_y - 14.0 - norm * 96.0
-        far_pts.append((px, py))
+    # 12 monthly contribution orbs floating smoothly above the water
+    months = stats["monthly_series"]
+    m_vals = [m["total"] for m in months]
+    max_m = max(m_vals) if m_vals and max(m_vals) > 0 else 1
+    peak_m_idx = m_vals.index(max(m_vals)) if m_vals else 0
+    latest_m_idx = max(0, len(months) - 1)
 
-    far_stroke, far_area = smooth_ridge_path(far_pts, shore_y)
+    orb_pts: list[tuple[float, float]] = []
+    n_m = max(2, len(months))
+    for i, m in enumerate(months):
+        mx = 58.0 + (i / (n_m - 1)) * (862.0 - 58.0)
+        norm = math.sqrt(m["total"] / max_m)
+        my = 166.0 - norm * 78.0
+        orb_pts.append((mx, my))
 
-    # 2. Near pine ridge: last 30 days daily activity (edge-to-edge)
-    last_30 = stats["last_30_days"]
-    d_vals = [d["contributionCount"] for d in last_30]
-    max_d = max(d_vals) if d_vals and max(d_vals) > 0 else 1
-    near_pts: list[tuple[float, float]] = []
-    n_d = max(2, len(last_30))
-    for i, d in enumerate(last_30):
-        px = left_x + (i / (n_d - 1)) * (right_x - left_x)
-        norm = math.sqrt(d["contributionCount"] / max_d)
-        py = shore_y - 6.0 - norm * 54.0
-        near_pts.append((px, py))
+    flow_line = smooth_curve(orb_pts)
 
-    near_stroke, near_area = smooth_ridge_path(near_pts, shore_y)
+    orbs_svg = []
+    ripples_svg = []
+    for i, (m, (ox, oy)) in enumerate(zip(months, orb_pts)):
+        is_peak = i == peak_m_idx
+        is_latest = i == latest_m_idx
+        norm = math.sqrt(m["total"] / max_m)
+        orb_r = 4.0 + norm * 3.8
+        col = t["ochre"] if is_peak else (t["pine"] if is_latest else t["lake"])
 
-    # Peak week callout
-    pk_x, pk_y = far_pts[peak_w_idx] if far_pts else (460.0, 140.0)
-    pk_anchor = "middle"
-    pk_tx = pk_x
-    if pk_x < 130:
-        pk_anchor = "start"
-        pk_tx = max(36.0, pk_x)
-    elif pk_x > 790:
-        pk_anchor = "end"
-        pk_tx = min(884.0, pk_x)
-    pk_month = datetime.strptime(weekly[peak_w_idx]["firstDay"], "%Y-%m-%d").strftime("%b %Y") if weekly else ""
+        # Delicate vertical tether down to the waterline
+        orbs_svg.append(
+            f'<line x1="{ox:.1f}" y1="{oy + orb_r:.1f}" x2="{ox:.1f}" y2="188" stroke="{col}" stroke-opacity="0.22" stroke-width="1" stroke-dasharray="2 3"/>'
+        )
 
-    # 3. Evenly paced month labels aligned to the 52-week horizontal axis (no skipped months!)
-    month_positions: list[tuple[str, float]] = []
-    seen_months: dict[tuple[int, int], list[float]] = {}
-    for i, item in enumerate(weekly):
-        dt = datetime.strptime(item["firstDay"], "%Y-%m-%d")
-        key = (dt.year, dt.month)
-        mx = 24.0 + (i / (n_w - 1)) * (896.0 - 24.0)
-        seen_months.setdefault(key, []).append(mx)
-    for (yr, mo), xs in sorted(seen_months.items()):
-        # Skip tiny leading stub month (< 2 weeks) so Dec..Nov renders cleanly without gaps
-        if len(xs) < 2 and xs[0] < 60:
-            continue
-        mid_x = sum(xs) / len(xs)
-        month_positions.append((datetime(yr, mo, 1).strftime("%b"), mid_x))
+        # Expanding zen water ripples beneath Peak & Latest months
+        if is_peak or is_latest:
+            rip_col = t["ochre"] if is_peak else t["pine"]
+            dur_r = "4.8s" if is_peak else "5.6s"
+            for delay in ("0s", "-2.4s"):
+                ripples_svg.append(
+                    f'<ellipse cx="{ox:.1f}" cy="188" rx="4" ry="1.8" fill="none" stroke="{rip_col}" stroke-width="1.1">'
+                    f'<animate attributeName="rx" values="4;26" dur="{dur_r}" begin="{delay}" repeatCount="indefinite"/>'
+                    f'<animate attributeName="ry" values="1.6;7.5" dur="{dur_r}" begin="{delay}" repeatCount="indefinite"/>'
+                    f'<animate attributeName="stroke-opacity" values="0.55;0" dur="{dur_r}" begin="{delay}" repeatCount="indefinite"/>'
+                    f'</ellipse>'
+                )
 
-    month_labels_svg = [
-        f'<text x="{mx:.1f}" y="317" text-anchor="middle" fill="{t["ink_muted"]}" font-family="{SANS}" font-size="10.2">{lbl}</text>'
-        for lbl, mx in month_positions
+        # Soft aura + glowing monthly orb
+        orbs_svg.append(
+            f'<circle cx="{ox:.1f}" cy="{oy:.1f}" r="{orb_r + 6:.1f}" fill="{col}" fill-opacity="0.16">'
+            f'<animate attributeName="r" values="{orb_r + 4:.1f};{orb_r + 9:.1f};{orb_r + 4:.1f}" dur="{5.0 + (i % 4) * 1.1:.1f}s" repeatCount="indefinite"/>'
+            f'</circle>'
+            f'<circle cx="{ox:.1f}" cy="{oy:.1f}" r="{orb_r:.1f}" fill="{t["surface"]}" stroke="{col}" stroke-width="2"/>'
+            f'<circle cx="{ox:.1f}" cy="{oy:.1f}" r="{max(1.8, orb_r * 0.42):.1f}" fill="{col}"/>'
+        )
+
+        # Month label + exact monthly total tucked cleanly along the quiet footer line of the water
+        val_txt = fmt_num(m["total"])
+        m_op = "1.0" if (is_peak or is_latest) else "0.74"
+        orbs_svg.append(
+            f'<text x="{ox:.1f}" y="{oy - orb_r - 7:.1f}" text-anchor="middle" fill="{t["ink"] if (is_peak or is_latest) else t["ink_sec"]}" font-family="{SANS}" font-size="9.8" font-weight="{700 if (is_peak or is_latest) else 500}">{val_txt}</text>'
+            f'<text x="{ox:.1f}" y="203" text-anchor="middle" fill="{t["ink"]}" fill-opacity="{m_op}" font-family="{SANS}" font-size="9.8" font-weight="{700 if (is_peak or is_latest) else 500}">{esc(m["label"])}</text>'
+        )
+
+    # Floating peaceful twilight fireflies
+    fireflies = [
+        (135, 134, 1.7, "12s", "0s"),
+        (275, 118, 1.5, "16s", "-5s"),
+        (410, 126, 1.9, "14s", "-2s"),
+        (545, 112, 1.5, "18s", "-7s"),
+        (685, 130, 1.8, "13s", "-4s"),
+        (805, 120, 1.6, "15s", "-9s"),
     ]
+    ff_svg = []
+    for fx, fy, fr, dur, beg in fireflies:
+        ff_svg.append(
+            f'<circle cx="{fx}" cy="{fy}" r="{fr}" fill="{t["firefly"]}" opacity="0">'
+            f'<animate attributeName="opacity" values="0;0.65;0.18;0" dur="{dur}" begin="{beg}" repeatCount="indefinite"/>'
+            f'<animateTransform attributeName="transform" type="translate" values="0 6; 8 -14; -6 -28" dur="{dur}" begin="{beg}" repeatCount="indefinite"/>'
+            f'</circle>'
+        )
 
-    # 4. Quiet 26-week mini contribution mosaic in the top-right corner
-    mosaic_svg = []
-    m_weeks = stats["mosaic_weeks"]
-    m_all = [d["contributionCount"] for wk in m_weeks for d in wk["contributionDays"] if d["contributionCount"] > 0]
-    m_max = max(m_all) if m_all else 1
-    cell = 5.2
-    gap = 2.0
-    m_start_x = 884.0 - len(m_weeks) * (cell + gap) + gap
-    m_start_y = 22.0
-    for wi, wk in enumerate(m_weeks):
+    # Full-width sleek 52-week calm pill-brick heatmap ribbon (y=222..276)
+    r_weeks = stats["ribbon_weeks"]
+    r_all = [d["contributionCount"] for wk in r_weeks for d in wk["contributionDays"] if d["contributionCount"] > 0]
+    r_max = max(r_all) if r_all else 1
+    nw = max(1, len(r_weeks))
+    col_step = 848.0 / nw
+    brick_w = max(6.0, col_step - 3.6)
+    brick_h = 5.2
+    row_step = 7.4
+    ribbon_svg = []
+    for wi, wk in enumerate(r_weeks):
+        bx = 36.0 + wi * col_step
         for d in wk["contributionDays"]:
             di = d["weekday"]
             cnt = d["contributionCount"]
             if cnt == 0:
                 lvl = 0
             else:
-                ratio = cnt / m_max
-                lvl = 1 if ratio < 0.22 else (2 if ratio < 0.48 else (3 if ratio < 0.75 else 4))
-            cx = m_start_x + wi * (cell + gap)
-            cy = m_start_y + di * (cell + gap)
-            mosaic_svg.append(f'<rect x="{cx:.1f}" y="{cy:.1f}" width="{cell:.1f}" height="{cell:.1f}" rx="1.3" fill="{t["ramp"][lvl]}"/>')
+                ratio = cnt / r_max
+                lvl = 1 if ratio < 0.20 else (2 if ratio < 0.45 else (3 if ratio < 0.72 else 4))
+            by = 223.0 + di * row_step
+            ribbon_svg.append(
+                f'<rect x="{bx:.1f}" y="{by:.1f}" width="{brick_w:.1f}" height="{brick_h:.1f}" rx="1.6" fill="{t["ramp"][lvl]}"/>'
+            )
 
-    # 5. Subtle calm lake ripples
-    ripples = [
-        (85, 242, 145, 0.22, "11s"),
-        (310, 248, 180, 0.18, "14s"),
-        (595, 244, 165, 0.20, "12s"),
-        (170, 262, 120, 0.14, "16s"),
-        (455, 268, 210, 0.16, "13s"),
-        (710, 264, 130, 0.13, "15s"),
-        (250, 284, 150, 0.10, "17s"),
-        (540, 288, 140, 0.10, "14s"),
-    ]
-    ripples_svg = []
-    for rx, ry, rw, op, dur in ripples:
-        ripples_svg.append(
-            f'<line x1="{rx}" y1="{ry}" x2="{rx + rw}" y2="{ry}" stroke="{t["ripple"]}" stroke-width="1" stroke-linecap="round" stroke-opacity="{op}">'
-            f'<animate attributeName="stroke-opacity" values="{op};{op * 0.35:.2f};{op}" dur="{dur}" repeatCount="indefinite"/>'
-            f'</line>'
-        )
+    peak_m = months[peak_m_idx] if months else {"label": "—", "total": 0}
 
-    # Reflection scale factor anchored at shore_y
-    ref_ty = shore_y * (1.0 + 0.56)
-
-    return f'''<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}" viewBox="0 0 {w} {h}" role="img" aria-label="The Quiet Horizon — 52-Week and 30-Day GitHub Activity Landscape">
+    return f'''<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}" viewBox="0 0 {w} {h}" role="img" aria-label="Calm Currents — Animated Monthly Contribution Flow and 52-Week Activity Ribbon">
 <defs>
-  <clipPath id="horizonClip"><rect width="{w}" height="{h}" rx="16"/></clipPath>
-  <clipPath id="skyClip"><rect x="0" y="0" width="{w}" height="{shore_y}"/></clipPath>
-  <clipPath id="waterClip"><rect x="0" y="{shore_y}" width="{w}" height="{h - shore_y}"/></clipPath>
-
-  <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
-    <stop offset="0%" stop-color="{t['sky_top']}"/>
-    <stop offset="55%" stop-color="{t['sky_mid']}"/>
+  <clipPath id="flowClip"><rect width="{w}" height="{h}" rx="16"/></clipPath>
+  <clipPath id="waveBox"><rect x="0" y="56" width="{w}" height="156"/></clipPath>
+  <linearGradient id="flowSky" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="{t['surface']}"/>
+    <stop offset="48%" stop-color="{t['sky_mid']}"/>
     <stop offset="100%" stop-color="{t['sky_bot']}"/>
   </linearGradient>
-
-  <linearGradient id="waterGrad" x1="0" y1="0" x2="0" y2="1">
-    <stop offset="0%" stop-color="{t['water_top']}"/>
-    <stop offset="100%" stop-color="{t['water_bot']}"/>
-  </linearGradient>
-
-  <radialGradient id="orbAura" cx="0.5" cy="0.5" r="0.5">
-    <stop offset="0%" stop-color="{t['orb']}" stop-opacity="0.58"/>
-    <stop offset="40%" stop-color="{t['orb_glow']}" stop-opacity="0.18"/>
-    <stop offset="100%" stop-color="{t['orb_glow']}" stop-opacity="0"/>
-  </radialGradient>
-
-  <radialGradient id="orbSoft" cx="0.5" cy="0.5" r="0.5">
-    <stop offset="0%" stop-color="{t['orb']}" stop-opacity="0.72"/>
-    <stop offset="78%" stop-color="{t['orb']}" stop-opacity="0.38"/>
-    <stop offset="100%" stop-color="{t['orb']}" stop-opacity="0"/>
-  </radialGradient>
-
-  <linearGradient id="farRidgeFill" x1="0" y1="0" x2="0" y2="1">
-    <stop offset="0%" stop-color="{t['ridge_far']}" stop-opacity="0.52"/>
-    <stop offset="100%" stop-color="{t['ridge_far']}" stop-opacity="0.14"/>
-  </linearGradient>
-
-  <linearGradient id="nearRidgeFill" x1="0" y1="0" x2="0" y2="1">
-    <stop offset="0%" stop-color="{t['ridge_near']}" stop-opacity="0.82"/>
-    <stop offset="100%" stop-color="{t['ridge_near']}" stop-opacity="0.34"/>
-  </linearGradient>
-
-  <linearGradient id="waterFade" x1="0" y1="0" x2="0" y2="1">
-    <stop offset="0%" stop-color="#ffffff" stop-opacity="0.46"/>
-    <stop offset="70%" stop-color="#ffffff" stop-opacity="0.12"/>
-    <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
-  </linearGradient>
-  <mask id="reflectMask">
-    <rect x="0" y="{shore_y}" width="{w}" height="96" fill="url(#waterFade)"/>
-  </mask>
 </defs>
 
-<g clip-path="url(#horizonClip)">
-  <!-- Sky & Water Backdrop -->
-  <rect x="0" y="0" width="{w}" height="{shore_y}" fill="url(#skyGrad)"/>
-  <rect x="0" y="{shore_y}" width="{w}" height="{h - shore_y}" fill="url(#waterGrad)"/>
+<g clip-path="url(#flowClip)">
+  <!-- Backdrop -->
+  <rect x="0" y="0" width="{w}" height="212" fill="url(#flowSky)"/>
+  <rect x="0" y="212" width="{w}" height="{h - 212}" fill="{t['surface']}"/>
 
-  <!-- Soft sun / moon orb resting above the highland mist -->
-  <circle cx="118" cy="118" r="56" fill="url(#orbAura)"/>
-  <circle cx="118" cy="118" r="17" fill="url(#orbSoft)"/>
+  <!-- Header -->
+  <text x="36" y="34" fill="{t['ink']}" font-family="{SERIF}" font-size="16.5" font-weight="400">Calm Currents</text>
+  <text x="884" y="33" text-anchor="end" fill="{t['ink_sec']}" font-family="{SANS}" font-size="10.8">
+    {fmt_num(stats['rolling_30'])} in 30d  ·  {fmt_num(stats['rolling_7'])} in 7d  ·  Peak: {esc(peak_m['label'])} ({fmt_num(peak_m['total'])})
+  </text>
+  <line x1="36" y1="47" x2="884" y2="47" stroke="{t['divider']}" stroke-width="1"/>
 
-  <!-- Header & 26-week calm heatmap mosaic -->
-  <text x="36" y="38" fill="{t['ink']}" font-family="{SERIF}" font-size="17" font-weight="400">The Quiet Horizon</text>
-  <text x="36" y="57" fill="{t['ink_sec']}" font-family="{SANS}" font-size="11.2">52-week contribution topography · {fmt_num(stats['rolling_30'])} contributions in 30 days · {fmt_num(stats['rolling_7'])} in 7 days</text>
-  <g>{"".join(mosaic_svg)}</g>
-  <text x="884" y="84" text-anchor="end" fill="{t['ink_muted']}" font-family="{SANS}" font-size="9.5">Last 26 weeks</text>
-
-  <!-- Data-driven mountain ridges -->
-  <g clip-path="url(#skyClip)">
-    <!-- Far ridge: 52-week momentum -->
-    <path d="{far_area}" fill="url(#farRidgeFill)"/>
-    <path d="{far_stroke}" fill="none" stroke="{t['ridge_far_stroke']}" stroke-opacity="0.65" stroke-width="1.3"/>
-
-    <!-- Near ridge: 30-day daily pulse -->
-    <path d="{near_area}" fill="url(#nearRidgeFill)"/>
-    <path d="{near_stroke}" fill="none" stroke="{t['ridge_near_stroke']}" stroke-opacity="0.75" stroke-width="1.4"/>
-
-    <!-- Quiet peak marker -->
-    <line x1="{pk_x:.1f}" y1="{pk_y:.1f}" x2="{pk_x:.1f}" y2="{pk_y - 12:.1f}" stroke="{t['ridge_far_stroke']}" stroke-opacity="0.55" stroke-width="1"/>
-    <circle cx="{pk_x:.1f}" cy="{pk_y:.1f}" r="3" fill="{t['surface']}" stroke="{t['ridge_far_stroke']}" stroke-width="1.5"/>
-    <text x="{pk_tx:.1f}" y="{pk_y - 16:.1f}" text-anchor="{pk_anchor}" fill="{t['ink_sec']}" font-family="{SANS}" font-size="10.2" font-weight="500">Peak week · {fmt_num(peak_w_val)} ({esc(pk_month)})</text>
-  </g>
-
-  <!-- Still lake reflection of both ridges -->
-  <g clip-path="url(#waterClip)" mask="url(#reflectMask)">
-    <g transform="translate(0, {ref_ty:.2f}) scale(1, -0.56)">
-      <path d="{far_area}" fill="{t['ridge_far']}" fill-opacity="0.55"/>
-      <path d="{near_area}" fill="{t['ridge_near']}" fill-opacity="0.72"/>
+  <!-- Gently gliding infinite silk-water waves -->
+  <g clip-path="url(#waveBox)">
+    <g>
+      <path d="{wave_back}" fill="{t['wave_1']}" fill-opacity="0.22"/>
+      <animateTransform attributeName="transform" type="translate" from="0 0" to="-{w} 0" dur="36s" repeatCount="indefinite"/>
+    </g>
+    <g>
+      <path d="{wave_mid}" fill="{t['wave_2']}" fill-opacity="0.24"/>
+      <animateTransform attributeName="transform" type="translate" from="-{w} 0" to="0 0" dur="28s" repeatCount="indefinite"/>
+    </g>
+    <g>
+      <path d="{wave_front}" fill="{t['wave_3']}" fill-opacity="0.16"/>
+      <animateTransform attributeName="transform" type="translate" from="0 0" to="-{w} 0" dur="22s" repeatCount="indefinite"/>
     </g>
   </g>
 
-  <!-- Calm waterline & subtle breathing ripples -->
-  <line x1="0" y1="{shore_y}" x2="{w}" y2="{shore_y}" stroke="{t['ripple']}" stroke-opacity="0.35" stroke-width="1"/>
+  <!-- Floating firefly motes & zen ripples -->
+  <g>{"".join(ff_svg)}</g>
   <g>{"".join(ripples_svg)}</g>
 
-  <!-- Month axis & gentle footer legend -->
-  <line x1="36" y1="300" x2="884" y2="300" stroke="{t['divider']}" stroke-opacity="0.65" stroke-width="1"/>
-  <g>{"".join(month_labels_svg)}</g>
+  <!-- Monthly luminous spline & floating lanterns -->
+  <path d="{flow_line}" fill="none" stroke="{t['lake']}" stroke-opacity="0.45" stroke-width="1.6"/>
+  <g>{"".join(orbs_svg)}</g>
 
-  <text x="36" y="341" fill="{t['ink_muted']}" font-family="{SANS}" font-size="9.8">Every elevation is shaped directly by live GitHub contribution data.</text>
-  <g transform="translate(664, 341)" font-family="{SANS}" font-size="9.8" fill="{t['ink_muted']}">
-    <circle cx="0" cy="-3" r="3.5" fill="{t['ridge_far']}" fill-opacity="0.75"/>
-    <text x="8" y="0">52-week trend</text>
-    <circle cx="102" cy="-3" r="3.5" fill="{t['ridge_near']}" fill-opacity="0.88"/>
-    <text x="110" y="0">30-day daily pulse</text>
+  <!-- Subtle waterline divider into full 52-week calm ribbon -->
+  <line x1="0" y1="212" x2="{w}" y2="212" stroke="{t['divider']}" stroke-width="1"/>
+  <g>{"".join(ribbon_svg)}</g>
+  <text x="36" y="285" fill="{t['ink_muted']}" font-family="{SANS}" font-size="9.5">52-week contribution cadence · automatically tracked by GitHub</text>
+  <g transform="translate(772, 279)" font-family="{SANS}" font-size="9.2" fill="{t['ink_muted']}">
+    <text x="0" y="6">Less</text>
+    <rect x="25" y="-1" width="9" height="6" rx="1.5" fill="{t['ramp'][0]}"/>
+    <rect x="37" y="-1" width="9" height="6" rx="1.5" fill="{t['ramp'][1]}"/>
+    <rect x="49" y="-1" width="9" height="6" rx="1.5" fill="{t['ramp'][2]}"/>
+    <rect x="61" y="-1" width="9" height="6" rx="1.5" fill="{t['ramp'][3]}"/>
+    <rect x="73" y="-1" width="9" height="6" rx="1.5" fill="{t['ramp'][4]}"/>
+    <text x="86" y="6">More</text>
   </g>
 </g>
 
 <rect x="0.5" y="0.5" width="{w - 1}" height="{h - 1}" rx="15.5" fill="none" stroke="{t['border']}" stroke-width="1"/>
 </svg>
 '''
-
-
-def build_recent_activity_md(stats: dict[str, Any]) -> str:
-    rows = [
-        "| Repository | Focus & Latest Update | Language | Tended |",
-        "| :--- | :--- | :--- | ---: |",
-    ]
-    for r in stats["recently_tended"]:
-        name_link = f"[**{r['name']}**]({r['url']})"
-        if r["homepage"]:
-            name_link += f" · [Live]({r['homepage']})"
-        cleaned_desc = clean_repo_description(r["name"], r["description"])
-        desc = truncate(cleaned_desc, 92) if cleaned_desc else r["latest_commit"]
-        if cleaned_desc and r["latest_commit"]:
-            detail = f"{desc}<br><sub>Latest commit: {r['latest_commit']}</sub>"
-        else:
-            detail = desc or "Active development"
-        # Escape pipes for markdown table safety
-        detail = detail.replace("|", "\\|")
-        rows.append(f"| {name_link} | {detail} | `{r['language']}` | {r['relative']} |")
-    return "\n".join(rows)
 
 
 def replace_marker(content: str, tag: str, replacement: str) -> str:
@@ -1199,7 +1162,7 @@ def update_readme(stats: dict[str, Any]) -> None:
         return
     text = README_PATH.read_text(encoding="utf-8")
 
-    # Update live star badges on public flagship repos if markers exist
+    # Sync live star counts on public flagship repos
     lookup = stats["repo_lookup"]
     for repo_name in ("pharmacy_template_tier2", "hotel-intranet", "Kampus", "moi_mashinani"):
         if repo_name in lookup:
@@ -1211,14 +1174,8 @@ def update_readme(stats: dict[str, Any]) -> None:
                 text,
             )
 
-    text = replace_marker(text, "RECENT_ACTIVITY", build_recent_activity_md(stats))
-
-    updated_date = stats["now_eat"].strftime("%B %-d, %Y") if os.name != "nt" else stats["now_eat"].strftime("%B %d, %Y")
-    footer_line = (
-        f"<sub>Updated automatically via GitHub Actions on {updated_date} · "
-        f"{fmt_num(stats['all_time_contributions'])} lifetime contributions across "
-        f"{fmt_num(stats['public_repos'])} public repositories</sub>"
-    )
+    updated_date = stats["now_eat"].strftime("%b %-d, %Y") if os.name != "nt" else stats["now_eat"].strftime("%b %d, %Y")
+    footer_line = f"<sub>Auto-synced by GitHub Actions · {updated_date}</sub>"
     text = replace_marker(text, "LAST_UPDATED", footer_line)
 
     README_PATH.write_text(text, encoding="utf-8")
@@ -1233,11 +1190,11 @@ def main() -> None:
         (ASSETS / f"hero-{mode}.svg").write_text(render_hero_svg(stats, mode), encoding="utf-8")
         (ASSETS / f"stats-overview-{mode}.svg").write_text(render_stats_overview_svg(stats, mode), encoding="utf-8")
         (ASSETS / f"stats-rhythm-{mode}.svg").write_text(render_stats_rhythm_svg(stats, mode), encoding="utf-8")
-        (ASSETS / f"activity-horizon-{mode}.svg").write_text(render_activity_horizon_svg(stats, mode), encoding="utf-8")
+        (ASSETS / f"activity-flow-{mode}.svg").write_text(render_activity_flow_svg(stats, mode), encoding="utf-8")
 
     update_readme(stats)
     print(
-        f"Profile updated: {stats['all_time_contributions']} lifetime contributions, "
+        f"Profile updated: rank {stats['rank_grade']}, {stats['all_time_contributions']} lifetime, "
         f"{stats['rolling_365']} past 365d, {stats['current_streak']}d streak, "
         f"{stats['public_repos']} public repos."
     )
