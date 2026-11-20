@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="344" viewBox="0 0 920 344" role="img" aria-label="GitHub Overview Statistics — Automatically Updated">
+<rect width="920" height="344" rx="16" fill="#FFFFFF" stroke="#DCE6E1" stroke-width="1"/>
+
+<!-- Header -->
+<text x="36" y="37" fill="#182924" font-family="Georgia, 'Iowan Old Style', 'Palatino Linotype', Palatino, serif" font-size="17" font-weight="400">GitHub Overview</text>
+<text x="884" y="36" text-anchor="end" fill="#7A9089" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11">All-time &amp; rolling 365 days  ·  tracked automatically</text>
+<line x1="36" y1="52" x2="884" y2="52" stroke="#E5EDE9" stroke-width="1"/>
+
+<!-- Center divider -->
+<line x1="468" y1="68" x2="468" y2="322" stroke="#E5EDE9" stroke-width="1"/>
+
+<!-- LEFT: Spotlight totals -->
+<g>
+  <rect x="36" y="68" width="196" height="78" rx="10" fill="#EFF5F2" stroke="#DCE6E1" stroke-width="0.8"/>
+  <text x="52" y="90" fill="#4C625B" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.2">All-time contributions</text>
+  <text x="52" y="121" fill="#2C6E5B" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="25" font-weight="700" letter-spacing="-0.5">6,481</text>
+  <text x="52" y="137" fill="#7A9089" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5">Across 2024 – 2026</text>
+
+  <rect x="248" y="68" width="196" height="78" rx="10" fill="#EFF5F2" stroke="#DCE6E1" stroke-width="0.8"/>
+  <text x="264" y="90" fill="#4C625B" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.2">Past 365 days</text>
+  <text x="264" y="121" fill="#477A96" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="25" font-weight="700" letter-spacing="-0.5">5,111</text>
+  <text x="264" y="137" fill="#7A9089" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5">445 in the last 30 days</text>
+</g>
+
+<!-- LEFT: Detailed Ledger -->
+<g>
+  <text x="36" y="182" fill="#4C625B" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.8">Commits (all-time)</text><text x="228" y="182" text-anchor="end" fill="#182924" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12.8" font-weight="600">3,605</text><text x="252" y="182" fill="#4C625B" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.8">Pull requests</text><text x="444" y="182" text-anchor="end" fill="#182924" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12.8" font-weight="600">124</text><line x1="36" y1="196" x2="444" y2="196" stroke="#E5EDE9" stroke-width="1"/><text x="36" y="218" fill="#4C625B" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.8">Private activity</text><text x="228" y="218" text-anchor="end" fill="#182924" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12.8" font-weight="600">2,642</text><text x="252" y="218" fill="#4C625B" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.8">Issues &amp; reviews</text><text x="444" y="218" text-anchor="end" fill="#182924" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12.8" font-weight="600">1</text><line x1="36" y1="232" x2="444" y2="232" stroke="#E5EDE9" stroke-width="1"/><text x="36" y="254" fill="#4C625B" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.8">Public repositories</text><text x="228" y="254" text-anchor="end" fill="#182924" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12.8" font-weight="600">107</text><text x="252" y="254" fill="#4C625B" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.8">Stars · Forks</text><text x="444" y="254" text-anchor="end" fill="#182924" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12.8" font-weight="600">38 · 6</text><line x1="36" y1="268" x2="444" y2="268" stroke="#E5EDE9" stroke-width="1"/><text x="36" y="290" fill="#4C625B" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.8">Followers · Following</text><text x="228" y="290" text-anchor="end" fill="#182924" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12.8" font-weight="600">27 · 6</text><text x="252" y="290" fill="#4C625B" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.8">Code indexed</text><text x="444" y="290" text-anchor="end" fill="#182924" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12.8" font-weight="600">64.0 MB</text>
+</g>
+
+<!-- RIGHT: Streaks -->
+<g>
+  <rect x="494" y="68" width="188" height="78" rx="10" fill="#EFF5F2" stroke="#DCE6E1" stroke-width="0.8"/>
+  <text x="510" y="90" fill="#4C625B" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.2">Current streak</text>
+  <text x="510" y="121" fill="#A8844E" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="24" font-weight="700" letter-spacing="-0.4">7 days</text>
+  <text x="510" y="137" fill="#7A9089" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5">Nov 14 – Nov 20</text>
+
+  <rect x="696" y="68" width="188" height="78" rx="10" fill="#EFF5F2" stroke="#DCE6E1" stroke-width="0.8"/>
+  <text x="712" y="90" fill="#4C625B" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.2">Longest streak</text>
+  <text x="712" y="121" fill="#2C6E5B" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="24" font-weight="700" letter-spacing="-0.4">29 days</text>
+  <text x="712" y="137" fill="#7A9089" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5">Jun 23 – Jul 21</text>
+</g>
+
+<!-- RIGHT: Consistency micro-summary -->
+<g>
+  <text x="494" y="174" fill="#7A9089" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.8">Active days (1y)</text>
+  <text x="494" y="194" fill="#182924" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="600">268 <tspan fill="#7A9089" font-size="11.5" font-weight="400">(72%)</tspan></text>
+
+  <text x="636" y="174" fill="#7A9089" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.8">Best single day</text>
+  <text x="636" y="194" fill="#182924" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="600">238 <tspan fill="#7A9089" font-size="11.5" font-weight="400">· Sep 3</tspan></text>
+
+  <text x="784" y="174" fill="#7A9089" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.8">Active-day avg</text>
+  <text x="784" y="194" fill="#182924" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="600">19.1 <tspan fill="#7A9089" font-size="11.5" font-weight="400">/ day</tspan></text>
+</g>
+
+<line x1="494" y1="212" x2="884" y2="212" stroke="#E5EDE9" stroke-width="1"/>
+
+<!-- RIGHT: Yearly trajectory -->
+<text x="494" y="234" fill="#4C625B" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.8" font-weight="600">Yearly contribution growth</text>
+<g>
+  <text x="494" y="259" fill="#4C625B" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11">2024</text><rect x="536" y="250" width="286" height="10" rx="5" fill="#EFF5F2"/><rect x="536" y="250" width="6.0" height="10" rx="5" fill="#6C9A7F" fill-opacity="0.62"/><text x="884" y="259" text-anchor="end" fill="#4C625B" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.8" font-weight="500">21</text><text x="494" y="283" fill="#4C625B" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11">2025</text><rect x="536" y="274" width="286" height="10" rx="5" fill="#EFF5F2"/><rect x="536" y="274" width="100.7" height="10" rx="5" fill="#6C9A7F" fill-opacity="0.62"/><text x="884" y="283" text-anchor="end" fill="#4C625B" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.8" font-weight="500">1,682</text><text x="494" y="307" fill="#4C625B" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11">2026</text><rect x="536" y="298" width="286" height="10" rx="5" fill="#EFF5F2"/><rect x="536" y="298" width="286.0" height="10" rx="5" fill="#2C6E5B" fill-opacity="0.95"/><text x="884" y="307" text-anchor="end" fill="#182924" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.8" font-weight="600">4,778</text>
+</g>
+</svg>

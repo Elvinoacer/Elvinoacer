@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="212" viewBox="0 0 920 212" role="img" aria-label="Elvin Omondi Juma — Founding Engineer at Great Thumbs Software Solutions">
+<defs>
+  <clipPath id="heroClip"><rect width="920" height="212" rx="16"/></clipPath>
+  <linearGradient id="heroBg" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0%" stop-color="#FFFFFF"/>
+    <stop offset="65%" stop-color="#F7FAF8"/>
+    <stop offset="100%" stop-color="#EEF4F1"/>
+  </linearGradient>
+  <radialGradient id="heroGlow" cx="0.85" cy="0.28" r="0.34">
+    <stop offset="0%" stop-color="#E8CE96" stop-opacity="0.28"/>
+    <stop offset="55%" stop-color="#2C6E5B" stop-opacity="0.06"/>
+    <stop offset="100%" stop-color="#F7FAF8" stop-opacity="0"/>
+  </radialGradient>
+  <radialGradient id="heroOrbGrad" cx="0.5" cy="0.5" r="0.5">
+    <stop offset="0%" stop-color="#F2DFB6" stop-opacity="0.62"/>
+    <stop offset="72%" stop-color="#F2DFB6" stop-opacity="0.30"/>
+    <stop offset="100%" stop-color="#F2DFB6" stop-opacity="0"/>
+  </radialGradient>
+  <linearGradient id="hillFar" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#7DA3B5" stop-opacity="0.26"/>
+    <stop offset="100%" stop-color="#7DA3B5" stop-opacity="0.04"/>
+  </linearGradient>
+  <linearGradient id="hillNear" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#2C6E5B" stop-opacity="0.22"/>
+    <stop offset="100%" stop-color="#2C6E5B" stop-opacity="0.03"/>
+  </linearGradient>
+</defs>
+
+<g clip-path="url(#heroClip)">
+  <rect width="920" height="212" fill="url(#heroBg)"/>
+  <rect width="920" height="212" fill="url(#heroGlow)"/>
+
+  <!-- Subtle distant highland mist silhouettes on the right -->
+  <circle cx="792" cy="58" r="24" fill="url(#heroOrbGrad)"/>
+  <path d="M 470 212 C 545 148, 610 132, 682 154 C 742 172, 804 102, 872 126 C 894 134, 910 144, 926 150 L 926 212 Z" fill="url(#hillFar)"/>
+  <path d="M 555 212 C 625 162, 695 168, 764 146 C 824 128, 876 156, 926 142 L 926 212 Z" fill="url(#hillNear)"/>
+  <path d="M 555 212 C 625 162, 695 168, 764 146 C 824 128, 876 156, 926 142" fill="none" stroke="#2C6E5B" stroke-opacity="0.22" stroke-width="1"/>
+
+  <!-- Live status pill -->
+  <g transform="translate(42, 30)">
+    <rect width="407" height="26" rx="13" fill="#EFF5F2" stroke="#DCE6E1" stroke-width="1"/>
+    <circle cx="15" cy="13" r="3.6" fill="#2C6E5B">
+      <animate attributeName="opacity" values="0.95;0.38;0.95" dur="5.5s" repeatCount="indefinite"/>
+    </circle>
+    <text x="27" y="17" fill="#4C625B" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="500">Eldoret, Kenya  ·  7-day streak  ·  5,111 contributions this year</text>
+  </g>
+
+  <!-- Identity -->
+  <text x="42" y="102" fill="#182924" font-family="Georgia, 'Iowan Old Style', 'Palatino Linotype', Palatino, serif" font-size="33" font-weight="400" letter-spacing="-0.4">Elvin Omondi Juma</text>
+  <text x="42" y="129" fill="#4C625B" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="500">Founding Engineer at Great Thumbs Software Solutions</text>
+  <text x="42" y="155" fill="#7A9089" font-family="Georgia, 'Iowan Old Style', 'Palatino Linotype', Palatino, serif" font-style="italic" font-size="13">Building calm, dependable software for healthcare, local commerce, and everyday operations.</text>
+
+  <!-- Subtle bottom bar -->
+  <line x1="42" y1="176" x2="540" y2="176" stroke="#E5EDE9" stroke-width="1"/>
+  <text x="42" y="195" fill="#7A9089" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.2">
+    <tspan fill="#4C625B" font-weight="600">@Elvinoacer</tspan>
+    <tspan>  ·  107 public repositories  ·  6,481 lifetime contributions</tspan>
+  </text>
+</g>
+
+<rect x="0.5" y="0.5" width="919" height="211" rx="15.5" fill="none" stroke="#DCE6E1" stroke-width="1"/>
+</svg>

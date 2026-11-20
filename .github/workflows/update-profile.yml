@@ -1,0 +1,41 @@
+name: Update Profile Telemetry
+
+on:
+  schedule:
+    # Refresh every 6 hours automatically
+    - cron: "0 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Fetch GitHub stats and render calm telemetry SVGs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PROFILE_TOKEN: ${{ secrets.PROFILE_TOKEN }}
+          GITHUB_USERNAME: Elvinoacer
+        run: python3 scripts/update_profile.py
+
+      - name: Commit and push updated stats if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if [[ -n "$(git status --porcelain)" ]]; then
+            git add assets/ README.md
+            git commit -m "chore(stats): refresh live GitHub telemetry and horizon"
+            git push
+          else
+            echo "No telemetry changes to commit."
+          fi
