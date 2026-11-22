@@ -56,11 +56,11 @@
 
   <!-- Live status pill -->
   <g transform="translate(42, 26)">
-    <rect width="374" height="26" rx="13" fill="#F0F6F3" stroke="#DCE6E1" stroke-width="1"/>
+    <rect width="357" height="26" rx="13" fill="#F0F6F3" stroke="#DCE6E1" stroke-width="1"/>
     <circle cx="15" cy="13" r="3.6" fill="#2C6E5B">
       <animate attributeName="opacity" values="0.95;0.35;0.95" dur="5s" repeatCount="indefinite"/>
     </circle>
-    <text x="27" y="17" fill="#4B615A" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.4" font-weight="500">Eldoret, Kenya  ·  7-day streak  ·  5,113 contributions / 1y</text>
+    <text x="27" y="17" fill="#4B615A" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.4" font-weight="500">Eldoret, Kenya  ·  Quiet day  ·  5,113 contributions / 1y</text>
   </g>
 
   <!-- Concise identity -->
