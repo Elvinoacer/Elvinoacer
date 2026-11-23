@@ -23,7 +23,7 @@
   <text x="54" y="59" text-anchor="middle" fill="#2C6E5B" font-family="Georgia, 'Iowan Old Style', 'Palatino Linotype', Palatino, serif" font-size="22" font-weight="700">S</text>
   <text x="104" y="34" fill="#4B615A" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11">Lifetime contributions</text>
   <text x="104" y="62" fill="#182924" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="24" font-weight="700" letter-spacing="-0.4">6,496</text>
-  <text x="104" y="81" fill="#7A9089" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5">5,126 past year · 454 / 30d</text>
+  <text x="104" y="81" fill="#7A9089" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5">5,066 past year · 450 / 30d</text>
 </g>
 
 <!-- Gauge 2: Consistency Ring -->
@@ -31,11 +31,11 @@
   <rect width="273" height="108" rx="12" fill="#F0F6F3" stroke="#DCE6E1" stroke-width="0.8"/>
   <circle cx="54" cy="54" r="33" fill="none" stroke="#E4ECE8" stroke-width="6"/>
   <circle cx="54" cy="54" r="33" fill="none" stroke="#477A96" stroke-width="6" stroke-linecap="round"
-          stroke-dasharray="149.4 207.3" transform="rotate(-90 54 54)"/>
+          stroke-dasharray="149.0 207.3" transform="rotate(-90 54 54)"/>
   <text x="54" y="59" text-anchor="middle" fill="#477A96" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="15.5" font-weight="700">72%</text>
   <text x="104" y="34" fill="#4B615A" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11">Active days (past year)</text>
   <text x="104" y="62" fill="#182924" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="24" font-weight="700" letter-spacing="-0.4">263 days</text>
-  <text x="104" y="81" fill="#7A9089" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5">19.5 / active day · 99 / wk</text>
+  <text x="104" y="81" fill="#7A9089" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5">19.3 / active day · 97 / wk</text>
 </g>
 
 <!-- Gauge 3: Streak Ring -->
