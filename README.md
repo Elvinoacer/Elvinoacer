@@ -42,7 +42,7 @@
 
 | Project | Focus | Links |
 | :--- | :--- | :--- |
-| 🩺 **Afyvia** | Multi-tenant pharmacy &amp; clinical OS | [Live](https://afyvia.gtss.software) · [Repo](https://github.com/Elvinoacer/pharmacy_template_tier2)<!-- STAR:pharmacy_template_tier2 --> · ★ 17<!-- /STAR:pharmacy_template_tier2 --> |
+| 🩺 **Afyvia** | Multi-tenant pharmacy &amp; clinical OS | [Live](https://afyvia.gtss.software) · [Repo](https://github.com/Elvinoacer/pharmacy_template_tier2)<!-- STAR:pharmacy_template_tier2 --> · ★ 18<!-- /STAR:pharmacy_template_tier2 --> |
 | ⚡ **JustInTime** | Hyperlocal services marketplace &amp; M-Pesa | [Live](https://justintime.gtss.software) |
 | 🍽️ **Hotel Intranet** | Offline-first LAN hospitality POS &amp; KDS | [Repo](https://github.com/Elvinoacer/hotel-intranet)<!-- STAR:hotel-intranet --> · ★ 17<!-- /STAR:hotel-intranet --> |
 | 🧭 **Kampus** | Campus community &amp; peer marketplace | [Live](https://moimashinani.gtss.software) · [Repo](https://github.com/Elvinoacer/Kampus)<!-- STAR:Kampus --> · ★ 1<!-- /STAR:Kampus --> |
@@ -62,7 +62,7 @@
 <br />
 
 <!-- LAST_UPDATED:START -->
-<sub>Auto-synced by GitHub Actions · Nov 24, 2026</sub>
+<sub>Auto-synced by GitHub Actions · Nov 25, 2026</sub>
 <!-- LAST_UPDATED:END -->
 
 </div>
