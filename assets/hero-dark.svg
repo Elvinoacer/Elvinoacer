@@ -60,7 +60,7 @@
     <circle cx="15" cy="13" r="3.6" fill="#63B59B">
       <animate attributeName="opacity" values="0.95;0.35;0.95" dur="5s" repeatCount="indefinite"/>
     </circle>
-    <text x="27" y="17" fill="#95AAA3" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.4" font-weight="500">Eldoret, Kenya  ·  4-day streak  ·  5,097 contributions / 1y</text>
+    <text x="27" y="17" fill="#95AAA3" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.4" font-weight="500">Eldoret, Kenya  ·  5-day streak  ·  5,099 contributions / 1y</text>
   </g>
 
   <!-- Concise identity -->
@@ -71,7 +71,7 @@
   <!-- Subtle footer telemetry line -->
   <text x="42" y="178" fill="#687F78" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11">
     <tspan fill="#95AAA3" font-weight="600">@Elvinoacer</tspan>
-    <tspan>  ·  106 public repos  ·  6,527 lifetime contributions</tspan>
+    <tspan>  ·  106 public repos  ·  6,529 lifetime contributions</tspan>
   </text>
 </g>
 
